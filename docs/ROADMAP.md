@@ -51,8 +51,8 @@ named in the product goal (HANDOFF §1). *(Flagged as a human decision — demot
 
 Goal: a deployed, verifiable, testable skeleton. Nothing card-related yet.
 
-- [ ] **0.1 — Repo & toolchain init.** *(git init + GitHub remote already done
-  2026-07-03.)* TypeScript (strict) + Wrangler project; Vitest with
+- [x] **0.1 — Repo & toolchain init.** *(git init + GitHub remote already done
+  2026-07-03; toolchain landed 2026-07-04.)* TypeScript (strict) + Wrangler project; Vitest with
   `@cloudflare/vitest-pool-workers` (verify current package name/status at
   build time); lint/format config; `npm test` and `wrangler dev` both run
   green on an empty-ish project. Layout per [TECH-DESIGN.md](TECH-DESIGN.md).

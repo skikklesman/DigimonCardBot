@@ -10,6 +10,25 @@
 
 ---
 
+## 2026-07-04 — Toolchain locked in (chunk 0.1); Workers Vitest API drift noted
+
+- **Decision:** TypeScript 6.0 (strict), Wrangler 4.107, Vitest 4.1 +
+  `@cloudflare/vitest-pool-workers` 0.18, ESLint 10 + typescript-eslint,
+  Prettier. **Zero runtime dependencies.** All dev-only, so no per-package
+  justification entries needed under the dependency policy.
+- **Drift finding (build-time verification paid off):** the pool-workers
+  package dropped the documented `defineWorkersConfig` /
+  `@cloudflare/vitest-pool-workers/config` API in the Vitest 4 era. Current
+  wiring is a Vite plugin: `cloudflareTest({ wrangler: { configPath } })`
+  from the package root, plus tsconfig types entry
+  `@cloudflare/vitest-pool-workers/types` for `cloudflare:test`. If online
+  docs/examples show `defineWorkersConfig`, they are stale — trust the
+  package's own exports.
+- **Revisit if:** typescript-eslint's supported TS range (<6.1.0 today) falls
+  behind a TS upgrade.
+
+---
+
 ## 2026-07-03 — Documentation set & gate structure established
 
 - **Decision:** Roadmap uses five named gates (Scaffolding Up → First Playable

@@ -1,0 +1,16 @@
+# Worker config — bindings + schedule only. NO SECRETS (HANDOFF §10).
+# Secrets go in via `wrangler secret put` (deployed) / .dev.vars (local).
+
+name = "digimon-tcg-bot"
+main = "src/index.ts"
+compatibility_date = "2026-06-01"
+
+# D1 binding lands with chunk 1.1 (see docs/ROADMAP.md):
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "cards"
+# database_id = "<from `wrangler d1 create cards`>"
+
+# Sync cron lands with chunk 3.6:
+# [triggers]
+# crons = ["0 6 * * 1"]   # Mondays 06:00 UTC

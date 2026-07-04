@@ -36,3 +36,4 @@ Carried from HANDOFF §14 plus new ones raised by the roadmap:
 | 5 | Discord app owner: Team vs personal | Team (per HANDOFF §14) | Chunk 0.5 |
 | 6 | Sync cadence | Weekly Mon 06:00 UTC (HANDOFF §10) | Chunk 3.6 |
 | 7 | Final command names/options parity | Mirror old bot | Chunk 4.4 |
+| 8 | Open-source license (repo goes public post-launch) | MIT unless owner prefers otherwise | Phase 5 |

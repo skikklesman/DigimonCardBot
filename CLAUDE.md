@@ -5,6 +5,18 @@ Discord slash-command bot for Digimon TCG card lookup, replacing DigimonTCGBot
 D1 card cache with version-pointer sync. Target: ~1,000 servers, ~$0/month,
 minimal maintenance.
 
+## Project facts
+
+- Remote: https://github.com/skikklesman/DigimonCardBot (`origin`, branch
+  `master`). **Private for now** — the owner intends to open-source it once
+  it's up and running (license + public README are launch-phase tasks; see
+  DECISIONS.md open decisions).
+- The `gh` CLI is installed and authenticated as `skikklesman` on the dev
+  machine.
+- Timeline pressure: the old bot dies **2026-07-31**, and Discord bot
+  verification (human action, ~5-day review) must be submitted before the bot
+  reaches 100 servers.
+
 ## Read these before writing code
 
 1. **[HANDOFF.md](HANDOFF.md)** — the founding spec: architecture, data model,

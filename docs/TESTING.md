@@ -10,13 +10,13 @@
 
 ## 1. Test pyramid
 
-| Layer | Runs | Tooling | What it proves |
-|---|---|---|---|
-| Unit | every push (CI) + locally | Vitest | Pure logic is correct |
-| Integration | every push (CI) + locally | Vitest + Workers runtime pool (local D1) | Modules compose correctly inside the real runtime |
-| Post-deploy smoke | after every deploy (CI) | Script: signed synthetic interactions → live endpoint | The deployed Worker + real D1 + real secrets actually work |
-| Source contract | scheduled (weekly, before sync cadence) | Script: fetch real source, run validation gates, write nothing | Upstream hasn't drifted; we find out before the cron does |
-| Manual gate scripts | at each roadmap gate | Human + test guild | The user-visible product works |
+| Layer               | Runs                                    | Tooling                                                        | What it proves                                             |
+| ------------------- | --------------------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------- |
+| Unit                | every push (CI) + locally               | Vitest                                                         | Pure logic is correct                                      |
+| Integration         | every push (CI) + locally               | Vitest + Workers runtime pool (local D1)                       | Modules compose correctly inside the real runtime          |
+| Post-deploy smoke   | after every deploy (CI)                 | Script: signed synthetic interactions → live endpoint          | The deployed Worker + real D1 + real secrets actually work |
+| Source contract     | scheduled (weekly, before sync cadence) | Script: fetch real source, run validation gates, write nothing | Upstream hasn't drifted; we find out before the cron does  |
+| Manual gate scripts | at each roadmap gate                    | Human + test guild                                             | The user-visible product works                             |
 
 Verify the current Cloudflare-recommended Vitest integration
 (`@cloudflare/vitest-pool-workers` at time of writing) during chunk 0.1 — this
@@ -82,9 +82,9 @@ public key signs real traffic — so the smoke script instead uses the app's rea
 flow where possible and falls back to boundary checks:
 
 1. **PING check:** POST an unsigned request → expect 401 (proves verification
-   is on, not off). *(A correctly signed PING can only come from Discord;
+   is on, not off). _(A correctly signed PING can only come from Discord;
    don't try to fake it — instead re-save/re-verify the endpoint URL check in
-   the Portal if verification is in doubt.)*
+   the Portal if verification is in doubt.)_
 2. **Health route:** a trivial `GET /health` on the Worker returning
    `{ activeVersion, cardCount, lastSuccessfulSync }` — the smoke script
    asserts version > 0, count within expected range, sync timestamp fresh.
@@ -110,13 +110,16 @@ sync failed" into "we knew Sunday that upstream drifted."
 ## 6. Manual gate scripts
 
 ### 🏗️ Gate A — Scaffolding Up
+
 1. Developer Portal → save Interactions Endpoint URL → succeeds (Discord PING
    verified).
 2. `curl -X POST <endpoint>` unsigned → 401.
 3. CI on latest commit: green.
 
 ### 🎮 Gate B — First Playable script
+
 In the private test guild:
+
 1. `/card card-name:EX1-066` → embed with correct card image + text.
 2. `/card card-name:goldramon` (free text, no suggestion picked) → sensible
    result (single hit or disambiguation list).
@@ -127,7 +130,9 @@ In the private test guild:
    respond".
 
 ### 🚀 Gate C — MVP script
+
 Everything in Gate B, plus:
+
 1. Typing `goldr` in the `card-name` option offers Goldramon printings with
    `Name (Set)` labels; picking one resolves that exact printing.
 2. `/alt` on a card with alt arts lists/shows the variants.
@@ -143,13 +148,13 @@ Everything in Gate B, plus:
 
 ### Monitoring & alerting matrix
 
-| Signal | Source | Alert path | Threshold |
-|---|---|---|---|
-| Sync failure | `scheduled()` catch → webhook | Private Discord channel | Any failure |
-| Stale data | `last_successful_sync` age check | Webhook | > cadence + 25% margin |
-| Worker errors / failed invocations | Cloudflare Workers analytics | Manual review weekly; Cloudflare notification if available on free tier (verify) | Any sustained error rate |
-| Endpoint down | External uptime ping on `/health` (free tier of any uptime service) | Email/Discord | 2 consecutive failures |
-| Drop-count spike | Validation gate counts, reported in sync summary | Webhook (warn, not fail) | > 1% of batch |
+| Signal                             | Source                                                              | Alert path                                                                       | Threshold                |
+| ---------------------------------- | ------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ------------------------ |
+| Sync failure                       | `scheduled()` catch → webhook                                       | Private Discord channel                                                          | Any failure              |
+| Stale data                         | `last_successful_sync` age check                                    | Webhook                                                                          | > cadence + 25% margin   |
+| Worker errors / failed invocations | Cloudflare Workers analytics                                        | Manual review weekly; Cloudflare notification if available on free tier (verify) | Any sustained error rate |
+| Endpoint down                      | External uptime ping on `/health` (free tier of any uptime service) | Email/Discord                                                                    | 2 consecutive failures   |
+| Drop-count spike                   | Validation gate counts, reported in sync summary                    | Webhook (warn, not fail)                                                         | > 1% of batch            |
 
 ### Rollback playbook (rehearse before launch)
 

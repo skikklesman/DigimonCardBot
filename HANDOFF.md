@@ -5,7 +5,7 @@
 > This is community infrastructure: it must be cheap, low-maintenance, and able to
 > outlive any single maintainer's attention.
 
-This document is the spec. It records not just *what* to build but *why* each
+This document is the spec. It records not just _what_ to build but _why_ each
 decision was made, so the implementation doesn't quietly reverse a choice that was
 deliberate. Read the "Key decisions" and "Do NOT" sections before writing code.
 
@@ -25,7 +25,7 @@ ID, alt-art support, and clean image embeds.
 
 ## 2. Constraints & scale
 
-- **Scale:** design for ~1,000 servers. This is *small* by Discord standards — no
+- **Scale:** design for ~1,000 servers. This is _small_ by Discord standards — no
   sharding is required (sharding is only forced above ~2,500 guilds).
 - **Budget:** aim for ~$0/month (or close to it). This is achievable on Cloudflare's free tier.
 - **Maintenance:** minimize always-on processes and babysitting. Prefer serverless.
@@ -40,12 +40,14 @@ Two fully independent paths that share exactly one thing: the card cache (a D1
 SQLite database). They never interact at runtime.
 
 **Request path** (runs per slash command):
+
 ```
 Discord  --POST /interactions-->  Worker.fetch()  --read-->  D1 (card cache)
 Discord  <----reply-------------  Worker.fetch()
 ```
 
 **Sync path** (runs on a cron schedule):
+
 ```
 Cron trigger --> Worker.scheduled() --> fetch card source --> validate
              --> load new version into D1 --> verify --> flip version pointer
@@ -61,12 +63,12 @@ worst, lookups serve slightly stale (but correct) data.
 
 ## 4. Tech stack & why
 
-| Concern | Choice | Why |
-|---|---|---|
-| Interaction model | **HTTP Interactions** (not Gateway) | Lookups are stateless and interaction-only. No persistent connection to keep alive; serverless-friendly; needs **zero privileged intents**. |
-| Compute | **Cloudflare Workers** | Natural home for HTTP interactions. Scale-to-zero, edge latency, generous free tier. One Worker holds both request + sync handlers. |
-| Card cache | **Cloudflare D1 (SQLite)** | Supports both access patterns we need: exact lookup (`WHERE card_id = ?`) and name search (`WHERE search_name LIKE ?`). A KV store can't do search well. |
-| Card images | **Not re-hosted** | Store the image URL in D1; let Discord embed it from the source host. No object storage needed unless the source blocks hotlinking (solve later if it happens). |
+| Concern           | Choice                              | Why                                                                                                                                                             |
+| ----------------- | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Interaction model | **HTTP Interactions** (not Gateway) | Lookups are stateless and interaction-only. No persistent connection to keep alive; serverless-friendly; needs **zero privileged intents**.                     |
+| Compute           | **Cloudflare Workers**              | Natural home for HTTP interactions. Scale-to-zero, edge latency, generous free tier. One Worker holds both request + sync handlers.                             |
+| Card cache        | **Cloudflare D1 (SQLite)**          | Supports both access patterns we need: exact lookup (`WHERE card_id = ?`) and name search (`WHERE search_name LIKE ?`). A KV store can't do search well.        |
+| Card images       | **Not re-hosted**                   | Store the image URL in D1; let Discord embed it from the source host. No object storage needed unless the source blocks hotlinking (solve later if it happens). |
 
 ### Why HTTP interactions over the Gateway (important — do not reverse)
 
@@ -76,11 +78,11 @@ interactions need none of that: Discord POSTs each slash command to our endpoint
 we reply in the HTTP response. This makes the bot serverless, cheaper, and simpler
 to verify with Discord.
 
-**Trade-off we accepted:** HTTP interactions can *only* receive
+**Trade-off we accepted:** HTTP interactions can _only_ receive
 interaction events (slash commands, buttons, modals). They cannot react to plain
 messages — so no `[[bracket]]`/`!prefix` text lookups and no auto-posting when a new
 set drops. If the community later demands text-prefix commands, that requires a
-*separate* small Gateway process with the Message Content intent (and pushes us over
+_separate_ small Gateway process with the Message Content intent (and pushes us over
 the 10k-user privileged-intent review). Keep the two concerns separable so that can
 be bolted on without a rewrite. Default plan is slash-only.
 
@@ -89,7 +91,7 @@ be bolted on without a rewrite. Default plan is slash-only.
 ## 5. Data model (D1)
 
 Version-pointer design: every card row is tagged with a dataset `version`. New syncs
-load rows under the *next* version number alongside the current data; the cutover is
+load rows under the _next_ version number alongside the current data; the cutover is
 a single write that flips the active version. This makes promotion atomic and
 rollback trivial. No separate staging table is required — old and new versions
 coexist in the same table until the pointer flips.
@@ -128,6 +130,7 @@ CREATE INDEX IF NOT EXISTS idx_cards_search ON cards(version, search_name);
 ```
 
 **Reads always filter on the active version**, e.g.:
+
 ```sql
 SELECT * FROM cards
 WHERE version = (SELECT value FROM meta WHERE key = 'active_version')
@@ -190,16 +193,19 @@ debounced keystroke across ~1,000 servers.) Note the interaction is **debounced*
 Discord — it fires on a typing pause, not per keystroke — so volume is manageable.
 
 **Query:** prefix match, index-friendly, capped at 25:
+
 ```sql
 SELECT card_id, variant, name, set_name FROM cards
 WHERE version = (SELECT value FROM meta WHERE key = 'active_version')
   AND search_name LIKE ?     -- bind 'goldr%'  (prefix; uses idx_cards_search)
 LIMIT 25;
 ```
+
 Start with prefix (`goldr%`). Substring (`%goldr%`) is more forgiving but cannot use
 the index — only switch if users ask for it.
 
 **Choice construction — label vs. value (important):**
+
 - `name` (the label shown) = human string, e.g. `"Goldramon (BT-16)"` — format as
   `"{name} ({set_name})"` so distinct printings are distinguishable.
 - `value` (what Discord submits when picked) = a **stable identifier**, e.g.
@@ -207,6 +213,7 @@ the index — only switch if users ask for it.
   unambiguous "this exact printing" instead of forcing a re-resolve by name.
 
 **Edge cases:**
+
 - Cap at 25. If a prefix matches more, prioritize (exact name-prefix first, then
   broaden) rather than truncating arbitrarily.
 - Suggestions are **not enforced** — the user can still submit free text that wasn't in
@@ -240,16 +247,18 @@ Command set to mirror the old bot: `/card`, `/alt`, `/keyword`, `/release`, `/pa
 ## 8. Sync path — robust transform-and-upsert
 
 Treat the incoming feed as guilty until proven innocent. Validation gates come
-*before* any write; the live data is never touched until the new dataset has cleared
+_before_ any write; the live data is never touched until the new dataset has cleared
 every check; the final cutover is atomic.
 
 ### Defense 1 — fetch defensively
+
 Check HTTP status (a 200 is not guaranteed — could be a 503 or an HTML error page),
 set a timeout, and retry a couple of times with backoff on transient failures. If the
 fetch never succeeds, **abort**: the live cache is untouched and lookups keep serving
 the current data.
 
 ### Defense 2 — validate the whole batch before any write
+
 - **Shrink guard (highest value):** compare incoming card count to the current live
   count; refuse the update if it dropped more than ~10%. This single check neutralizes
   the catastrophic cases (empty array, truncated response, error page parsed as junk).
@@ -259,33 +268,38 @@ the current data.
   a spike in drops is itself a signal.
 - **Schema-drift detection:** if expected fields are absent across the board, the
   upstream changed format — abort and alert rather than writing nulls everywhere.
-- Distinction that matters: *one bad card* → skip it; *the whole feed is wrong* →
+- Distinction that matters: _one bad card_ → skip it; _the whole feed is wrong_ →
   abort the batch.
 
 ### Defense 3 — idempotency via upsert on a stable key
+
 Every write is `INSERT ... ON CONFLICT DO UPDATE`, keyed on `(card_id, variant)`
 within the new version. Running the sync twice yields the same state as running it
 once, so retries are safe. **Never** use an auto-increment row id as identity — that
 makes re-runs create duplicates.
 
 ### Defense 4 — atomic promote (this beats partial failure)
+
 Load all new rows under the next version number, verify them, then **flip the
 `active_version` pointer in a single write**. Readers filter on the active version, so
 they never observe a half-written state, no matter how many rows were loaded.
 Rollback = flip the pointer back to the prior version.
 
 ### Defense 5 — observe & alert
+
 Write `last_successful_sync` on every successful promote. Announce failures to a
-private Discord webhook (free, no extra infra). A good abort produces *no visible
-change*, so without this a silently failing sync could serve stale data for weeks.
+private Discord webhook (free, no extra infra). A good abort produces _no visible
+change_, so without this a silently failing sync could serve stale data for weeks.
 Alert if `last_successful_sync` goes stale past the expected cadence.
 
 ### ⛔ Anti-pattern — never do this
+
 `DELETE FROM cards; INSERT ...` on the **live** table. If the insert fails after the
 delete, you serve an empty table to every server. The version-pointer design exists
 specifically to avoid this.
 
 ### Worker-limits escape hatch
+
 A scheduled Worker has a bounded CPU/time budget. A few-thousand-row Digimon pool
 should load in one invocation with chunked/batched upserts. If the dataset ever
 outgrows a single run, load staging rows across multiple cron runs (each chunk is
@@ -293,6 +307,7 @@ idempotent) and flip the pointer only once loading is complete. Cloudflare Queue
 a Durable Object can drive that later — do not add this complexity on day one.
 
 ### Optional manual resync
+
 Expose a tiny **authenticated** route on the `fetch` handler that triggers the same
 sync logic on demand, for when a set drops and you don't want to wait for the cron.
 
@@ -300,7 +315,7 @@ sync logic on demand, for when a set drops and you don't want to wait for the cr
 
 ## 9. Card data source
 
-The bot consumes a card *dataset* over a defined boundary; it must not care how the
+The bot consumes a card _dataset_ over a defined boundary; it must not care how the
 data was produced, so the source is swappable.
 
 - **Primary candidate:** `niamu/digimon-card-game` — scrapes official Bandai sources
@@ -320,6 +335,7 @@ Secrets go in via `wrangler secret put NAME` — **never in the repo**. A commit
 token is compromised instantly (Discord auto-invalidates tokens it detects on GitHub).
 
 Required secrets:
+
 - `DISCORD_PUBLIC_KEY` — signature verification
 - `DISCORD_BOT_TOKEN` — command registration + any follow-up messages
 - `DISCORD_APP_ID` — command registration
@@ -327,6 +343,7 @@ Required secrets:
 - `ADMIN_RESYNC_TOKEN` — guards the manual-resync route (if implemented)
 
 `wrangler.toml` sketch (bindings + schedule only; no secrets):
+
 ```toml
 name = "digimon-tcg-bot"
 main = "src/index.ts"
@@ -375,18 +392,18 @@ These require a person and, in one case, a government ID. Plan around them.
 Execute roughly in this order; each milestone is independently testable.
 
 1. **Stub Worker + signature verification.** Answers PING (type 1) with PONG.
-   Save the Interactions Endpoint URL successfully. *(Gate: URL saves.)*
+   Save the Interactions Endpoint URL successfully. _(Gate: URL saves.)_
 2. **D1 setup.** `wrangler d1 create`, apply the schema, seed the `meta` table with
    `active_version = 0`.
 3. **Sync job (populate).** Implement fetch → validate (with shrink guard) → load new
    version → verify → flip pointer → write `last_successful_sync`. Run once to
-   populate. *(Gate: cards table has a full, versioned dataset.)*
+   populate. _(Gate: cards table has a full, versioned dataset.)_
 4. **`/card` read path.** Lookup by name and by ID, filtered on active version;
    return an image embed. Handle not-found and multiple-matches. Handle a
    `card-name` value that came from a free-text entry rather than a picked suggestion.
 5. **Autocomplete for `card-name`.** Add the autocomplete interaction branch (§6.4):
    prefix query on `search_name`, ≤25 choices, label = `Name (Set)`, value =
-   `card_id|variant`. *(Gate: typing `goldr` offers the Goldramon printings.)*
+   `card_id|variant`. _(Gate: typing `goldr` offers the Goldramon printings.)_
 6. **Register commands to a test guild.** Iterate on the full command set. Remember
    `autocomplete: true` on the `card-name` option.
 7. **Additional commands** (`/alt`, `/keyword`, `/release`, `/page`) as scoped.

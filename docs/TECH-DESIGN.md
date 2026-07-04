@@ -2,7 +2,7 @@
 
 > Covers the engineering decisions [HANDOFF.md](../HANDOFF.md) leaves open:
 > project structure, tooling, module boundaries, and coding conventions.
-> HANDOFF is the *what/why* of the architecture; this is the *how* of the
+> HANDOFF is the _what/why_ of the architecture; this is the _how_ of the
 > codebase. Where the two conflict, HANDOFF wins — and file an issue, because
 > that conflict is a bug in this document.
 
@@ -10,15 +10,15 @@
 
 ## 1. Stack decisions (proposals — confirm in chunk 0.1)
 
-| Concern | Choice | Why |
-|---|---|---|
-| Language | TypeScript, `strict: true` | Interaction payloads and card records are exactly the kind of loosely-shaped JSON that TS catches mistakes in. |
-| Framework | **None** — plain `fetch`/`scheduled` export | The Worker has one POST route, one health route, one admin route. A router framework is more surface than the app. |
-| Signature verification | WebCrypto Ed25519 (built into Workers) | No dependency for the security boundary. Verify current WebCrypto Ed25519 support/algorithm name at build time; fall back to the `discord-interactions` package only if WebCrypto can't do it. |
-| Test runner | Vitest + Cloudflare's Workers pool (`@cloudflare/vitest-pool-workers` at time of writing) | Runs tests inside workerd with a real local D1 — integration tests without deploying. |
-| Discord API types | `discord-api-types` package | Types only, zero runtime cost, keeps interaction-type magic numbers named. |
-| Migrations | `wrangler d1 migrations` | Built-in, good enough for one database. |
-| CI | GitHub Actions | Free for public repos; `wrangler-action` for deploys. |
+| Concern                | Choice                                                                                    | Why                                                                                                                                                                                            |
+| ---------------------- | ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Language               | TypeScript, `strict: true`                                                                | Interaction payloads and card records are exactly the kind of loosely-shaped JSON that TS catches mistakes in.                                                                                 |
+| Framework              | **None** — plain `fetch`/`scheduled` export                                               | The Worker has one POST route, one health route, one admin route. A router framework is more surface than the app.                                                                             |
+| Signature verification | WebCrypto Ed25519 (built into Workers)                                                    | No dependency for the security boundary. Verify current WebCrypto Ed25519 support/algorithm name at build time; fall back to the `discord-interactions` package only if WebCrypto can't do it. |
+| Test runner            | Vitest + Cloudflare's Workers pool (`@cloudflare/vitest-pool-workers` at time of writing) | Runs tests inside workerd with a real local D1 — integration tests without deploying.                                                                                                          |
+| Discord API types      | `discord-api-types` package                                                               | Types only, zero runtime cost, keeps interaction-type magic numbers named.                                                                                                                     |
+| Migrations             | `wrangler d1 migrations`                                                                  | Built-in, good enough for one database.                                                                                                                                                        |
+| CI                     | GitHub Actions                                                                            | Free for public repos; `wrangler-action` for deploys.                                                                                                                                          |
 
 Dependency policy: **every runtime dependency needs a written justification in
 [DECISIONS.md](DECISIONS.md).** The bot must outlive maintainer attention
@@ -92,7 +92,7 @@ Dependency policy: **every runtime dependency needs a written justification in
   enough context to diagnose from the Discord message alone (stage, counts,
   upstream status code).
 - **`search_name` normalization** is defined once in `data/schema.ts` and used
-  by *both* the sync (writing) and autocomplete/lookup (querying) paths. If
+  by _both_ the sync (writing) and autocomplete/lookup (querying) paths. If
   these ever diverge, search silently breaks — unit-test them against the same
   table of cases.
 - **Timestamps** are ISO-8601 UTC strings everywhere (matches HANDOFF §5).

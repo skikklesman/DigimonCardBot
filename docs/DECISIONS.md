@@ -46,13 +46,13 @@
 
 Carried from HANDOFF §14 plus new ones raised by the roadmap:
 
-| # | Decision | Default until decided | Needed by |
-|---|---|---|---|
-| 1 | Card data source (niamu vs digimoncard.io/.dev) | Evaluate in chunk 1.2 | Chunk 1.2 |
-| 2 | `/alt` in MVP or Phase 4? | In MVP (per HANDOFF §1 product goal) | Gate C |
-| 3 | What does the old bot's `/page` actually do? | Ask community | Chunk 4.3 |
-| 4 | Keyword data source for `/keyword` | Small static dataset in repo | Chunk 4.1 |
-| 5 | Discord app owner: Team vs personal | Team (per HANDOFF §14) | Chunk 0.5 |
-| 6 | Sync cadence | Weekly Mon 06:00 UTC (HANDOFF §10) | Chunk 3.6 |
-| 7 | Final command names/options parity | Mirror old bot | Chunk 4.4 |
-| 8 | Open-source license (repo goes public post-launch) | MIT unless owner prefers otherwise | Phase 5 |
+| #   | Decision                                           | Default until decided                | Needed by |
+| --- | -------------------------------------------------- | ------------------------------------ | --------- |
+| 1   | Card data source (niamu vs digimoncard.io/.dev)    | Evaluate in chunk 1.2                | Chunk 1.2 |
+| 2   | `/alt` in MVP or Phase 4?                          | In MVP (per HANDOFF §1 product goal) | Gate C    |
+| 3   | What does the old bot's `/page` actually do?       | Ask community                        | Chunk 4.3 |
+| 4   | Keyword data source for `/keyword`                 | Small static dataset in repo         | Chunk 4.1 |
+| 5   | Discord app owner: Team vs personal                | Team (per HANDOFF §14)               | Chunk 0.5 |
+| 6   | Sync cadence                                       | Weekly Mon 06:00 UTC (HANDOFF §10)   | Chunk 3.6 |
+| 7   | Final command names/options parity                 | Mirror old bot                       | Chunk 4.4 |
+| 8   | Open-source license (repo goes public post-launch) | MIT unless owner prefers otherwise   | Phase 5   |

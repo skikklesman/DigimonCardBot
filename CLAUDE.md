@@ -17,6 +17,21 @@ minimal maintenance.
   verification (human action, ~5-day review) must be submitted before the bot
   reaches 100 servers.
 
+### Live deployment (as of chunk 0.5, 2026-07-05 — Gate A)
+
+- **Worker is deployed and live** (production) at
+  `https://digimon-tcg-bot.rstewart555.workers.dev`; the interactions endpoint
+  is `POST /interactions`. It only answers Discord's signed PING for now — every
+  card command lands in later chunks.
+- **Cloudflare:** account `<OWNER_EMAIL>'s Account`
+  (`<CLOUDFLARE_ACCOUNT_ID>`); `wrangler` authed via OAuth on the dev
+  machine (token has `workers` + `d1` write — no re-login needed for Phase 1).
+- **Discord app:** owned by a **Team** (DECISIONS #5). `DISCORD_PUBLIC_KEY` is
+  set as a Worker secret (`wrangler secret put`); the Interactions Endpoint URL
+  is saved in the Developer Portal and passed Discord's verification.
+- None of the above are secrets. Actual secrets live only in `wrangler secret`
+  / `.dev.vars` — never the repo.
+
 ## Read these before writing code
 
 1. **[HANDOFF.md](HANDOFF.md)** — the founding spec: architecture, data model,

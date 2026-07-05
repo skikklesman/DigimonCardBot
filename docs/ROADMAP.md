@@ -60,7 +60,7 @@ Goal: a deployed, verifiable, testable skeleton. Nothing card-related yet.
 - [x] **0.2 — CI skeleton.** _(Landed 2026-07-04.)_ GitHub Actions: typecheck +
       lint + format-check + tests on every push. Deploy step stubbed but present.
       _DoD: a pushed commit shows a green check._
-- [ ] **0.3 — Ed25519 verification module.** Pure function:
+- [x] **0.3 — Ed25519 verification module.** _(Landed 2026-07-04.)_ Pure function:
       `(publicKey, signature, timestamp, body) → boolean` via WebCrypto. **Unit
       tests with known-good and known-bad vectors** — this is the security boundary;
       it gets real tests, not a mock.

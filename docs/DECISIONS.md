@@ -10,6 +10,46 @@
 
 ---
 
+## 2026-07-05 — Card source: digimoncard.app dataset (chunk 1.2, resolves open decision #1)
+
+- **Decision:** Primary card source is the **TakaOtaku/Digimon-Card-App**
+  dataset — one JSON file
+  (`src/assets/cardlists/DigimonCards.json`, ~8.4 MB, 4,295 cards) fetched
+  from GitHub raw. **digimoncard.io's public API is the documented fallback**
+  behind the adapter boundary (HANDOFF §9). Owner confirmed the choice.
+- **Evidence (all verified 2026-07-05):**
+  - **digimoncard.app:** MIT license; auto-updated from official Bandai
+    sources every ~3 days (`[Automatic] Update Cards` commits, latest
+    2026-07-04) plus human curation; richest field coverage (multilingual
+    names, restrictions, ACE/LINK/assembly mechanics); **explicit alt-art
+    variants** (`AAs`/`JAAs` arrays, ids like `EX1-066_P1`) **with working
+    image URLs** (`digimoncard.app/assets/images/cards/EX1-066_P1.webp` → 200) — the only candidate that fully covers the MVP's `/alt`
+    requirement. No API key, no meaningful rate limit for a weekly fetch.
+  - **digimoncard.io:** working public API (15 req/10s limit);
+    `search?series=Digimon Card Game` returns the full 9,000-row dataset in
+    one ~9.6 MB call (verified not truncated via reverse-sort). But alt arts
+    are only implied by duplicate rows keyed on `tcgplayer_id`, and alt-art
+    image URLs use internal set-ids that **no public endpoint exposes** —
+    `/alt` would have no variant images. Base images:
+    `images.digimoncard.io/images/cards/{id}.jpg|webp`.
+  - **niamu/digimon-card-game:** active and well-built, but the API is
+    self-host software (Clojure/Datomic scraper + export + server) — wrong
+    fit for a zero-maintenance bot — and CC BY-NC-SA licensed.
+  - **digimoncard.dev:** deck-builder SPA; no public API found.
+- **Fixture:** 17 verbatim records captured to
+  `test/fixtures/digimoncard-app-cards.json` (provenance + upstream shape
+  notes in the adjacent README; upstream commit `20e2841`).
+- **Risks accepted:** hobby project (single maintainer, ~10 stars) — the
+  adapter boundary + stale-cache-keeps-serving design (HANDOFF §8/9) makes a
+  dead source a degraded state, not an outage, and .io is the tested swap.
+- **Verify at build time (chunk 2.3):** Discord embeds render `.webp` card
+  images correctly.
+- **Revisit if:** the repo goes unmaintained/archived, the file moves or
+  changes shape (the weekly source-contract CI check exists to catch this),
+  or Bandai objects to community datasets.
+
+---
+
 ## 2026-07-05 — D1 created; migration/test wiring facts for pool-workers 0.18 (chunk 1.1)
 
 - **Decision:** D1 database `cards` created (id
@@ -107,7 +147,6 @@ Carried from HANDOFF §14 plus new ones raised by the roadmap:
 
 | #   | Decision                                           | Default until decided                | Needed by |
 | --- | -------------------------------------------------- | ------------------------------------ | --------- |
-| 1   | Card data source (niamu vs digimoncard.io/.dev)    | Evaluate in chunk 1.2                | Chunk 1.2 |
 | 2   | `/alt` in MVP or Phase 4?                          | In MVP (per HANDOFF §1 product goal) | Gate C    |
 | 3   | What does the old bot's `/page` actually do?       | Ask community                        | Chunk 4.3 |
 | 4   | Keyword data source for `/keyword`                 | Small static dataset in repo         | Chunk 4.1 |

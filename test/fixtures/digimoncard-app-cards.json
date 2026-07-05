@@ -1,0 +1,1190 @@
+[
+  {
+    "AAs": [
+      {
+        "id": "EX1-066_P1",
+        "illustrator": "Kenji Watanabe",
+        "note": "EX-01: Theme Booster Classic Collection",
+        "type": "Textured - Alternative Art"
+      },
+      {
+        "id": "EX1-066_P2",
+        "illustrator": "Kenji Watanabe",
+        "note": "Championship 2024 Tamers Pack",
+        "type": "Foil - Championship Stamp - Alternative Art"
+      },
+      {
+        "id": "EX1-066_P3",
+        "illustrator": "sasasi",
+        "note": "Special Event Pack 2025",
+        "type": "Alternative Art"
+      },
+      {
+        "id": "EX1-066_P3",
+        "illustrator": "sasasi",
+        "note": "BT-21: Limited Card Pack",
+        "type": "Alternative Art"
+      },
+      {
+        "id": "EX1-066_P4",
+        "illustrator": "Kenji Watanabe",
+        "note": "AD-01: ADVANCED BOOSTER DIGIMON GENERATION",
+        "type": "Foil - Rare"
+      },
+      {
+        "id": "EX1-066_P5",
+        "illustrator": "Kenji Watanabe",
+        "note": "AD-01: ADVANCED BOOSTER DIGIMON GENERATION",
+        "type": "Foil - Rare"
+      }
+    ],
+    "JAAs": [
+      {
+        "id": "EX1-066_P1-J",
+        "illustrator": "Kenji Watanabe",
+        "note": "EX-01: Theme Booster Classic Collection",
+        "type": "Textured - Alternative Art"
+      },
+      {
+        "id": "EX1-066_P2-J",
+        "illustrator": "Kenji Watanabe",
+        "note": "PB-15: Digimon Card Game 3rd Anniversary Set",
+        "type": "Textured - Gold Background - Alternative Art"
+      },
+      {
+        "id": "EX1-066_P3-J",
+        "illustrator": "Kenji Watanabe",
+        "note": "LM-04: Limited Card Pack Torrid Weiss",
+        "type": "Foil - Coloured Border - Alternative Art"
+      },
+      {
+        "id": "EX1-066_P4-J",
+        "illustrator": "sasasi",
+        "note": "LM-05: Limited Card Pack Final Elysion",
+        "type": "Alternative Art"
+      }
+    ],
+    "aceEffect": "-",
+    "assembly": "-",
+    "attribute": "-",
+    "block": ["01", "05"],
+    "burstDigivolve": "-",
+    "cardImage": "assets/images/cards/EX1-066.webp",
+    "cardLv": "-",
+    "cardNumber": "EX1-066",
+    "cardType": "Tamer",
+    "color": "White",
+    "digiXros": "-",
+    "digivolveCondition": [],
+    "digivolveEffect": "-",
+    "dnaDigivolve": "-",
+    "dp": "-",
+    "dualEffect": "-",
+    "effect": "[On Play] Reveal the top 3 cards of your deck. Add 1 Digimon card among them to your hand. Trash the remaining cards.\n[All Turns] When one of your level 5 or higher Digimon with digivolution cards is deleted, you may suspend this Tamer. If you do, gain 1 memory, then hatch 1 Digi-Egg card to an empty space in your Breeding Area.",
+    "form": "-",
+    "id": "EX1-066",
+    "illustrator": "Kenji Watanabe",
+    "linkDP": "-",
+    "linkEffect": "-",
+    "linkRequirement": "-",
+    "name": {
+      "english": "Analog Youth",
+      "japanese": "アナログの少年",
+      "korean": "-",
+      "simplifiedChinese": "-",
+      "traditionalChinese": "-"
+    },
+    "notes": "▹THEME BOOSTER CLASSIC COLLECTION [EX-01]",
+    "optionCardColourRequirement": "-",
+    "optionCardEffect": "-",
+    "playCost": "2",
+    "rarity": "R",
+    "restrictions": {
+      "chinese": "Unrestricted",
+      "english": "Unrestricted",
+      "japanese": "Unrestricted",
+      "korean": "Unrestricted"
+    },
+    "rule": "-",
+    "securityEffect": "[Security] Play this card without paying the cost.",
+    "specialDigivolve": "-",
+    "type": "-",
+    "version": "Normal"
+  },
+  {
+    "AAs": [
+      {
+        "id": "BT14-018_P0",
+        "illustrator": "toriyufu",
+        "note": "Blast Ace Pre-Release Pack",
+        "type": "Foil - Pre Release Stamp - Rare"
+      }
+    ],
+    "JAAs": [],
+    "aceEffect": "-",
+    "assembly": "-",
+    "attribute": "Vaccine",
+    "block": ["03"],
+    "burstDigivolve": "-",
+    "cardImage": "assets/images/cards/BT14-018.webp",
+    "cardLv": "Lv.6",
+    "cardNumber": "BT14-018",
+    "cardType": "Digimon",
+    "color": "Red/Yellow",
+    "digiXros": "-",
+    "digivolveCondition": [
+      {
+        "color": "Red",
+        "cost": "4",
+        "level": "5"
+      },
+      {
+        "color": "Yellow",
+        "cost": "4",
+        "level": "5"
+      }
+    ],
+    "digivolveEffect": "-",
+    "dnaDigivolve": "-",
+    "dp": "12000",
+    "dualEffect": "-",
+    "effect": "[On Play] [When Digivolving] Play 1 [Amon of Crimson Flame] Token (Digimon/Red/6000 DP/＜Rush＞) and 1 [Umon of Blue Thunder] Token. (Digimon/Yellow/6000 DP/＜Blocker＞)\n[All Turns] When this Digimon would digivolve or leave the battle area, delete all of your [Amon of Crimson Flame]s and [Umon of Blue Thunder]s. If you deleted a Digimon with this effect, ＜Recovery +1 (Deck)＞ ",
+    "form": "Mega",
+    "id": "BT14-018",
+    "illustrator": "toriyufu",
+    "linkDP": "-",
+    "linkEffect": "-",
+    "linkRequirement": "-",
+    "name": {
+      "english": "Goldramon",
+      "japanese": "ゴッドドラモン",
+      "korean": "갓드라몬",
+      "simplifiedChinese": "神龙兽",
+      "traditionalChinese": "神龍獸"
+    },
+    "notes": "▹BOOSTER BLAST ACE [BT-14]",
+    "optionCardColourRequirement": "-",
+    "optionCardEffect": "-",
+    "playCost": "12",
+    "rarity": "R",
+    "restrictions": {
+      "chinese": "Unrestricted",
+      "english": "Unrestricted",
+      "japanese": "Unrestricted",
+      "korean": "Not released"
+    },
+    "rule": "-",
+    "securityEffect": "-",
+    "specialDigivolve": "-",
+    "type": "Holy Dragon/Four Great Dragons",
+    "version": "Normal"
+  },
+  {
+    "AAs": [
+      {
+        "id": "BT16-014_P0",
+        "illustrator": "koki",
+        "note": "Pre-Release Pack Beginning Observer",
+        "type": "Foil - Pre Release Stamp - Rare"
+      }
+    ],
+    "JAAs": [],
+    "aceEffect": "-",
+    "assembly": "-",
+    "attribute": "Vaccine",
+    "block": ["03"],
+    "burstDigivolve": "-",
+    "cardImage": "assets/images/cards/BT16-014.webp",
+    "cardLv": "Lv.6",
+    "cardNumber": "BT16-014",
+    "cardType": "Digimon",
+    "color": "Red/Yellow",
+    "digiXros": "-",
+    "digivolveCondition": [
+      {
+        "color": "Red",
+        "cost": "5",
+        "level": "5"
+      },
+      {
+        "color": "Yellow",
+        "cost": "5",
+        "level": "5"
+      }
+    ],
+    "digivolveEffect": "-",
+    "dnaDigivolve": "-",
+    "dp": "13000",
+    "dualEffect": "-",
+    "effect": "＜Raid＞ \n[When Digivolving] [When Attacking] You may use 1 [God Flame] or 1 Option card with the [Four Great Dragons] trait from your hand without paying the cost.\n[All Turns] This Digimon gains all effects of [Goldramon] in this Digimon's digivolution cards.",
+    "form": "Mega",
+    "id": "BT16-014",
+    "illustrator": "koki",
+    "linkDP": "-",
+    "linkEffect": "-",
+    "linkRequirement": "-",
+    "name": {
+      "english": "Goldramon (X Antibody)",
+      "japanese": "ゴッドドラモンX抗体",
+      "korean": "-",
+      "simplifiedChinese": "-",
+      "traditionalChinese": "-"
+    },
+    "notes": "▹BOOSTER BEGINNING OBSERVER [BT-16]",
+    "optionCardColourRequirement": "-",
+    "optionCardEffect": "-",
+    "playCost": "13",
+    "rarity": "R",
+    "restrictions": {
+      "chinese": "Unrestricted",
+      "english": "Unrestricted",
+      "japanese": "Unrestricted",
+      "korean": "Unrestricted"
+    },
+    "rule": "-",
+    "securityEffect": "-",
+    "specialDigivolve": "[Digivolve] [Goldramon]: Cost 2 ",
+    "type": "Holy Dragon/X Antibody/Four Great Dragons",
+    "version": "Normal"
+  },
+  {
+    "AAs": [],
+    "JAAs": [],
+    "aceEffect": "-",
+    "assembly": "-",
+    "attribute": "-",
+    "block": ["00"],
+    "burstDigivolve": "-",
+    "cardImage": "assets/images/cards/BT1-001.webp",
+    "cardLv": "Lv.2",
+    "cardNumber": "BT1-001",
+    "cardType": "Digi-Egg",
+    "color": "Red",
+    "digiXros": "-",
+    "digivolveCondition": [],
+    "digivolveEffect": "[When Attacking] When you attack an opponent's Digimon, this Digimon gets +1000 DP for the turn.",
+    "dnaDigivolve": "-",
+    "dp": "-",
+    "dualEffect": "-",
+    "effect": "-",
+    "form": "In-Training",
+    "id": "BT1-001",
+    "illustrator": "TANIMESO",
+    "linkDP": "-",
+    "linkEffect": "-",
+    "linkRequirement": "-",
+    "name": {
+      "english": "Yokomon",
+      "japanese": "ピョコモン",
+      "korean": "어니몬",
+      "simplifiedChinese": "比高兽",
+      "traditionalChinese": "比高獸"
+    },
+    "notes": "▹RELEASE SPECIAL BOOSTER 1.0 [BT01-03]",
+    "optionCardColourRequirement": "-",
+    "optionCardEffect": "-",
+    "playCost": "-",
+    "rarity": "R",
+    "restrictions": {
+      "chinese": "Unrestricted",
+      "english": "Unrestricted",
+      "japanese": "Unrestricted",
+      "korean": "Unrestricted"
+    },
+    "rule": "-",
+    "securityEffect": "-",
+    "specialDigivolve": "-",
+    "type": "Bulb",
+    "version": "Normal"
+  },
+  {
+    "AAs": [
+      {
+        "id": "AD1-005_P1",
+        "illustrator": "Emiliano Santalucia",
+        "note": "AD-01: ADVANCED BOOSTER DIGIMON GENERATION",
+        "type": "Alternative Art"
+      }
+    ],
+    "JAAs": [
+      {
+        "id": "AD1-005_P1-J",
+        "illustrator": "Emiliano Santalucia",
+        "note": "AD-01: ADVANCED BOOSTER DIGIMON GENERATION",
+        "type": "Alternative Art"
+      }
+    ],
+    "aceEffect": "Overflow ＜-4＞ ",
+    "assembly": "-",
+    "attribute": "God",
+    "block": ["05"],
+    "burstDigivolve": "-",
+    "cardImage": "assets/images/cards/AD1-005.webp",
+    "cardLv": "Lv.6",
+    "cardNumber": "AD1-005",
+    "cardType": "Digimon",
+    "color": "Red/White",
+    "digiXros": "-",
+    "digivolveCondition": [
+      {
+        "color": "Red",
+        "cost": "4",
+        "level": "5"
+      },
+      {
+        "color": "All",
+        "cost": "4",
+        "level": "Ult."
+      }
+    ],
+    "digivolveEffect": "-",
+    "dnaDigivolve": "-",
+    "dp": "12000",
+    "dualEffect": "-",
+    "effect": "[Hand] [Counter] ＜Blast Digivolve＞ \n＜Security A. +1＞ \n＜Blocker＞ \n＜Link +1＞ \n[On Play] [When Digivolving] [When Attacking] [Once Per Turn] You may link up to 2 [Social], [Navi] or [Tool] trait cards from your hand or this Digimon's digivolution cards to this Digimon without paying the cost. Then, you may delete 1 of your opponent's Digimon with as much or less DP as this Digimon.",
+    "form": "God/Appmon",
+    "id": "AD1-005",
+    "illustrator": "Erik Ly",
+    "linkDP": "-",
+    "linkEffect": "-",
+    "linkRequirement": "-",
+    "name": {
+      "english": "Gaiamon",
+      "japanese": "ガイアモン",
+      "korean": "-",
+      "simplifiedChinese": "-",
+      "traditionalChinese": "-"
+    },
+    "notes": "AD-01: ADVANCED BOOSTER DIGIMON GENERATION",
+    "optionCardColourRequirement": "-",
+    "optionCardEffect": "-",
+    "playCost": "7",
+    "rarity": "SR",
+    "restrictions": {
+      "chinese": "Unrestricted",
+      "english": "Unrestricted",
+      "japanese": "Unrestricted",
+      "korean": "Unrestricted"
+    },
+    "rule": "-",
+    "securityEffect": "-",
+    "specialDigivolve": "[App Fusion] [Globemon] & [Charismon]: Cost 0",
+    "type": "Creation",
+    "version": "Normal"
+  },
+  {
+    "AAs": [
+      {
+        "id": "BT21-009_P1",
+        "illustrator": "Tonamikanji",
+        "note": "BT-21: BOOSTER WORLD CONVERGENCE",
+        "type": "Alternative Art"
+      }
+    ],
+    "JAAs": [
+      {
+        "id": "BT21-009_P1-J",
+        "illustrator": "Tonamikanji",
+        "note": "BT-21: BOOSTER WORLD CONVERGENCE",
+        "type": "Alternative Art"
+      }
+    ],
+    "aceEffect": "-",
+    "assembly": "-",
+    "attribute": "Social",
+    "block": ["05"],
+    "burstDigivolve": "-",
+    "cardImage": "assets/images/cards/BT21-009.webp",
+    "cardLv": "Lv.3",
+    "cardNumber": "BT21-009",
+    "cardType": "Digimon",
+    "color": "Red",
+    "digiXros": "-",
+    "digivolveCondition": [
+      {
+        "color": "Red",
+        "cost": "0",
+        "level": "2"
+      }
+    ],
+    "digivolveEffect": "-",
+    "dnaDigivolve": "-",
+    "dp": "2000",
+    "dualEffect": "-",
+    "effect": "[Your Turn] [Once Per Turn] When this Digimon gets linked, if you have 1 or fewer Tamers, you may play 1 [Haru Shinkai] from your hand without paying the cost.",
+    "form": "Stnd./Appmon",
+    "id": "BT21-009",
+    "illustrator": "sasasi",
+    "linkDP": "+2000 DP",
+    "linkEffect": "＜Raid＞ ",
+    "linkRequirement": "[Link] [Appmon] trait: Cost 1 ",
+    "name": {
+      "english": "Gatchmon",
+      "japanese": "ガッチモン",
+      "korean": "-",
+      "simplifiedChinese": "-",
+      "traditionalChinese": "-"
+    },
+    "notes": "BT-21: BOOSTER WORLD CONVERGENCE",
+    "optionCardColourRequirement": "-",
+    "optionCardEffect": "-",
+    "playCost": "3",
+    "rarity": "R",
+    "restrictions": {
+      "chinese": "Unrestricted",
+      "english": "Unrestricted",
+      "japanese": "Unrestricted",
+      "korean": "Unrestricted"
+    },
+    "rule": "-",
+    "securityEffect": "-",
+    "specialDigivolve": "[Digivolve] Lv.2 w/[Appmon]/[Hero] trait: Cost 0 ",
+    "type": "Search (App Name)/Hero",
+    "version": "Normal"
+  },
+  {
+    "AAs": [
+      {
+        "id": "AD1-009_P1",
+        "illustrator": "toriyufu",
+        "note": "AD-01: ADVANCED BOOSTER DIGIMON GENERATION",
+        "type": "Alternative Art"
+      }
+    ],
+    "JAAs": [
+      {
+        "id": "AD1-009_P1-J",
+        "illustrator": "toriyufu",
+        "note": "AD-01: ADVANCED BOOSTER DIGIMON GENERATION",
+        "type": "Alternative Art"
+      }
+    ],
+    "aceEffect": "-",
+    "assembly": "[Assembly -4] [MetalGreymon: Alterous Mode] x [Greymon] ",
+    "attribute": "Virus",
+    "block": ["05"],
+    "burstDigivolve": "-",
+    "cardImage": "assets/images/cards/AD1-009.webp",
+    "cardLv": "Lv.6",
+    "cardNumber": "AD1-009",
+    "cardType": "Digimon",
+    "color": "Red/Black",
+    "digiXros": "-",
+    "digivolveCondition": [
+      {
+        "color": "Red",
+        "cost": "4",
+        "level": "5"
+      },
+      {
+        "color": "Black",
+        "cost": "4",
+        "level": "5"
+      }
+    ],
+    "digivolveEffect": "＜Security A. +1＞ ",
+    "dnaDigivolve": "-",
+    "dp": "12000",
+    "dualEffect": "-",
+    "effect": "＜Alliance＞ \n＜Piercing＞ \n＜Blocker＞ \n[On Play] [When Digivolving] ＜De-Digivolve 3＞ 1 of your opponent's Digimon. Then, until your opponent's turn ends, their Digimon's effects don't affect this Digimon and 1 of your Digimon with [Garurumon] in its name.\n[End of Your Turn] 2 of your Digimon may DNA digivolve into [Omnimon Alter-S] in the hand. Then, 1 of your Digimon may attack.",
+    "form": "Mega",
+    "id": "AD1-009",
+    "illustrator": "No Illustrator",
+    "linkDP": "-",
+    "linkEffect": "-",
+    "linkRequirement": "-",
+    "name": {
+      "english": "BlitzGreymon",
+      "japanese": "ブリッツグレイモン",
+      "korean": "-",
+      "simplifiedChinese": "-",
+      "traditionalChinese": "-"
+    },
+    "notes": "AD-01: ADVANCED BOOSTER DIGIMON GENERATION",
+    "optionCardColourRequirement": "-",
+    "optionCardEffect": "-",
+    "playCost": "12",
+    "rarity": "SR",
+    "restrictions": {
+      "chinese": "Unrestricted",
+      "english": "Unrestricted",
+      "japanese": "Unrestricted",
+      "korean": "Unrestricted"
+    },
+    "rule": "-",
+    "securityEffect": "-",
+    "specialDigivolve": "[Digivolve] Lv.5 w/[Greymon] in name or w/[ADVENTURE] trait: Cost 3 ",
+    "type": "Cyborg/ADVENTURE",
+    "version": "Normal"
+  },
+  {
+    "AAs": [],
+    "JAAs": [],
+    "aceEffect": "-",
+    "assembly": "-",
+    "attribute": "Virus",
+    "block": ["05"],
+    "burstDigivolve": "-",
+    "cardImage": "assets/images/cards/AD1-013.webp",
+    "cardLv": "Lv.6",
+    "cardNumber": "AD1-013",
+    "cardType": "Digimon",
+    "color": "Blue/Black",
+    "digiXros": "-",
+    "digivolveCondition": [
+      {
+        "color": "Blue",
+        "cost": "3",
+        "level": "5"
+      },
+      {
+        "color": "Black",
+        "cost": "3",
+        "level": "5"
+      }
+    ],
+    "digivolveEffect": "[All Turns] For each color in this [Blue Flare] or [Xros Heart] trait Digimon's digivolution cards, it gets +1000 DP.",
+    "dnaDigivolve": "-",
+    "dp": "11000",
+    "dualEffect": "-",
+    "effect": "＜Reboot＞ \n＜Blocker＞ \n[On Play] [When Digivolving] Delete 1 of your opponent's Digimon with the fewest digivolution cards.\n[All Turns] When this Digimon would leave the battle area other than by DigiXros, you may play 1 level 5 or lower [Blue Flare] or [Xros Heart] trait Digimon card from its digivolution cards without paying the cost.",
+    "form": "Mega",
+    "id": "AD1-013",
+    "illustrator": "tessy",
+    "linkDP": "-",
+    "linkEffect": "-",
+    "linkRequirement": "-",
+    "name": {
+      "english": "ZeigGreymon",
+      "japanese": "ジークグレイモン",
+      "korean": "-",
+      "simplifiedChinese": "-",
+      "traditionalChinese": "-"
+    },
+    "notes": "AD-01: ADVANCED BOOSTER DIGIMON GENERATION",
+    "optionCardColourRequirement": "-",
+    "optionCardEffect": "-",
+    "playCost": "11",
+    "rarity": "R",
+    "restrictions": {
+      "chinese": "Unrestricted",
+      "english": "Unrestricted",
+      "japanese": "Unrestricted",
+      "korean": "Unrestricted"
+    },
+    "rule": "[Rule] Trait: Has [Xros Heart] Type.",
+    "securityEffect": "-",
+    "specialDigivolve": "[Digivolve] Lv.5 w/[Blue Flare]/[Xros Heart] trait: Cost 3 ",
+    "type": "Cyborg/Blue Flare",
+    "version": "Normal"
+  },
+  {
+    "AAs": [
+      {
+        "id": "BT1-090_P1",
+        "illustrator": "UnnoDaisuke",
+        "note": "Event Pack 5",
+        "type": "Foil - Coloured Border - Alternative Art"
+      }
+    ],
+    "JAAs": [],
+    "aceEffect": "-",
+    "assembly": "-",
+    "attribute": "-",
+    "block": ["00"],
+    "burstDigivolve": "-",
+    "cardImage": "assets/images/cards/BT1-090.webp",
+    "cardLv": "-",
+    "cardNumber": "BT1-090",
+    "cardType": "Option",
+    "color": "Red",
+    "digiXros": "-",
+    "digivolveCondition": [],
+    "digivolveEffect": "-",
+    "dnaDigivolve": "-",
+    "dp": "-",
+    "dualEffect": "-",
+    "effect": "[Main] Gain 2 memory. At end of turn, lose 2 memory.",
+    "form": "-",
+    "id": "BT1-090",
+    "illustrator": "UnnoDaisuke",
+    "linkDP": "-",
+    "linkEffect": "-",
+    "linkRequirement": "-",
+    "name": {
+      "english": "Gravity Crush",
+      "japanese": "グラビティプレス",
+      "korean": "그래비티 프레스",
+      "simplifiedChinese": "重力碾压",
+      "traditionalChinese": "重力碾壓"
+    },
+    "notes": "▹RELEASE SPECIAL BOOSTER 1.0 [BT01-03]",
+    "optionCardColourRequirement": "-",
+    "optionCardEffect": "-",
+    "playCost": "0",
+    "rarity": "C",
+    "restrictions": {
+      "chinese": "Restricted to 1",
+      "english": "Restricted to 1",
+      "japanese": "Restricted to 1",
+      "korean": "Restricted to 1"
+    },
+    "rule": "-",
+    "securityEffect": "-",
+    "specialDigivolve": "-",
+    "type": "-",
+    "version": "Normal"
+  },
+  {
+    "AAs": [
+      {
+        "id": "AD1-004_P1",
+        "illustrator": "kaz",
+        "note": "AD-01: ADVANCED BOOSTER DIGIMON GENERATION",
+        "type": "Alternative Art"
+      }
+    ],
+    "JAAs": [
+      {
+        "id": "AD1-004_P1-J",
+        "illustrator": "kaz",
+        "note": "AD-01: ADVANCED BOOSTER DIGIMON GENERATION",
+        "type": "Alternative Art"
+      }
+    ],
+    "aceEffect": "-",
+    "assembly": "-",
+    "attribute": "Vaccine",
+    "block": ["05"],
+    "burstDigivolve": "-",
+    "cardImage": "assets/images/cards/AD1-004.webp",
+    "cardLv": "Lv.6",
+    "cardNumber": "AD1-004",
+    "cardType": "Digimon",
+    "color": "Red/Black",
+    "digiXros": "-",
+    "digivolveCondition": [
+      {
+        "color": "Red",
+        "cost": "4",
+        "level": "5"
+      },
+      {
+        "color": "Black",
+        "cost": "4",
+        "level": "5"
+      }
+    ],
+    "digivolveEffect": "[When Attacking] [Once Per Turn] Delete 1 of your opponent's Digimon with as much or less DP as this Digimon with [Greymon] or [Omnimon] in its name in its name.",
+    "dnaDigivolve": "-",
+    "dp": "12000",
+    "dualEffect": "-",
+    "effect": "＜Raid＞ \n＜Piercing＞ \n[On Play] [When Digivolving] Delete 1 of your opponent's Digimon with as much or less DP as this Digimon.\n[All Turns] This Digimon gets +1000 DP for each of your Tamers' colors, and gains ＜Security A. +1＞ for every 3 such colors.\n[End of Your Turn] 1 of your Digimon may attack.",
+    "form": "Mega",
+    "id": "AD1-004",
+    "illustrator": "No Illustrator",
+    "linkDP": "-",
+    "linkEffect": "-",
+    "linkRequirement": "-",
+    "name": {
+      "english": "WarGreymon",
+      "japanese": "ブリッツグレイモン",
+      "korean": "-",
+      "simplifiedChinese": "-",
+      "traditionalChinese": "-"
+    },
+    "notes": "AD-01: ADVANCED BOOSTER DIGIMON GENERATION",
+    "optionCardColourRequirement": "-",
+    "optionCardEffect": "-",
+    "playCost": "12",
+    "rarity": "SR",
+    "restrictions": {
+      "chinese": "Unrestricted",
+      "english": "Unrestricted",
+      "japanese": "Unrestricted",
+      "korean": "Unrestricted"
+    },
+    "rule": "-",
+    "securityEffect": "-",
+    "specialDigivolve": "[Digivolve] Lv.5 w/[Greymon] in name or w/[ADVENTURE]/[Hero] trait: Cost 3 ",
+    "type": "Dragonkin/ADVENTURE/Hero",
+    "version": "Normal"
+  },
+  {
+    "AAs": [
+      {
+        "id": "AD1-006_P1",
+        "illustrator": "Spareribs",
+        "note": "AD-01: ADVANCED BOOSTER DIGIMON GENERATION",
+        "type": "Alternative Art"
+      }
+    ],
+    "JAAs": [
+      {
+        "id": "AD1-006_P1-J",
+        "illustrator": "Spareribs",
+        "note": "AD-01: ADVANCED BOOSTER DIGIMON GENERATION",
+        "type": "Alternative Art"
+      }
+    ],
+    "aceEffect": "-",
+    "assembly": "-",
+    "attribute": "Data",
+    "block": ["05"],
+    "burstDigivolve": "-",
+    "cardImage": "assets/images/cards/AD1-006.webp",
+    "cardLv": "Lv.6",
+    "cardNumber": "AD1-006",
+    "cardType": "Digimon",
+    "color": "Red/Black/Blue",
+    "digiXros": "[DigiXros -2] [OmniShoutmon] x [ZeigGreymon] x [Ballistamon] x [Dorulumon] x [Starmons] x [Sparrowmon] ",
+    "digivolveCondition": [
+      {
+        "color": "Red",
+        "cost": "5",
+        "level": "5"
+      },
+      {
+        "color": "Black",
+        "cost": "5",
+        "level": "5"
+      },
+      {
+        "color": "Blue",
+        "cost": "5",
+        "level": "5"
+      }
+    ],
+    "digivolveEffect": "-",
+    "dnaDigivolve": "-",
+    "dp": "13000",
+    "dualEffect": "-",
+    "effect": "[On Play] [When Digivolving] [When Attacking] [Once Per Turn] You may return 1 of your opponent's Digimon with as much or less DP as this Digimon to the bottom of the deck. Then, this Digimon may unsuspend.\n[All Turns] When this Digimon would leave the battle area other than by DigiXros, from this Digimon's digivolution cards, you may place up to 4 [Xros Heart] or [Blue Flare] trait Digimon cards under 1 of your Tamers and play 1 such card without paying the cost.",
+    "form": "Mega",
+    "id": "AD1-006",
+    "illustrator": "No Illustrator",
+    "linkDP": "-",
+    "linkEffect": "-",
+    "linkRequirement": "-",
+    "name": {
+      "english": "Shoutmon X7",
+      "japanese": "シャウトモンX7",
+      "korean": "-",
+      "simplifiedChinese": "-",
+      "traditionalChinese": "-"
+    },
+    "notes": "AD-01: ADVANCED BOOSTER DIGIMON GENERATION",
+    "optionCardColourRequirement": "-",
+    "optionCardEffect": "-",
+    "playCost": "13",
+    "rarity": "SR",
+    "restrictions": {
+      "chinese": "Unrestricted",
+      "english": "Unrestricted",
+      "japanese": "Unrestricted",
+      "korean": "Unrestricted"
+    },
+    "rule": "-",
+    "securityEffect": "-",
+    "specialDigivolve": "[Digivolve] Lv.6 w/[Xros Heart]/[Blue Flare] trait: Cost 2 ",
+    "type": "Composite/Xros Heart/Blue Flare",
+    "version": "Normal"
+  },
+  {
+    "AAs": [],
+    "JAAs": [],
+    "aceEffect": "-",
+    "assembly": "-",
+    "attribute": "Free",
+    "block": ["05"],
+    "burstDigivolve": "-",
+    "cardImage": "assets/images/cards/AD1-011.webp",
+    "cardLv": "Lv.5",
+    "cardNumber": "AD1-011",
+    "cardType": "Digimon",
+    "color": "Blue/Green",
+    "digiXros": "-",
+    "digivolveCondition": [
+      {
+        "color": "Blue",
+        "cost": "4",
+        "level": "4"
+      },
+      {
+        "color": "Green",
+        "cost": "4",
+        "level": "4"
+      }
+    ],
+    "digivolveEffect": "＜Partition (Blue Lv.4 & Green Lv.4)＞ ",
+    "dnaDigivolve": "[Digivolve] Lv.4 w/[Free]/[Hero] trait: Cost 3\n[DNA Digivolve] Blue Lv.4 + Green Lv.4 : Cost 0",
+    "dp": "8000",
+    "dualEffect": "-",
+    "effect": "＜Partition (Blue Lv.4 & Green Lv.4)＞ \n[When Digivolving] Until your opponent's turn ends, this Digimon can't be deleted in battle. Then, if DNA digivolving, this Digimon's attack target can't change for the turn.\n[When Attacking] This Digimon may digivolve into a Digimon card with [Imperialdramon] in its name in the hand with the digivolution cost reduced by 2.",
+    "form": "Ultimate",
+    "id": "AD1-011",
+    "illustrator": "No Illustrator",
+    "linkDP": "-",
+    "linkEffect": "-",
+    "linkRequirement": "-",
+    "name": {
+      "english": "Paildramon",
+      "japanese": "パイルドラモン",
+      "korean": "-",
+      "simplifiedChinese": "-",
+      "traditionalChinese": "-"
+    },
+    "notes": "AD-01: ADVANCED BOOSTER DIGIMON GENERATION",
+    "optionCardColourRequirement": "-",
+    "optionCardEffect": "-",
+    "playCost": "8",
+    "rarity": "R",
+    "restrictions": {
+      "chinese": "Unrestricted",
+      "english": "Unrestricted",
+      "japanese": "Unrestricted",
+      "korean": "Unrestricted"
+    },
+    "rule": "-",
+    "securityEffect": "-",
+    "specialDigivolve": "-",
+    "type": "Dragonkin/Hero",
+    "version": "Normal"
+  },
+  {
+    "AAs": [],
+    "JAAs": [],
+    "aceEffect": "-",
+    "assembly": "-",
+    "attribute": "-",
+    "block": ["06"],
+    "burstDigivolve": "-",
+    "cardImage": "assets/images/cards/P-226.webp",
+    "cardLv": "-",
+    "cardNumber": "P-226",
+    "cardType": "",
+    "color": "[[]]",
+    "digiXros": "-",
+    "digivolveCondition": [],
+    "digivolveEffect": "-",
+    "dnaDigivolve": "-",
+    "dp": "-",
+    "dualEffect": "-",
+    "effect": "-",
+    "form": "-",
+    "id": "P-226",
+    "illustrator": "To be completed",
+    "linkDP": "-",
+    "linkEffect": "-",
+    "linkRequirement": "-",
+    "name": {
+      "english": "[[:Category:|]]",
+      "japanese": "",
+      "korean": "-",
+      "simplifiedChinese": "-",
+      "traditionalChinese": "-"
+    },
+    "notes": "[[ ]]",
+    "optionCardColourRequirement": "-",
+    "optionCardEffect": "-",
+    "playCost": "-",
+    "rarity": "P",
+    "restrictions": {
+      "chinese": "Not released",
+      "english": "Not released",
+      "japanese": "Not released",
+      "korean": "Unrestricted"
+    },
+    "rule": "-",
+    "securityEffect": "-",
+    "specialDigivolve": "-",
+    "type": "-",
+    "version": "Normal"
+  },
+  {
+    "AAs": [
+      {
+        "id": "BT25-043_P1",
+        "illustrator": "Tonamikanji",
+        "note": "BT-25: BOOSTER DUAL REVOLUTION",
+        "type": "Alternative Art"
+      },
+      {
+        "id": "BT25-043_P2",
+        "illustrator": "Tonamikanji",
+        "note": "BT-25: BOOSTER DUAL REVOLUTION",
+        "type": "Alternative Art"
+      }
+    ],
+    "JAAs": [
+      {
+        "id": "BT25-043_P1-J",
+        "illustrator": "Tonamikanji",
+        "note": "BT-25: BOOSTER DUAL REVOLUTION",
+        "type": "Alternative Art"
+      },
+      {
+        "id": "BT25-043_P2-J",
+        "illustrator": "Tonamikanji",
+        "note": "BT-25: BOOSTER DUAL REVOLUTION",
+        "type": "Alternative Art"
+      }
+    ],
+    "aceEffect": "-",
+    "assembly": "-",
+    "attribute": "Virus",
+    "block": ["06"],
+    "burstDigivolve": "-",
+    "cardImage": "assets/images/cards/BT25-043.webp",
+    "cardLv": "Lv.6",
+    "cardNumber": "BT25-043",
+    "cardType": "Digimon/Option",
+    "color": "Yellow",
+    "digiXros": "-",
+    "digivolveCondition": [
+      {
+        "color": "Yellow",
+        "cost": "4",
+        "level": "5"
+      }
+    ],
+    "digivolveEffect": "-",
+    "dnaDigivolve": "-",
+    "dp": "12000",
+    "dualEffect": "[Arts Digivolve] ",
+    "effect": "[When Digivolving] [When Attacking] [Once Per Turn] ＜Recovery +1＞ Then, by trashing the top security card of 1 player with the most security cards, this Digimon unsuspends.\n[All Turns] [Once Per Turn] When any of your [Glowing Dawn] trait Digimon would leave the battle area, by trashing your top security card, they don't leave.",
+    "form": "Mega",
+    "id": "BT25-043",
+    "illustrator": "SENNSU",
+    "linkDP": "-",
+    "linkEffect": "-",
+    "linkRequirement": "-",
+    "name": {
+      "english": "Habakirimon/Habakiri",
+      "japanese": "ハバキリモン/羽々斬",
+      "korean": "-",
+      "simplifiedChinese": "-",
+      "traditionalChinese": "-"
+    },
+    "notes": "BT-25: BOOSTER DUAL REVOLUTION",
+    "optionCardColourRequirement": "Yellow",
+    "optionCardEffect": "＜Use Req. ([Glowing Dawn] trait)＞ \n[Main] 1 of your opponent's Digimon gets -8000 DP for the turn. Then, by trashing your top security card, all of your opponent's Digimon get -5000 DP for the turn.",
+    "playCost": "6",
+    "rarity": "UR",
+    "restrictions": {
+      "chinese": "Unrestricted",
+      "english": "Unrestricted",
+      "japanese": "Unrestricted",
+      "korean": "Unrestricted"
+    },
+    "rule": "-",
+    "securityEffect": "-",
+    "specialDigivolve": "[Digivolve] Lv.5 w/[Glowing Dawn] trait: Cost 3 ",
+    "type": "Shaman/Glowing Dawn/BEATBREAK",
+    "version": "Normal"
+  },
+  {
+    "AAs": [
+      {
+        "id": "AD1-019_P1",
+        "illustrator": "No Illustrator",
+        "note": "AD-01: ADVANCED BOOSTER DIGIMON GENERATION",
+        "type": "Alternative Art"
+      }
+    ],
+    "JAAs": [
+      {
+        "id": "AD1-019_P1-J",
+        "illustrator": "No Illustrator",
+        "note": "AD-01: ADVANCED BOOSTER DIGIMON GENERATION",
+        "type": "Alternative Art"
+      }
+    ],
+    "aceEffect": "-",
+    "assembly": "-",
+    "attribute": "-",
+    "block": ["05"],
+    "burstDigivolve": "-",
+    "cardImage": "assets/images/cards/AD1-019.webp",
+    "cardLv": "-",
+    "cardNumber": "AD1-019",
+    "cardType": "Tamer",
+    "color": "Blue/Yellow",
+    "digiXros": "-",
+    "digivolveCondition": [],
+    "digivolveEffect": "-",
+    "dnaDigivolve": "-",
+    "dp": "-",
+    "dualEffect": "-",
+    "effect": "[Start of Your Main Phase] If your opponent has a Digimon, gain 1 memory.\n[Your Turn] When any of your Digimon digivolve into an [ADVENTURE] trait Digimon, by suspending this Tamer, you may play 1 [ADVENTURE] trait card from your hand. For every 2 of your Tamers' colors, reduce this effect's play cost by 1.",
+    "form": "-",
+    "id": "AD1-019",
+    "illustrator": "No Illustrator",
+    "linkDP": "-",
+    "linkEffect": "-",
+    "linkRequirement": "-",
+    "name": {
+      "english": "Matt Ishida & T.K. Takaishi",
+      "japanese": "石田ヤマト＆高石タケル",
+      "korean": "-",
+      "simplifiedChinese": "-",
+      "traditionalChinese": "-"
+    },
+    "notes": "AD-01: ADVANCED BOOSTER DIGIMON GENERATION",
+    "optionCardColourRequirement": "-",
+    "optionCardEffect": "-",
+    "playCost": "3",
+    "rarity": "R",
+    "restrictions": {
+      "chinese": "Unrestricted",
+      "english": "Unrestricted",
+      "japanese": "Unrestricted",
+      "korean": "Unrestricted"
+    },
+    "rule": "-",
+    "securityEffect": "[Security] Play this card without paying the cost.",
+    "specialDigivolve": "-",
+    "type": "ADVENTURE/Hero",
+    "version": "Normal"
+  },
+  {
+    "AAs": [
+      {
+        "id": "P-001_P1",
+        "illustrator": "Ishibashi Yosuke",
+        "note": "PB-06: Tamer's Evolution Box 2",
+        "type": "Foil - Alternative Art"
+      },
+      {
+        "id": "P-001_P2",
+        "illustrator": "sasasi",
+        "note": "PB-12E: Digimon Card Game 2nd Anniversary Set",
+        "type": "Gold Foil - Gold Background - Promo"
+      }
+    ],
+    "JAAs": [
+      {
+        "id": "P-001_P1-J",
+        "illustrator": "Ishibashi Yosuke",
+        "note": "PB-06: Tamer's Evolution Box 2",
+        "type": "Foil - Alternative Art"
+      }
+    ],
+    "aceEffect": "-",
+    "assembly": "-",
+    "attribute": "Vaccine",
+    "block": ["00"],
+    "burstDigivolve": "-",
+    "cardImage": "assets/images/cards/P-001.webp",
+    "cardLv": "Lv.3",
+    "cardNumber": "P-001",
+    "cardType": "Digimon",
+    "color": "Red",
+    "digiXros": "-",
+    "digivolveCondition": [
+      {
+        "color": "Red",
+        "cost": "0",
+        "level": "2"
+      }
+    ],
+    "digivolveEffect": "-",
+    "dnaDigivolve": "-",
+    "dp": "3000",
+    "dualEffect": "-",
+    "effect": "[On Play] Delete 1 of your opponent's Digimon with 3000 DP or less.",
+    "form": "Rookie",
+    "id": "P-001",
+    "illustrator": "sasasi",
+    "linkDP": "-",
+    "linkEffect": "-",
+    "linkRequirement": "-",
+    "name": {
+      "english": "Agumon",
+      "japanese": "アグモン",
+      "korean": "아구몬",
+      "simplifiedChinese": "亚古兽",
+      "traditionalChinese": "亞古獸"
+    },
+    "notes": "Promotion Pack Ver 0.0",
+    "optionCardColourRequirement": "-",
+    "optionCardEffect": "-",
+    "playCost": "5",
+    "rarity": "P",
+    "restrictions": {
+      "chinese": "Unrestricted",
+      "english": "Unrestricted",
+      "japanese": "Unrestricted",
+      "korean": "Unrestricted"
+    },
+    "rule": "-",
+    "securityEffect": "-",
+    "specialDigivolve": "-",
+    "type": "Reptile",
+    "version": "Normal"
+  },
+  {
+    "AAs": [
+      {
+        "id": "BT1-095_P1",
+        "illustrator": "Nakano Haito",
+        "note": "Dash Pack Ver. 1.5",
+        "type": "Gold Foil - Alternative Art"
+      }
+    ],
+    "JAAs": [
+      {
+        "id": "BT1-095_P1-J",
+        "illustrator": "Nakano Haito",
+        "note": "BT-01: Booster New Evolution",
+        "type": "Gold Foil - Alternative Art"
+      }
+    ],
+    "aceEffect": "-",
+    "assembly": "-",
+    "attribute": "-",
+    "block": ["00"],
+    "burstDigivolve": "-",
+    "cardImage": "assets/images/cards/BT1-095.webp",
+    "cardLv": "-",
+    "cardNumber": "BT1-095",
+    "cardType": "Option",
+    "color": "Red",
+    "digiXros": "-",
+    "digivolveCondition": [],
+    "digivolveEffect": "-",
+    "dnaDigivolve": "-",
+    "dp": "-",
+    "dualEffect": "-",
+    "effect": "[Main] Unsuspend 1 of your Digimon. Until the end of your opponent's next turn, that Digimon gains ＜Blocker＞ ",
+    "form": "-",
+    "id": "BT1-095",
+    "illustrator": "satsuki may",
+    "linkDP": "-",
+    "linkEffect": "-",
+    "linkRequirement": "-",
+    "name": {
+      "english": "Brave Shield",
+      "japanese": "ブレイブシールド",
+      "korean": "브레이브 실드",
+      "simplifiedChinese": "勇气之盾",
+      "traditionalChinese": "勇氣之盾"
+    },
+    "notes": "▹RELEASE SPECIAL BOOSTER 1.5 [BT01-03]",
+    "optionCardColourRequirement": "-",
+    "optionCardEffect": "-",
+    "playCost": "5",
+    "rarity": "R",
+    "restrictions": {
+      "chinese": "Unrestricted",
+      "english": "Unrestricted",
+      "japanese": "Unrestricted",
+      "korean": "Unrestricted"
+    },
+    "rule": "-",
+    "securityEffect": "[Security] Unsuspend 1 of your Digimon. That Digimon gains ＜Blocker＞ for the turn. ",
+    "specialDigivolve": "-",
+    "type": "-",
+    "version": "Normal"
+  }
+]

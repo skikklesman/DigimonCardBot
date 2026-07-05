@@ -1,12 +1,49 @@
+// Integration tests for the interaction endpoint stub (chunk 0.4): the full
+// HTTP surface as Discord sees it, running inside workerd via SELF.
 import { SELF } from "cloudflare:test";
 import { describe, expect, it } from "vitest";
+import { signedInteraction } from "../test/helpers/discord-sign";
 
-// Harness smoke test: proves the Workers test pool boots the real Worker.
-// Replaced by real interaction tests in chunk 0.4.
-describe("worker stub", () => {
-  it("responds from inside the workerd runtime", async () => {
-    const res = await SELF.fetch("https://example.com/");
+const ENDPOINT = "https://example.com/interactions";
+
+describe("interaction endpoint", () => {
+  it("rejects an unsigned POST with 401", async () => {
+    const res = await SELF.fetch(ENDPOINT, {
+      method: "POST",
+      body: JSON.stringify({ type: 1 }),
+      headers: { "content-type": "application/json" },
+    });
+    expect(res.status).toBe(401);
+  });
+
+  it("rejects a signed-then-tampered body with 401", async () => {
+    const init = await signedInteraction({ type: 1 });
+    const res = await SELF.fetch(ENDPOINT, { ...init, body: JSON.stringify({ type: 2 }) });
+    expect(res.status).toBe(401);
+  });
+
+  it("answers a signed PING with PONG", async () => {
+    const res = await SELF.fetch(ENDPOINT, await signedInteraction({ type: 1 }));
     expect(res.status).toBe(200);
-    expect(await res.text()).toContain("digimon-tcg-bot");
+    expect(res.headers.get("content-type")).toContain("application/json");
+    await expect(res.json()).resolves.toEqual({ type: 1 });
+  });
+
+  it("answers any other verified interaction with a benign placeholder message", async () => {
+    const res = await SELF.fetch(ENDPOINT, await signedInteraction({ type: 2 }));
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { type: number; data: { content: string } };
+    expect(body.type).toBe(4); // CHANNEL_MESSAGE_WITH_SOURCE
+    expect(body.data.content).toContain("under construction");
+  });
+
+  it("returns 404 for non-interaction routes", async () => {
+    const res = await SELF.fetch("https://example.com/");
+    expect(res.status).toBe(404);
+  });
+
+  it("returns 404 for GET on the interactions path", async () => {
+    const res = await SELF.fetch(ENDPOINT);
+    expect(res.status).toBe(404);
   });
 });

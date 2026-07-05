@@ -1,0 +1,4 @@
+# Copy to .dev.vars (gitignored) for local `wrangler dev` against a real
+# Discord app. Values come from the Discord Developer Portal (chunk 0.5).
+# Deployed secrets are set with `wrangler secret put NAME` — never committed.
+DISCORD_PUBLIC_KEY = "your-app-public-key-hex"

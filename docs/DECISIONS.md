@@ -10,6 +10,28 @@
 
 ---
 
+## 2026-07-04 — First runtime dependency: discord-api-types (chunk 0.4)
+
+- **Decision:** `discord-api-types` added as a runtime dependency (the
+  dependency policy requires this entry). Also decided: the interactions
+  endpoint lives at `POST /interactions` (not `/`), leaving `/` and `/health`
+  free; a committed **test-only** Ed25519 keypair
+  (`test/fixtures/discord-test-keypair.json`) lets integration tests sign
+  synthetic interactions — it guards nothing and is not a secret.
+- **Why:** TECH-DESIGN planned it for its interaction-type constants; its
+  enums are runtime values, so "types-only devDependency" was not accurate.
+  It is zero-network, bundled at deploy (34 KiB gzipped total bundle), and
+  maintained in lockstep with Discord's API — safer than hand-copied magic
+  numbers.
+- **Gotcha recorded:** the package is CommonJS; the Workers Vitest pool
+  imports its enums as `undefined` unless pre-bundled — fixed via
+  `test.deps.optimizer.ssr.include` in vitest.config.ts. Production esbuild
+  bundling handles it fine (verified with `wrangler deploy --dry-run`).
+- **Revisit if:** bundle size ever matters (import only the `/v10` subpath) or
+  the package goes unmaintained.
+
+---
+
 ## 2026-07-04 — Toolchain locked in (chunk 0.1); Workers Vitest API drift noted
 
 - **Decision:** TypeScript 6.0 (strict), Wrangler 4.107, Vitest 4.1 +

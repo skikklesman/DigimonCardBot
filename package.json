@@ -22,5 +22,8 @@
     "typescript-eslint": "^8.62.1",
     "vitest": "^4.1.9",
     "wrangler": "^4.107.0"
+  },
+  "dependencies": {
+    "discord-api-types": "^0.38.49"
   }
 }

@@ -1,0 +1,5 @@
+{
+  "note": "TEST-ONLY Ed25519 keypair, intentionally committed. It exists so integration tests can sign synthetic Discord interactions; the Worker under test is configured (vitest.config.ts) to trust this public key. It guards nothing and is never used outside tests. The real app public key comes from Discord and is configured via `wrangler secret put DISCORD_PUBLIC_KEY` / .dev.vars (HANDOFF §10).",
+  "publicKeyHex": "e1269f6587fe3e0e023e93ea3176af6f5106eb4207e147c46d87075337a46a85",
+  "privateKeyPkcs8Base64": "MC4CAQAwBQYDK2VwBCIEIL0gt+M1KLSKJGkaK9ZUt6AWv4GjCJv67vLg4owQBkd/"
+}

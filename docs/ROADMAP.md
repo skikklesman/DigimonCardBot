@@ -65,9 +65,10 @@ Goal: a deployed, verifiable, testable skeleton. Nothing card-related yet.
       tests with known-good and known-bad vectors** — this is the security boundary;
       it gets real tests, not a mock.
       _DoD: tests cover valid sig, bad sig, tampered body, missing headers._
-- [ ] **0.4 — Interaction endpoint stub.** `fetch` handler: reject unsigned/
-      invalid (401), answer PING (type 1) with PONG (type 1), return a benign
-      placeholder for anything else. Integration test in the Workers runtime.
+- [x] **0.4 — Interaction endpoint stub.** _(Landed 2026-07-04.)_ `fetch`
+      handler: reject unsigned/ invalid (401), answer PING (type 1) with PONG
+      (type 1), return a benign placeholder for anything else. Integration test
+      in the Workers runtime.
 - [ ] **0.5 — Discord app + first deploy.** Create the Discord application
       (decide Team vs. personal owner now — HANDOFF §14), set
       `DISCORD_PUBLIC_KEY` via `wrangler secret put`, deploy, and **save the

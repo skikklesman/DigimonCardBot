@@ -96,6 +96,12 @@ Dependency policy: **every runtime dependency needs a written justification in
   these ever diverge, search silently breaks — unit-test them against the same
   table of cases.
 - **Timestamps** are ISO-8601 UTC strings everywhere (matches HANDOFF §5).
+- **Dependency changes on Windows (the dev machine):** after any
+  `npm install <pkg>`, watch the next CI run — Windows npm can silently drop
+  Linux-only optional/peer entries from the lockfile, which breaks `npm ci`
+  on CI. If it happens, don't hand-patch: delete `package-lock.json` +
+  `node_modules` and run a fresh `npm install` (learned 2026-07-04, chunk
+  0.4).
 - **Config matrix:** local dev uses `.dev.vars` (gitignored); deployed secrets
   via `wrangler secret put` only (HANDOFF §10). A `staging` Wrangler
   environment with its own D1 is optional; the test-guild-against-production

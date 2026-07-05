@@ -73,6 +73,9 @@ Goal: a deployed, verifiable, testable skeleton. Nothing card-related yet.
       (decide Team vs. personal owner now — HANDOFF §14), set
       `DISCORD_PUBLIC_KEY` via `wrangler secret put`, deploy, and **save the
       Interactions Endpoint URL in the Developer Portal.**
+      _Needs the human present: the Team-vs-personal call (DECISIONS open
+      decision #5), Discord Developer Portal access, and a one-time browser
+      handshake for `wrangler login` (like the `gh` one)._
 
 **🏗️ Gate A criteria:** endpoint URL saves successfully (Discord's test PING
 passes); CI green; signature tests in place. **Reached:** `pending`

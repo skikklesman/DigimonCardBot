@@ -69,7 +69,7 @@ Goal: a deployed, verifiable, testable skeleton. Nothing card-related yet.
       handler: reject unsigned/ invalid (401), answer PING (type 1) with PONG
       (type 1), return a benign placeholder for anything else. Integration test
       in the Workers runtime.
-- [ ] **0.5 — Discord app + first deploy.** Create the Discord application
+- [x] **0.5 — Discord app + first deploy.** _(Landed 2026-07-05.)_ Create the Discord application
       (decide Team vs. personal owner now — HANDOFF §14), set
       `DISCORD_PUBLIC_KEY` via `wrangler secret put`, deploy, and **save the
       Interactions Endpoint URL in the Developer Portal.**
@@ -78,7 +78,7 @@ Goal: a deployed, verifiable, testable skeleton. Nothing card-related yet.
       handshake for `wrangler login` (like the `gh` one)._
 
 **🏗️ Gate A criteria:** endpoint URL saves successfully (Discord's test PING
-passes); CI green; signature tests in place. **Reached:** `pending`
+passes); CI green; signature tests in place. **Reached:** 2026-07-05
 
 ---
 

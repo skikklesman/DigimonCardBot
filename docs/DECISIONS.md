@@ -10,6 +10,19 @@
 
 ---
 
+## 2026-07-05 — Discord app owner: Team (chunk 0.5, resolves open decision #5)
+
+- **Decision:** The Discord application is owned by a **Discord Team**, not the
+  personal `skikklesman` account. Confirms the HANDOFF §14 / roadmap default.
+- **Why:** Co-ownership and clean hand-off (this repo is intended to go
+  open-source), no single-personal-account point of failure, and it keeps bot
+  verification (gov-ID review before 100 servers, HANDOFF §12) attached to a
+  Team rather than one individual.
+- **Revisit if:** Discord changes Team requirements/pricing, or the owner
+  decides sole personal ownership is preferable before verification.
+
+---
+
 ## 2026-07-04 — First runtime dependency: discord-api-types (chunk 0.4)
 
 - **Decision:** `discord-api-types` added as a runtime dependency (the
@@ -74,7 +87,6 @@ Carried from HANDOFF §14 plus new ones raised by the roadmap:
 | 2   | `/alt` in MVP or Phase 4?                          | In MVP (per HANDOFF §1 product goal) | Gate C    |
 | 3   | What does the old bot's `/page` actually do?       | Ask community                        | Chunk 4.3 |
 | 4   | Keyword data source for `/keyword`                 | Small static dataset in repo         | Chunk 4.1 |
-| 5   | Discord app owner: Team vs personal                | Team (per HANDOFF §14)               | Chunk 0.5 |
 | 6   | Sync cadence                                       | Weekly Mon 06:00 UTC (HANDOFF §10)   | Chunk 3.6 |
 | 7   | Final command names/options parity                 | Mirror old bot                       | Chunk 4.4 |
 | 8   | Open-source license (repo goes public post-launch) | MIT unless owner prefers otherwise   | Phase 5   |

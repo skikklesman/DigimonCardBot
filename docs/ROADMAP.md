@@ -97,7 +97,9 @@ Goal: a populated, versioned card cache. Verifiable entirely with SQL.
       §9): current status, license, rate limits, field coverage (need image URLs + variants). **Record the decision and evidence in
       [DECISIONS.md](DECISIONS.md).** Save a real response snapshot into
       `test/fixtures/` — it becomes the contract-test fixture.
-- [ ] **1.3 — Source adapter.** `fetchCards(): Promise<RawCard[]>` +
+- [x] **1.3 — Source adapter.** _(Landed 2026-07-05; `normalize(raw)` returns
+      `Card[]` — base printing + one row per alt-art variant. Mapping choices in
+      [DECISIONS.md](DECISIONS.md).)_ `fetchCards(): Promise<RawCard[]>` +
       `normalize(raw): Card` behind the adapter boundary (HANDOFF §9). Unit tests
       run against the fixture, never the network.
 - [ ] **1.4 — Validation gates.** Shrink guard, per-record validation with drop

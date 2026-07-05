@@ -10,6 +10,39 @@
 
 ---
 
+## 2026-07-05 — Adapter mapping choices (chunk 1.3)
+
+- **Decisions** (all localized to `src/sync/adapter/digimoncard-app.ts`;
+  `Card` + `normalizeSearchName` live in `src/data/schema.ts`):
+  - **Images from GitHub raw** (`raw.githubusercontent.com/TakaOtaku/...`),
+    not `digimoncard.app` — same files (site is built from the repo), but
+    GitHub's CDN carries the hotlink load instead of a hobby site, and
+    Discord proxies/caches embed images anyway.
+  - **English alt-arts only**: `AAs` become variant rows (`P1`, `P2`, …);
+    `JAAs` (Japanese alt-arts) are excluded — English-first bot, and JAA
+    image coverage is unverified. Duplicate variant ids (re-releases) dedupe
+    to one row, first occurrence wins.
+  - **Effect folding**: supplementary mechanic text (ACE, LINK, rule,
+    digiXros/DNA/burst/special digivolve, assembly, dual) is folded into the
+    `effect` column, newline-separated, labeled only where upstream text
+    isn't self-labeled (`[ACE]`, `[Rule]`, `[Link DP]`, `[Link Effect]`).
+    Information-preserving: new mechanics stay displayable without schema
+    changes; the 2.3 embed builder chooses presentation.
+  - `inherited` = digivolveEffect + securityEffect (security text is
+    self-labeled upstream). `search_name` rules: lowercase → strip
+    diacritics → non-alphanumeric runs → single space → trim.
+  - **Conscious cut:** AA `illustrator`/treatment `type` have no schema
+    column and are dropped; revisit at 3.2 if `/alt` wants richer labels
+    (set name per variant is kept via the AA `note`).
+- **Why:** every choice favors "swap/extend without rewrite": upstream shape
+  knowledge stays in one file, and lossy cuts are listed here rather than
+  discovered later.
+- **Revisit if:** the community wants JAA lookups, `/alt` needs treatment
+  labels, or GitHub raw hotlinking misbehaves in Discord embeds (fallback:
+  `digimoncard.app` host, one constant).
+
+---
+
 ## 2026-07-05 — Schema-drift detection is two-directional (scopes chunk 1.4)
 
 - **Decision:** The 1.4 schema-drift gate compares upstream fields against the

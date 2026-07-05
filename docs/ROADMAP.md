@@ -86,9 +86,10 @@ passes); CI green; signature tests in place. **Reached:** 2026-07-05
 
 Goal: a populated, versioned card cache. Verifiable entirely with SQL.
 
-- [ ] **1.1 — D1 + schema migrations.** `wrangler d1 create`, schema from
-      [HANDOFF §5](../HANDOFF.md) as a migration file, seed `meta` with
-      `active_version = 0`. Local D1 works under `wrangler dev` and vitest.
+- [x] **1.1 — D1 + schema migrations.** _(Landed 2026-07-05.)_
+      `wrangler d1 create`, schema from [HANDOFF §5](../HANDOFF.md) as a
+      migration file, seed `meta` with `active_version = 0`. Local D1 works
+      under `wrangler dev` and vitest.
 - [ ] **1.2 — Pick & verify the card source.** Evaluate `niamu/digimon-card-game`
       vs. `digimoncard.io`/`.dev` (HANDOFF §9): current status, license, rate
       limits, field coverage (need image URLs + variants). **Record the decision

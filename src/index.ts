@@ -4,6 +4,7 @@ import { verifyDiscordSignature } from "./interactions/verify";
 
 export interface Env {
   DISCORD_PUBLIC_KEY: string;
+  DB: D1Database;
 }
 
 function json(payload: unknown, init?: ResponseInit): Response {

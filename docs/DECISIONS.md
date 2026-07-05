@@ -10,6 +10,30 @@
 
 ---
 
+## 2026-07-05 — D1 created; migration/test wiring facts for pool-workers 0.18 (chunk 1.1)
+
+- **Decision:** D1 database `cards` created (id
+  `004a6c30-4560-4990-9b41-2bf7805bb94e`, region ENAM), bound as `DB`.
+  Schema is HANDOFF §5 verbatim in `migrations/0001_initial_schema.sql`
+  (wrangler's default migrations dir), with the `meta` seed
+  (`active_version = 0`) in the same migration — one file, one "empty but
+  ready" state. Applied to both local and remote.
+- **Drift findings (pool-workers 0.18, extends the 2026-07-04 entry):**
+  - `readD1Migrations` now exports from the package **root** (the `/config`
+    subpath is gone). Tests get migrations via a `TEST_MIGRATIONS` miniflare
+    binding + a `setupFiles` script calling `applyD1Migrations` — the
+    documented pattern, just with updated import paths.
+  - **Per-test isolated storage is gone** in the plugin-API rewrite: tests in
+    a file share one local D1, so D1 test suites must reset tables in
+    `beforeEach` (see `test/migrations.test.ts`) and stay order-independent.
+  - `env` from `cloudflare:test` is now typed as the global `Cloudflare.Env`
+    (old `ProvidedEnv` module augmentation no longer exists); bindings are
+    typed by augmenting `Cloudflare.Env` in `test/env.d.ts`.
+- **Revisit if:** the pool reintroduces isolated storage (drop the manual
+  resets), or migrations outgrow single-file simplicity.
+
+---
+
 ## 2026-07-05 — Discord app owner: Team (chunk 0.5, resolves open decision #5)
 
 - **Decision:** The Discord application is owned by a **Discord Team**, not the

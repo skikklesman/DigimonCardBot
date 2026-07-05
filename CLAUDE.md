@@ -26,6 +26,9 @@ minimal maintenance.
 - **Cloudflare:** account `<OWNER_EMAIL>'s Account`
   (`<CLOUDFLARE_ACCOUNT_ID>`); `wrangler` authed via OAuth on the dev
   machine (token has `workers` + `d1` write — no re-login needed for Phase 1).
+- **D1:** database `cards` (`004a6c30-4560-4990-9b41-2bf7805bb94e`) exists,
+  bound as `DB`, schema migrated (chunk 1.1) — `meta.active_version = 0`, no
+  card data until the first sync (chunk 1.6).
 - **Discord app:** owned by a **Team** (DECISIONS #5). `DISCORD_PUBLIC_KEY` is
   set as a Worker secret (`wrangler secret put`); the Interactions Endpoint URL
   is saved in the Developer Portal and passed Discord's verification.

@@ -5,11 +5,11 @@ name = "digimon-tcg-bot"
 main = "src/index.ts"
 compatibility_date = "2026-06-01"
 
-# D1 binding lands with chunk 1.1 (see docs/ROADMAP.md):
-# [[d1_databases]]
-# binding = "DB"
-# database_name = "cards"
-# database_id = "<from `wrangler d1 create cards`>"
+# Card cache (HANDOFF §5). Migrations live in ./migrations (wrangler default).
+[[d1_databases]]
+binding = "DB"
+database_name = "cards"
+database_id = "004a6c30-4560-4990-9b41-2bf7805bb94e"
 
 # Sync cron lands with chunk 3.6:
 # [triggers]

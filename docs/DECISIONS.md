@@ -10,6 +10,27 @@
 
 ---
 
+## 2026-07-05 — Schema-drift detection is two-directional (scopes chunk 1.4)
+
+- **Decision:** The 1.4 schema-drift gate compares upstream fields against the
+  adapter's known-field list in **both directions**: a known field
+  missing/renamed → **abort** (HANDOFF §8 Defense 2, unchanged); an unknown
+  new field present → **proceed + warning** (to the alert webhook once 3.3
+  wires it).
+- **Why:** New game mechanics arrive as new fields (`aceEffect`,
+  `linkEffect`, `assembly` all did). A tolerant adapter ignores them, so
+  cards keep resolving but silently lose new rules text in embeds — users
+  would notice before the maintainer. The warn path converts that silent
+  degradation into a Discord ping the week a mechanic ships, for ~zero cost
+  (the drift gate already computes the field inventory). New _values_ in
+  existing fields (e.g. Dual cards' `Digimon/Option` cardType) need no
+  gate — TEXT columns and default-branch rendering absorb them; fixture
+  record BT25-043 pins that.
+- **Revisit if:** the warning turns noisy (upstream adds cosmetic fields
+  often) — then batch/dedupe warnings rather than dropping the signal.
+
+---
+
 ## 2026-07-05 — Card source: digimoncard.app dataset (chunk 1.2, resolves open decision #1)
 
 - **Decision:** Primary card source is the **TakaOtaku/Digimon-Card-App**

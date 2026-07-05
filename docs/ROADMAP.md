@@ -102,8 +102,13 @@ Goal: a populated, versioned card cache. Verifiable entirely with SQL.
       run against the fixture, never the network.
 - [ ] **1.4 — Validation gates.** Shrink guard, per-record validation with drop
       counting, schema-drift detection (HANDOFF §8, Defense 2). Pure functions.
-      **Unit-test every gate, including each documented catastrophe:** empty array,
-      truncated feed, HTML error page, renamed fields, single bad card.
+      Drift detection is **two-directional** (DECISIONS 2026-07-05): a known
+      field missing/renamed → abort the sync; an **unknown new field present →
+      proceed but emit a warning** (surfaced via the alert webhook once 3.3
+      lands) — the early-warning signal for new game mechanics like ACE/LINK/
+      Dual. **Unit-test every gate, including each documented catastrophe:**
+      empty array, truncated feed, HTML error page, renamed fields, single bad
+      card — plus the unknown-extra-field case (warns, does not abort).
 - [ ] **1.5 — Versioned load + atomic flip.** Chunked idempotent upserts under
       `active_version + 1`, verify count, flip pointer, write
       `last_successful_sync`, GC versions `< active - 1`. Integration tests against

@@ -2,7 +2,12 @@
 // snapshots ARE the response contract — review diffs like API changes.
 import { describe, expect, it } from "vitest";
 import type { Card } from "../data/schema";
-import { cardResponse, disambiguationResponse, notFoundResponse } from "./embeds";
+import {
+  altGalleryResponse,
+  cardResponse,
+  disambiguationResponse,
+  notFoundResponse,
+} from "./embeds";
 
 const goldramon: Card = {
   cardId: "BT14-018",
@@ -85,6 +90,29 @@ describe("disambiguationResponse", () => {
     const content = (response as { data: { content: string } }).data.content;
     expect(content).not.toContain("@everyone");
     expect(content).not.toContain("`boom`");
+  });
+});
+
+describe("altGalleryResponse", () => {
+  it("renders one image-first embed per printing", () => {
+    expect(
+      altGalleryResponse([
+        { ...analogYouthP1, variant: "0", imageUrl: "https://example.com/EX1-066.webp" },
+        analogYouthP1,
+        { ...analogYouthP1, variant: "P2", imageUrl: "https://example.com/EX1-066_P2.webp" },
+      ]),
+    ).toMatchSnapshot();
+  });
+
+  it("caps at Discord's 10-embed limit and says so", () => {
+    const many = Array.from({ length: 13 }, (_, i) => ({
+      ...analogYouthP1,
+      variant: `P${i}`,
+    }));
+    const response = altGalleryResponse(many);
+    const data = (response as unknown as { data: { content: string; embeds: unknown[] } }).data;
+    expect(data.embeds).toHaveLength(10);
+    expect(data.content).toContain("showing 10 of 13");
   });
 });
 

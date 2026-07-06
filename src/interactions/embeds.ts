@@ -81,6 +81,36 @@ export function cardResponse(card: Card): APIInteractionResponse {
   };
 }
 
+/** Discord allows at most 10 embeds per message — the /alt gallery cap. */
+const MAX_GALLERY_EMBEDS = 10;
+
+/** Every printing of one card as an embed gallery: image-first, one embed
+ * per printing, stats omitted — /alt is about the art. */
+export function altGalleryResponse(printings: Card[]): APIInteractionResponse {
+  const shown = printings.slice(0, MAX_GALLERY_EMBEDS);
+  const first = shown[0];
+  const overflow =
+    printings.length > shown.length ? ` (showing ${shown.length} of ${printings.length})` : "";
+  return {
+    type: InteractionResponseType.ChannelMessageWithSource,
+    data: {
+      content: first
+        ? `**${first.name}** \`${first.cardId}\` — ${printings.length} printings${overflow}`
+        : undefined,
+      embeds: shown.map((card) => {
+        const label = card.variant === "0" ? "base printing" : `alt-art ${card.variant}`;
+        const embed: APIEmbed = {
+          title: truncate(`${card.name} — ${card.cardId} · ${label}`, MAX_TITLE),
+          color: embedColor(card.color),
+        };
+        if (card.imageUrl) embed.image = { url: card.imageUrl };
+        if (card.setName) embed.footer = { text: truncate(card.setName, MAX_FIELD) };
+        return embed;
+      }),
+    },
+  };
+}
+
 /** How many closest matches to list before telling the user to narrow it. */
 const MAX_LISTED_MATCHES = 8;
 

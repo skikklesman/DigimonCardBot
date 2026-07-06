@@ -24,4 +24,18 @@ export const COMMAND_DEFINITIONS = [
       },
     ],
   },
+  {
+    name: "alt",
+    type: ApplicationCommandType.ChatInput,
+    description: "Show all printings of a Digimon TCG card, alt-arts included",
+    options: [
+      {
+        name: "card-name",
+        type: ApplicationCommandOptionType.String,
+        description: "Card name or ID (e.g. Analog Youth, EX1-066)",
+        required: true,
+        autocomplete: true,
+      },
+    ],
+  },
 ] satisfies RESTPutAPIApplicationGuildCommandsJSONBody;

@@ -185,7 +185,11 @@ the test guild. **Reached:** 2026-07-05
       ≤25 choices, label `Name (Set)`, value `card_id|variant`, exact-prefix
       prioritized (HANDOFF §6.4). **Never deferred.** Integration tests; manual
       gate: typing `goldr` offers the Goldramon printings.
-- [ ] **3.2 — `/alt` command.** List/show alt-art printings for a card
+- [x] **3.2 — `/alt` command.** _(Landed 2026-07-05. Responds with an embed
+      gallery — one image per printing, ≤10 per Discord's limit; resolution
+      ladder shared with `/card` via `commands/resolve.ts`; `/alt` reuses the
+      `/card` autocomplete. Registered + deployed.)_ List/show alt-art
+      printings for a card
       (variants of the same `card_id`). Same handler discipline as `/card`.
 - [ ] **3.3 — Observability.** Sync failures → `SYNC_ALERT_WEBHOOK`; stale-sync
       detection (`last_successful_sync` older than cadence + margin) alerts too

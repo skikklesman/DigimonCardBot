@@ -20,15 +20,18 @@ describe("command definitions", () => {
     }
   });
 
-  it("defines /card with a required, autocompleting card-name option", () => {
-    const card = COMMAND_DEFINITIONS.find((c) => c.name === "card");
-    const option = card?.options?.find((o) => o.name === "card-name");
-    expect(option).toMatchObject({
-      type: ApplicationCommandOptionType.String,
-      required: true,
-      autocomplete: true,
-    });
-  });
+  it.each(["card", "alt"])(
+    "defines /%s with a required, autocompleting card-name option",
+    (name) => {
+      const command = COMMAND_DEFINITIONS.find((c) => c.name === name);
+      const option = command?.options?.find((o) => o.name === "card-name");
+      expect(option).toMatchObject({
+        type: ApplicationCommandOptionType.String,
+        required: true,
+        autocomplete: true,
+      });
+    },
+  );
 
   it("never combines autocomplete with static choices (Discord rejects it)", () => {
     for (const command of COMMAND_DEFINITIONS) {

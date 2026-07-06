@@ -1,0 +1,52 @@
+# Owner TODO — human actions & things to check on
+
+> The roadmap tracks the _project's_ work; this file tracks **yours** — the
+> operator/owner actions no code can do. Check items off as you do them;
+> add new ones as they come up. (Claude: append here when a chunk creates a
+> human follow-up, and prune completed sections.)
+
+## Anytime (no deadline, browser is enough)
+
+- [ ] **Enable CI auto-deploys:** create a Cloudflare API token
+      (dash.cloudflare.com → My Profile → API Tokens → template
+      _"Edit Cloudflare Workers"_) and add it to the GitHub repo as the
+      `CLOUDFLARE_API_TOKEN` Actions secret (repo → Settings → Secrets and
+      variables → Actions). The CI job picks it up automatically on the
+      next push — no code change. Until then deploys stay manual and CI
+      only smoke-checks production.
+- [ ] **Vault the resync token:** the `RESYNC_TOKEN` value sits on its line
+      in `.dev.vars` on the dev machine (generated remotely 2026-07-06,
+      never displayed in any transcript). Copy it into your password
+      manager next to the webhook URL.
+- [ ] **Optional — external uptime ping:** point a free pinger (e.g.
+      UptimeRobot) at `GET /health` on the Worker so "endpoint down" and
+      "Cloudflare account problem" get caught from outside Cloudflare
+      (TESTING.md §7 monitoring matrix). Not urgent pre-launch.
+
+## During the 3.6 soak (starts when the cron lands)
+
+- [ ] **Use the bot daily in the test guild** — a few `/card` and `/alt`
+      lookups per day for 7 consecutive days; variety beats volume
+      (autocomplete picks, free text, an ID, a typo). This is Gate C
+      criterion #4.
+- [ ] **Glance at the alert channel daily** — silence is expected; anything
+      that appears is soak findings.
+- [ ] **After the first two Monday crons**, confirm two ✅ automated syncs
+      happened (`/health` timestamp refreshes, or the Cloudflare dashboard
+      cron log) — Gate C criterion #2.
+
+## Launch-phase (Phase 5 — before the old bot dies 2026-07-31)
+
+- [ ] **Discord bot verification** (HANDOFF §12): submit in the Developer
+      Portal **well before 100 servers** — needs your government ID,
+      review takes ~5 days. The single hardest deadline dependency.
+- [ ] **License + public README** (DECISIONS open decision): pick a license
+      (MIT is the path of least resistance) before flipping the repo
+      public.
+- [ ] **Community announcement plan**: where/when to tell the old bot's
+      communities, invite link distribution.
+
+---
+
+_Completed items: move them to the bottom with a date if they're worth
+remembering, otherwise delete._

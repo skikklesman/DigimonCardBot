@@ -136,7 +136,10 @@ Goal: a populated, versioned card cache. Verifiable entirely with SQL.
 
 ## Phase 2 — Read path → 🎮 Gate B: "First Playable"
 
-- [ ] **2.1 — Interaction router.** Branch on interaction type: 1→PONG,
+- [x] **2.1 — Interaction router.** _(Landed 2026-07-05. Handlers plug in via a
+      registry in `index.ts`; a throwing command handler → friendly ephemeral
+      error, a throwing autocomplete handler → empty choices.)_ Branch on
+      interaction type: 1→PONG,
       2→command dispatch, 4→autocomplete dispatch (HANDOFF §6.4). Unknown
       types/commands get a polite error response, never a crash. Unit tests per
       branch.

@@ -29,12 +29,16 @@ describe("interaction endpoint", () => {
     await expect(res.json()).resolves.toEqual({ type: 1 });
   });
 
-  it("answers any other verified interaction with a benign placeholder message", async () => {
-    const res = await SELF.fetch(ENDPOINT, await signedInteraction({ type: 2 }));
+  it("routes a verified command interaction (unknown command → polite ephemeral)", async () => {
+    const res = await SELF.fetch(
+      ENDPOINT,
+      await signedInteraction({ type: 2, data: { name: "card" } }),
+    );
     expect(res.status).toBe(200);
-    const body = (await res.json()) as { type: number; data: { content: string } };
+    const body = (await res.json()) as { type: number; data: { content: string; flags: number } };
     expect(body.type).toBe(4); // CHANNEL_MESSAGE_WITH_SOURCE
-    expect(body.data.content).toContain("under construction");
+    expect(body.data.flags).toBe(64); // ephemeral
+    expect(body.data.content).toContain("don't know that command");
   });
 
   it("returns 404 for non-interaction routes", async () => {

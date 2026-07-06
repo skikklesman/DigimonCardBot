@@ -237,7 +237,11 @@ the test guild. **Reached:** 2026-07-05
 
 Chunks 4.1–4.3 are independent — parallelizable.
 
-- [ ] **4.1 — `/keyword`.** Keyword/rules-term lookup. Needs a keyword data
+- [x] **4.1 — `/keyword`.** _(Landed 2026-07-06. Static curated glossary of
+      ~45 keywords — inventory extracted from real card text, definitions
+      cross-checked; four 2026 mechanics deliberately omitted pending verified
+      text. In-memory autocomplete. DECISIONS.md has sources + update path.
+      Registered + deployed.)_ Keyword/rules-term lookup. Needs a keyword data
       source — may be a small static dataset shipped with the bot; decide and
       record in DECISIONS.md.
 - [ ] **4.2 — `/release`.** Set/release info lookup. Check what the card source

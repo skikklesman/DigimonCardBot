@@ -24,6 +24,9 @@ export default defineConfig({
           TEST_MIGRATIONS: migrations,
           // Test-only bearer token for the /admin/resync auth tests.
           RESYNC_TOKEN: "test-resync-token",
+          // Explicit bindings beat .dev.vars: make sure tests can never
+          // post to the developer's REAL alert webhook.
+          SYNC_ALERT_WEBHOOK: "",
         },
       },
     }),

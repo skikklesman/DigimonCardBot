@@ -38,4 +38,18 @@ export const COMMAND_DEFINITIONS = [
       },
     ],
   },
+  {
+    name: "keyword",
+    type: ApplicationCommandType.ChatInput,
+    description: "Look up a Digimon TCG keyword or rules term",
+    options: [
+      {
+        name: "term",
+        type: ApplicationCommandOptionType.String,
+        description: "Keyword (e.g. Blocker, Raid, De-Digivolve)",
+        required: true,
+        autocomplete: true,
+      },
+    ],
+  },
 ] satisfies RESTPutAPIApplicationGuildCommandsJSONBody;

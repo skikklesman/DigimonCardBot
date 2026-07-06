@@ -81,6 +81,23 @@ export function cardResponse(card: Card): APIInteractionResponse {
   };
 }
 
+/** A rules-keyword definition (/keyword) — no card, no image, just text. */
+export function keywordResponse(keyword: { name: string; text: string }): APIInteractionResponse {
+  return {
+    type: InteractionResponseType.ChannelMessageWithSource,
+    data: {
+      embeds: [
+        {
+          title: truncate(`＜${keyword.name}＞`, MAX_TITLE),
+          description: truncate(keyword.text, 4096),
+          color: DEFAULT_COLOR,
+          footer: { text: "Digimon Card Game keyword" },
+        },
+      ],
+    },
+  };
+}
+
 /** Discord allows at most 10 embeds per message — the /alt gallery cap. */
 const MAX_GALLERY_EMBEDS = 10;
 

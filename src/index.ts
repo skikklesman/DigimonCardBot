@@ -5,6 +5,10 @@ import { createRepo } from "./data/repo.ts";
 import { createCardCommand } from "./interactions/commands/card.ts";
 import { createAltCommand } from "./interactions/commands/alt.ts";
 import { createCardAutocomplete } from "./interactions/autocomplete.ts";
+import {
+  createKeywordAutocomplete,
+  createKeywordCommand,
+} from "./interactions/commands/keyword.ts";
 import { checkStaleSync, runSyncWithAlerts } from "./sync/run.ts";
 import { sendSyncAlert } from "./sync/alert.ts";
 import { handleResync } from "./admin.ts";
@@ -16,9 +20,18 @@ function buildRegistry(env: Env): HandlerRegistry {
   const repo = createRepo(env.DB);
   const cardAutocomplete = createCardAutocomplete(repo);
   return {
-    commands: { card: createCardCommand(repo), alt: createAltCommand(repo) },
+    commands: {
+      card: createCardCommand(repo),
+      alt: createAltCommand(repo),
+      keyword: createKeywordCommand(),
+    },
     // /alt shares /card's autocomplete — same option, same suggestions.
-    autocomplete: { card: cardAutocomplete, alt: cardAutocomplete },
+    // /keyword's autocomplete is a static in-memory list (no D1).
+    autocomplete: {
+      card: cardAutocomplete,
+      alt: cardAutocomplete,
+      keyword: createKeywordAutocomplete(),
+    },
   };
 }
 

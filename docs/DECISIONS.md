@@ -10,6 +10,31 @@
 
 ---
 
+## 2026-07-06 — /keyword ships a curated static dataset (chunk 4.1)
+
+- **Decision:** `/keyword` looks up a **static, curated glossary**
+  (`src/data/keywords.ts`, ~45 entries) shipped with the bot — no network,
+  no D1; its autocomplete filters the same in-memory list.
+- **Sources & method:** the keyword _inventory_ was extracted from the real
+  card dataset (every `＜…＞` token across all effect fields, frequency-
+  ranked — ground truth for what appears on cards); definitions use
+  official reminder-text phrasing, cross-checked against digimonmeta.com's
+  keyword compilation (May 2025) and web sources for 2026 mechanics
+  (Engage, Ascension, Overclock, Decode, Link, App Fusion). Numbers are
+  normalized to "N".
+- **Deliberate omissions** (wrong rules text is worse than none — `/card`
+  shows any card's printed text regardless): `Training`, `Guard`,
+  `Assembly`, `Arts Digivolve` — add when official text is verified.
+  Upstream strips reminder text from card data, so definitions can't be
+  self-sourced from the feed (checked).
+- **Update path:** new keywords arrive a few times a year with new sets;
+  the unknown-field drift warning and `/keyword`'s own "not in my glossary
+  yet" reply both surface the gap. Editing the file is the whole job.
+- **Revisit if:** the glossary churns often enough to justify sourcing
+  from a maintained external dataset instead.
+
+---
+
 ## 2026-07-06 — Sync cron on Tuesdays; source-contract check owns Mondays (chunk 3.6)
 
 - **Decision:** Production sync cron is `0 6 * * 2` (Tuesdays 06:00 UTC),

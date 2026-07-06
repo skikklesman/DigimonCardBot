@@ -5,6 +5,7 @@
 import { EXPECTED_FIELDS, fetchCards, normalize } from "./adapter/digimoncard-app";
 import { checkSchemaDrift, checkShrink, validateCards } from "./validate";
 import { getLiveCardCount, loadNewVersion } from "./load";
+import { sendSyncAlert } from "./alert";
 
 export interface SyncSummary {
   version: number;
@@ -50,6 +51,41 @@ export async function checkStaleSync(
   if (ageMs <= STALE_AFTER_MS) return null;
   const days = (ageMs / 86_400_000).toFixed(1);
   return `card data is STALE: last successful sync was ${days} days ago (${row.value}) — expected weekly`;
+}
+
+export interface SyncWithAlertsOptions extends RunSyncOptions {
+  /** SYNC_ALERT_WEBHOOK — failures/warnings announce themselves here. */
+  webhookUrl?: string;
+}
+
+export type SyncOutcome = { ok: true; summary: SyncSummary } | { ok: false; error: string };
+
+/**
+ * The sync with its reporting attached — shared by the cron handler and the
+ * manual resync route so the two paths can never drift: failure → ❌ alert,
+ * success-with-warnings → ⚠️ alert. Never throws; callers branch on `ok`
+ * (the cron handler rethrows to mark its invocation failed).
+ */
+export async function runSyncWithAlerts(
+  db: D1Database,
+  options: SyncWithAlertsOptions = {},
+): Promise<SyncOutcome> {
+  try {
+    const summary = await runSync(db, options);
+    console.log(`sync complete: ${JSON.stringify(summary)}`);
+    if (summary.warnings.length > 0) {
+      await sendSyncAlert(
+        options.webhookUrl,
+        `⚠️ card sync v${summary.version} succeeded with warnings:\n• ${summary.warnings.join("\n• ")}`,
+      );
+    }
+    return { ok: true, summary };
+  } catch (error) {
+    const message = String(error);
+    console.error(`sync failed: ${message}`);
+    await sendSyncAlert(options.webhookUrl, `❌ card sync FAILED: ${message}`);
+    return { ok: false, error: message };
+  }
 }
 
 export async function runSync(db: D1Database, options: RunSyncOptions = {}): Promise<SyncSummary> {

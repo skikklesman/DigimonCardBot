@@ -5,8 +5,9 @@ import { createRepo } from "./data/repo";
 import { createCardCommand } from "./interactions/commands/card";
 import { createAltCommand } from "./interactions/commands/alt";
 import { createCardAutocomplete } from "./interactions/autocomplete";
-import { checkStaleSync, runSync } from "./sync/run";
+import { checkStaleSync, runSyncWithAlerts } from "./sync/run";
 import { sendSyncAlert } from "./sync/alert";
+import { handleResync } from "./admin";
 
 // Handlers close over the repo, so the registry is built per request (the
 // D1 binding arrives with env).
@@ -27,6 +28,9 @@ export interface Env {
   SYNC_ALERT_WEBHOOK?: string;
   /** Card source override for staging/drills; defaults to the real source. */
   CARD_SOURCE_URL?: string;
+  /** Bearer token for POST /admin/resync (wrangler secret; optional —
+   * without it the route 404s like it doesn't exist). */
+  RESYNC_TOKEN?: string;
 }
 
 function json(payload: unknown, init?: ResponseInit): Response {
@@ -39,6 +43,9 @@ function json(payload: unknown, init?: ResponseInit): Response {
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+    if (request.method === "POST" && url.pathname === "/admin/resync") {
+      return handleResync(request, env);
+    }
     if (request.method !== "POST" || url.pathname !== "/interactions") {
       return new Response("Not found", { status: 404 });
     }
@@ -78,19 +85,12 @@ export default {
     if (stale) {
       await sendSyncAlert(env.SYNC_ALERT_WEBHOOK, `⚠️ ${stale}`);
     }
-    try {
-      const summary = await runSync(env.DB, { sourceUrl: env.CARD_SOURCE_URL });
-      console.log(`sync complete: ${JSON.stringify(summary)}`);
-      if (summary.warnings.length > 0) {
-        await sendSyncAlert(
-          env.SYNC_ALERT_WEBHOOK,
-          `⚠️ card sync v${summary.version} succeeded with warnings:\n• ${summary.warnings.join("\n• ")}`,
-        );
-      }
-    } catch (error) {
-      console.error(`sync failed: ${String(error)}`);
-      await sendSyncAlert(env.SYNC_ALERT_WEBHOOK, `❌ card sync FAILED: ${String(error)}`);
-      throw error;
+    const outcome = await runSyncWithAlerts(env.DB, {
+      webhookUrl: env.SYNC_ALERT_WEBHOOK,
+      sourceUrl: env.CARD_SOURCE_URL,
+    });
+    if (!outcome.ok) {
+      throw new Error(outcome.error);
     }
   },
 } satisfies ExportedHandler<Env>;

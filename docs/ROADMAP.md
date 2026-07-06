@@ -200,7 +200,12 @@ the test guild. **Reached:** 2026-07-05
       detection (`last_successful_sync` older than cadence + margin) alerts too
       (HANDOFF §8 Defense 5). **Prove it: force a failure (bad source URL in a
       test) and see the Discord alert arrive.**
-- [ ] **3.4 — Manual resync route.** Authenticated route on `fetch` triggering
+- [x] **3.4 — Manual resync route.** _(Landed 2026-07-06. `POST /admin/resync`,
+      bearer auth via SHA-256 + `timingSafeEqual`; 404s are byte-identical to
+      unknown routes; with no `RESYNC_TOKEN` secret the route is disabled.
+      Shares `runSyncWithAlerts` with the cron path. Operator setup:
+      generate a token, `wrangler secret put RESYNC_TOKEN`, add to
+      `.dev.vars`.)_ Authenticated route on `fetch` triggering
       the sync (HANDOFF §8). Constant-time token check; 404 on bad auth. Tests:
       no-token, bad-token, good-token.
 - [ ] **3.5 — Post-deploy smoke suite.** Scripted signed synthetic interactions

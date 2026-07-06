@@ -22,6 +22,8 @@ export default defineConfig({
         bindings: {
           DISCORD_PUBLIC_KEY: testKeypair.publicKeyHex,
           TEST_MIGRATIONS: migrations,
+          // Test-only bearer token for the /admin/resync auth tests.
+          RESYNC_TOKEN: "test-resync-token",
         },
       },
     }),

@@ -102,6 +102,11 @@ Dependency policy: **every runtime dependency needs a written justification in
   on CI. If it happens, don't hand-patch: delete `package-lock.json` +
   `node_modules` and run a fresh `npm install` (learned 2026-07-04, chunk
   0.4).
+- **Appending to `.dev.vars` programmatically:** check for a trailing
+  newline first — a shell `>>` append onto a file whose last line lacks one
+  fuses the new `KEY=` onto the previous line's value and silently corrupts
+  both (bit us 2026-07-06: a source-URL override glued onto the webhook URL,
+  and the tell was a drill _succeeding_ when it should have failed).
 - **Config matrix:** local dev uses `.dev.vars` (gitignored); deployed secrets
   via `wrangler secret put` only (HANDOFF §10). A `staging` Wrangler
   environment with its own D1 is optional; the test-guild-against-production

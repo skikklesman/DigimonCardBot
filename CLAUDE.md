@@ -31,12 +31,22 @@ minimal maintenance.
   (2026-07-05, Gate B): version 1 live, 8,425 rows / 4,295 cards, transferred
   from the first real local sync. It will NOT refresh until the cron trigger
   lands (chunk 3.6) — data staleness is expected and harmless until then.
-- **Phases 1 and 2 are complete** (both 2026-07-05): sync pipeline, router,
-  repository, `/card` handler all live. `/card` is **registered to the
-  private test guild** (owner's `.dev.vars` has `DISCORD_APP_ID`,
-  `DISCORD_BOT_TOKEN`, `DISCORD_TEST_GUILD_ID`; re-register with
-  `npm run register`). Gate B passed with the owner's manual script.
-  Autocomplete intentionally returns empty until chunk 3.1.
+- **Phases 1 and 2 complete; Phase 3 through chunk 3.3** (2026-07-05/06):
+  sync pipeline, router, repository, `/card` (with autocomplete), `/alt`
+  (printing gallery), and **webhook alerting + stale-sync dead-man check —
+  proven live**: both forced-failure drills posted real messages to the
+  owner's alert channel, owner confirmed. **Next chunk: 3.4 (manual resync
+  route).**
+- **Commands `/card` + `/alt` are registered to the private test guild**
+  (owner's `.dev.vars` has `DISCORD_APP_ID`, `DISCORD_BOT_TOKEN`,
+  `DISCORD_TEST_GUILD_ID`, `SYNC_ALERT_WEBHOOK`; re-register with
+  `npm run register`). Production secrets: `DISCORD_PUBLIC_KEY` and
+  `SYNC_ALERT_WEBHOOK` (both via `wrangler secret put`). Optional
+  `CARD_SOURCE_URL` env overrides the card source for staging/drills.
+- **No cron trigger yet** (3.6): production data is a static Gate-B
+  snapshot; the stale-sync alert will legitimately fire if `scheduled()`
+  ever runs before 3.6 refreshes things — that's the dead-man check
+  working, not a bug. Local D1 is at version 3 from the alert drills.
 - **Discord app:** owned by a **Team** (DECISIONS #5). `DISCORD_PUBLIC_KEY` is
   set as a Worker secret (`wrangler secret put`); the Interactions Endpoint URL
   is saved in the Developer Portal and passed Discord's verification.

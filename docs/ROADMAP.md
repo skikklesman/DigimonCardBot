@@ -191,7 +191,12 @@ the test guild. **Reached:** 2026-07-05
       `/card` autocomplete. Registered + deployed.)_ List/show alt-art
       printings for a card
       (variants of the same `card_id`). Same handler discipline as `/card`.
-- [ ] **3.3 — Observability.** Sync failures → `SYNC_ALERT_WEBHOOK`; stale-sync
+- [x] **3.3 — Observability.** _(Landed 2026-07-06. **Proven**: both drills
+      ran against the real webhook and the owner confirmed both messages
+      arrived — ❌ forced failure via the new `CARD_SOURCE_URL` override
+      pointed at a dead host, and ⚠️ stale-sync with a backdated timestamp.
+      Production secret set; alerting live in prod.)_ Sync failures →
+      `SYNC_ALERT_WEBHOOK`; stale-sync
       detection (`last_successful_sync` older than cadence + margin) alerts too
       (HANDOFF §8 Defense 5). **Prove it: force a failure (bad source URL in a
       test) and see the Discord alert arrive.**

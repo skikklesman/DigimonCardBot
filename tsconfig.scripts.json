@@ -1,0 +1,12 @@
+{
+  // Deploy-time scripts run under Node (≥22.18 native TS), not workerd —
+  // they get Node types here so Worker code (base tsconfig) can't
+  // accidentally use Node globals. `npm run typecheck` checks both.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"],
+    // Node's ESM loader requires explicit .ts extensions on relative imports.
+    "allowImportingTsExtensions": true
+  },
+  "include": ["scripts/**/*.ts"]
+}

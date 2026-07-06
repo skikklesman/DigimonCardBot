@@ -156,7 +156,11 @@ Goal: a populated, versioned card cache. Verifiable entirely with SQL.
       / not-found. Must handle free-text values that aren't a `card_id|variant`
       token (HANDOFF §6.4 edge cases). Embed builder is a pure function — snapshot-
       test its JSON.
-- [ ] **2.4 — Command registration script.** Standalone script (HANDOFF §7),
+- [x] **2.4 — Command registration script.** _(Landed 2026-07-05: `npm run
+    register` / `register:global`; runs on Node ≥22.18 native TS. **Human
+      prereq for 2.5:** put `DISCORD_APP_ID`, `DISCORD_BOT_TOKEN`, and
+      `DISCORD_TEST_GUILD_ID` in `.dev.vars`, then run `npm run register`.)_
+      Standalone script (HANDOFF §7),
       PUT to the guild-commands endpoint for the test guild. `card-name` option has
       `autocomplete: true`. Lives in `scripts/`, runs from dev machine/CI, never in
       the Worker.

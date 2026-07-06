@@ -164,11 +164,16 @@ Goal: a populated, versioned card cache. Verifiable entirely with SQL.
       PUT to the guild-commands endpoint for the test guild. `card-name` option has
       `autocomplete: true`. Lives in `scripts/`, runs from dev machine/CI, never in
       the Worker.
-- [ ] **2.5 — First Playable test.** Deploy; in the private test guild run the
+- [x] **2.5 — First Playable test.** _(Landed 2026-07-05. Owner registered
+      `/card` to the test guild and ran the manual script — all five steps
+      passed. Production D1 populated by export/import of the local synced
+      dataset with a manual pointer flip (staged rows first, flip last —
+      rehearsing the promote); refreshes properly once the cron lands in
+      3.6.)_ Deploy; in the private test guild run the
       manual script in [TESTING.md → First Playable script](TESTING.md).
 
 **🎮 Gate B criteria:** the First Playable manual script passes end-to-end in
-the test guild. **Reached:** `pending`
+the test guild. **Reached:** 2026-07-05
 
 ---
 

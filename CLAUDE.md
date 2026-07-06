@@ -27,8 +27,11 @@ minimal maintenance.
   (`<CLOUDFLARE_ACCOUNT_ID>`); `wrangler` authed via OAuth on the dev
   machine (token has `workers` + `d1` write — no re-login needed for Phase 1).
 - **D1:** database `cards` (`004a6c30-4560-4990-9b41-2bf7805bb94e`) exists,
-  bound as `DB`, schema migrated (chunk 1.1) — `meta.active_version = 0`, no
-  card data until the first sync (chunk 1.6).
+  bound as `DB`, schema migrated (chunk 1.1). **Phase 1 (data layer) is
+  complete** (2026-07-05): the full sync pipeline works and the first real
+  sync populated **local** D1 (version 1, 8,425 rows / 4,295 cards).
+  **Production D1 is still at `active_version = 0` with no card data** —
+  populate it before chunk 2.5's deploy-and-test (the cron lands in 3.6).
 - **Discord app:** owned by a **Team** (DECISIONS #5). `DISCORD_PUBLIC_KEY` is
   set as a Worker secret (`wrangler secret put`); the Interactions Endpoint URL
   is saved in the Developer Portal and passed Discord's verification.

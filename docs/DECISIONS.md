@@ -257,13 +257,12 @@
 
 ## Open decisions (human input needed)
 
-Carried from HANDOFF §14 plus new ones raised by the roadmap:
+Carried from HANDOFF §14 plus new ones raised by the roadmap. Resolved ones
+move up into the log above — so far #1 (card source), #2 (`/alt` in MVP),
+#4 (keyword source), #5 (Team owner), and #6 (sync cadence).
 
-| #   | Decision                                           | Default until decided                | Needed by |
-| --- | -------------------------------------------------- | ------------------------------------ | --------- |
-| 2   | `/alt` in MVP or Phase 4?                          | In MVP (per HANDOFF §1 product goal) | Gate C    |
-| 3   | What does the old bot's `/page` actually do?       | Ask community                        | Chunk 4.3 |
-| 4   | Keyword data source for `/keyword`                 | Small static dataset in repo         | Chunk 4.1 |
-| 6   | Sync cadence                                       | Weekly Mon 06:00 UTC (HANDOFF §10)   | Chunk 3.6 |
-| 7   | Final command names/options parity                 | Mirror old bot                       | Chunk 4.4 |
-| 8   | Open-source license (repo goes public post-launch) | MIT unless owner prefers otherwise   | Phase 5   |
+| #   | Decision                                           | Default until decided              | Needed by |
+| --- | -------------------------------------------------- | ---------------------------------- | --------- |
+| 3   | What does the old bot's `/page` actually do?       | Ask community                      | Chunk 4.3 |
+| 7   | Final command names/options parity                 | Mirror old bot                     | Chunk 4.4 |
+| 8   | Open-source license (repo goes public post-launch) | MIT unless owner prefers otherwise | Phase 5   |

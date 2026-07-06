@@ -340,7 +340,8 @@ Required secrets:
 - `DISCORD_BOT_TOKEN` — command registration + any follow-up messages
 - `DISCORD_APP_ID` — command registration
 - `SYNC_ALERT_WEBHOOK` — failure alerts (optional but recommended)
-- `ADMIN_RESYNC_TOKEN` — guards the manual-resync route (if implemented)
+- `RESYNC_TOKEN` — guards the manual-resync route (`POST /admin/resync`);
+  unset ⇒ the route 404s as if it didn't exist
 
 `wrangler.toml` sketch (bindings + schedule only; no secrets):
 

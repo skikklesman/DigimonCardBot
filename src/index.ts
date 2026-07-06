@@ -90,11 +90,11 @@ export default {
     return json(await route(interaction, buildRegistry(env)));
   },
 
-  // Sync path (HANDOFF §3). The production cron trigger lands in chunk 3.6;
-  // until then this runs via `wrangler dev --test-scheduled`. Failures and
-  // warnings announce themselves to the alert webhook (HANDOFF §8 Defense
-  // 5); the rethrow additionally marks the invocation failed in
-  // Cloudflare's metrics.
+  // Sync path (HANDOFF §3). Runs on the production cron (Tuesdays 06:00 UTC,
+  // wrangler.toml); also triggerable locally via `wrangler dev
+  // --test-scheduled`. Failures and warnings announce themselves to the alert
+  // webhook (HANDOFF §8 Defense 5); the rethrow additionally marks the
+  // invocation failed in Cloudflare's metrics.
   async scheduled(_controller, env): Promise<void> {
     // Dead-man check first: if the last GOOD sync is older than cadence +
     // margin, say so even if (especially if) this run is about to fail too.

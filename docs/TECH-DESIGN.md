@@ -36,7 +36,9 @@ Dependency policy: **every runtime dependency needs a written justification in
 │   ├── ROADMAP.md          # Work chunks, gates, MVP definition
 │   ├── TESTING.md          # Test plan & live-stability regimen
 │   ├── TECH-DESIGN.md      # This file
-│   └── DECISIONS.md        # Append-only decision log
+│   ├── DECISIONS.md        # Append-only decision log
+│   ├── OWNER-TODO.md       # Human/operator action list
+│   └── blog/               # Dev blog — one post per phase
 ├── wrangler.toml           # Bindings + cron. NO SECRETS. (HANDOFF §10)
 ├── src/
 │   ├── index.ts            # Worker entry: exports fetch + scheduled. Thin.
@@ -48,20 +50,35 @@ Dependency policy: **every runtime dependency needs a written justification in
 │   │   └── embeds.ts       # Pure embed/response builders
 │   ├── data/
 │   │   ├── repo.ts         # All SQL for the read path (version-filtered)
-│   │   └── schema.ts       # Card type + search_name normalization rules
+│   │   ├── schema.ts       # Card type + search_name normalization rules
+│   │   └── keywords.ts     # Static /keyword glossary (curated, no D1)
 │   ├── sync/
 │   │   ├── adapter/        # Source adapter(s) — the swappable boundary (§9)
 │   │   ├── validate.ts     # Shrink guard, per-record, schema-drift (pure)
 │   │   ├── load.ts         # Versioned upsert + atomic flip + GC
 │   │   └── alert.ts        # Webhook alerting
+│   ├── admin.ts            # POST /admin/resync — bearer-auth manual sync
 │   └── health.ts           # GET /health for smoke tests & uptime pings
 ├── scripts/
 │   ├── register-commands.ts# PUT command definitions (guild or global flag)
+│   ├── command-definitions.ts # Shared slash-command schemas
+│   ├── source-contract.ts  # Weekly upstream-drift check (CI; writes nothing)
 │   └── smoke.ts            # Post-deploy smoke checks
 ├── migrations/             # D1 migration files
 └── test/
     └── fixtures/           # Captured source responses, interaction payloads
 ```
+
+### 2.1 HTTP surface (all on the one Worker `fetch`)
+
+| Method & path        | Auth                         | Purpose                           |
+| -------------------- | ---------------------------- | --------------------------------- |
+| `POST /interactions` | Ed25519 signature (Discord)  | All slash commands + autocomplete |
+| `GET /health`        | none (read-only, no secrets) | Smoke tests + uptime pings        |
+| `POST /admin/resync` | Bearer `RESYNC_TOKEN`        | Manual sync trigger (HANDOFF §8)  |
+
+Anything else → 404. A missing `RESYNC_TOKEN` makes `/admin/resync` 404 too, so
+it can't be probed for existence.
 
 ## 3. Module boundaries (the rules that keep this maintainable)
 

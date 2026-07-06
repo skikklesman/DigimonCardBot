@@ -47,6 +47,9 @@ Target: all pure logic. These are the bulk of the suite and must stay fast
   multi-match, not-found, alt-art listing.
 - **Autocomplete choice construction** — ≤25 cap, exact-prefix prioritization,
   label format `Name (Set)`, value format `card_id|variant`.
+- **Keyword glossary** (chunk 4.1) — dataset-integrity checks on the static
+  glossary: every entry well-formed, numbers normalized to "N", and the
+  in-memory autocomplete filters/caps the list correctly.
 
 Conventions: tests live beside source as `*.test.ts`; no network access in unit
 tests, ever; fixtures in `test/fixtures/`.

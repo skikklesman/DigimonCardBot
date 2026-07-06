@@ -114,7 +114,10 @@ Goal: a populated, versioned card cache. Verifiable entirely with SQL.
       Dual. **Unit-test every gate, including each documented catastrophe:**
       empty array, truncated feed, HTML error page, renamed fields, single bad
       card — plus the unknown-extra-field case (warns, does not abort).
-- [ ] **1.5 — Versioned load + atomic flip.** Chunked idempotent upserts under
+- [x] **1.5 — Versioned load + atomic flip.** _(Landed 2026-07-05. Flip +
+      `last_successful_sync` + GC happen in one transactional `db.batch`; a
+      failed attempt's staging rows are cleared at the start of the next run.)_
+      Chunked idempotent upserts under
       `active_version + 1`, verify count, flip pointer, write
       `last_successful_sync`, GC versions `< active - 1`. Integration tests against
       local D1: happy path, re-run idempotency, mid-load failure leaves the live

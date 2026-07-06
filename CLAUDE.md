@@ -31,22 +31,29 @@ minimal maintenance.
   (2026-07-05, Gate B): version 1 live, 8,425 rows / 4,295 cards, transferred
   from the first real local sync. It will NOT refresh until the cron trigger
   lands (chunk 3.6) — data staleness is expected and harmless until then.
-- **Phases 1 and 2 complete; Phase 3 through chunk 3.3** (2026-07-05/06):
-  sync pipeline, router, repository, `/card` (with autocomplete), `/alt`
-  (printing gallery), and **webhook alerting + stale-sync dead-man check —
-  proven live**: both forced-failure drills posted real messages to the
-  owner's alert channel, owner confirmed. **Next chunk: 3.4 (manual resync
-  route).**
-- **Commands `/card` + `/alt` are registered to the private test guild**
+- **Phases 1–3 complete (code-wise) + chunk 4.1** (2026-07-05/06): sync
+  pipeline, router, repository, `/card` (with autocomplete), `/alt`
+  (gallery), `/keyword` (static glossary), alerting (proven by live
+  drills), `POST /admin/resync` (bearer-auth, proven against production),
+  `GET /health`, post-deploy smoke in CI, weekly source-contract CI job
+  (Mondays 06:00 UTC). **Next chunk: 4.2 (`/release`).** 4.3 (`/page`) is
+  blocked on community input — and note the owner is an **official Digimon
+  TCG judge**: primary source for all rules/keyword content (see
+  OWNER-TODO's glossary-review item).
+- **Cron is LIVE**: `0 6 * * 2` (Tuesdays 06:00 UTC; DECISIONS 2026-07-06).
+  **The 7-day soak runs 2026-07-06 → 2026-07-13**; Gate C also needs the
+  two automated runs (expected Jul 7 + Jul 14). Owner duties in
+  OWNER-TODO.md. Production D1: version 2, 8,425 rows, pipeline-loaded via
+  the resync route.
+- **Commands `/card`, `/alt`, `/keyword` registered to the test guild**
   (owner's `.dev.vars` has `DISCORD_APP_ID`, `DISCORD_BOT_TOKEN`,
-  `DISCORD_TEST_GUILD_ID`, `SYNC_ALERT_WEBHOOK`; re-register with
-  `npm run register`). Production secrets: `DISCORD_PUBLIC_KEY` and
-  `SYNC_ALERT_WEBHOOK` (both via `wrangler secret put`). Optional
-  `CARD_SOURCE_URL` env overrides the card source for staging/drills.
-- **No cron trigger yet** (3.6): production data is a static Gate-B
-  snapshot; the stale-sync alert will legitimately fire if `scheduled()`
-  ever runs before 3.6 refreshes things — that's the dead-man check
-  working, not a bug. Local D1 is at version 3 from the alert drills.
+  `DISCORD_TEST_GUILD_ID`, `SYNC_ALERT_WEBHOOK`, `RESYNC_TOKEN`;
+  re-register with `npm run register`). Production secrets:
+  `DISCORD_PUBLIC_KEY`, `SYNC_ALERT_WEBHOOK`, `RESYNC_TOKEN`. Optional
+  `CARD_SOURCE_URL` overrides the card source for staging/drills.
+- **Convention since 3.6:** relative imports carry explicit `.ts`
+  extensions (Node scripts import real `src/` modules; one resolution
+  style across Node, esbuild, vitest).
 - **Discord app:** owned by a **Team** (DECISIONS #5). `DISCORD_PUBLIC_KEY` is
   set as a Worker secret (`wrangler secret put`); the Interactions Endpoint URL
   is saved in the Developer Portal and passed Discord's verification.

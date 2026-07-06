@@ -1,0 +1,134 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`cardResponse > renders a full Digimon card 1`] = `
+{
+  "data": {
+    "embeds": [
+      {
+        "color": 14697818,
+        "fields": [
+          {
+            "inline": true,
+            "name": "Type",
+            "value": "Digimon",
+          },
+          {
+            "inline": true,
+            "name": "Color",
+            "value": "Red/Yellow",
+          },
+          {
+            "inline": true,
+            "name": "Level",
+            "value": "6",
+          },
+          {
+            "inline": true,
+            "name": "Play Cost",
+            "value": "12",
+          },
+          {
+            "inline": true,
+            "name": "DP",
+            "value": "12000",
+          },
+          {
+            "inline": true,
+            "name": "Rarity",
+            "value": "R",
+          },
+          {
+            "name": "Effect",
+            "value": "[On Play] [When Digivolving] Play 1 [Amon of Crimson Flame] Token.",
+          },
+          {
+            "name": "Inherited / Security",
+            "value": "＜Security A. +1＞",
+          },
+        ],
+        "footer": {
+          "text": "BOOSTER BLAST ACE [BT-14]",
+        },
+        "image": {
+          "url": "https://example.com/BT14-018.webp",
+        },
+        "title": "Goldramon — BT14-018",
+      },
+    ],
+  },
+  "type": 4,
+}
+`;
+
+exports[`cardResponse > renders an alt-art Tamer, skipping null stats and tagging the variant 1`] = `
+{
+  "data": {
+    "embeds": [
+      {
+        "color": 15001579,
+        "fields": [
+          {
+            "inline": true,
+            "name": "Type",
+            "value": "Tamer",
+          },
+          {
+            "inline": true,
+            "name": "Color",
+            "value": "White",
+          },
+          {
+            "inline": true,
+            "name": "Play Cost",
+            "value": "2",
+          },
+          {
+            "inline": true,
+            "name": "Rarity",
+            "value": "R",
+          },
+          {
+            "name": "Effect",
+            "value": "[On Play] Reveal the top 3 cards of your deck.",
+          },
+          {
+            "name": "Inherited / Security",
+            "value": "[Security] Play this card without paying the cost.",
+          },
+        ],
+        "footer": {
+          "text": "EX-01: Theme Booster Classic Collection",
+        },
+        "image": {
+          "url": "https://example.com/EX1-066_P1.webp",
+        },
+        "title": "Analog Youth — EX1-066 (P1)",
+      },
+    ],
+  },
+  "type": 4,
+}
+`;
+
+exports[`disambiguationResponse > lists matches ephemerally with IDs to retry with 1`] = `
+{
+  "data": {
+    "content": "Found 3 cards matching **goldramon** — run the command again with one of these IDs:
+• **Goldramon** \`BT14-018\` — BOOSTER BLAST ACE [BT-14]
+• **Goldramon** \`EX3-035\` — EX-03
+• **Goldramon (X Antibody)** \`BT16-014\` — BOOSTER BLAST ACE [BT-14]",
+    "flags": 64,
+  },
+  "type": 4,
+}
+`;
+
+exports[`notFoundResponse > is friendly, ephemeral, and suggests next steps 1`] = `
+{
+  "data": {
+    "content": "No cards found matching **zzzznotacard**. Try the autocomplete suggestions, or search by card ID (like \`EX1-066\`).",
+    "flags": 64,
+  },
+  "type": 4,
+}
+`;

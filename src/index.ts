@@ -1,15 +1,20 @@
 // Worker entry point. Stays thin: verify → route → respond (TECH-DESIGN §3.5).
 import { verifyDiscordSignature } from "./interactions/verify";
 import { route, type HandlerRegistry } from "./interactions/router";
+import { createRepo } from "./data/repo";
+import { createCardCommand } from "./interactions/commands/card";
 import { runSync } from "./sync/run";
 
-// Command/autocomplete handlers register here as they land: /card in 2.3,
-// its autocomplete in 3.1, /alt in 3.2. Until then the router answers
-// everything unknown politely.
-const registry: HandlerRegistry = {
-  commands: {},
-  autocomplete: {},
-};
+// Handlers close over the repo, so the registry is built per request (the
+// D1 binding arrives with env). Still to register: /card autocomplete
+// (3.1), /alt (3.2).
+function buildRegistry(env: Env): HandlerRegistry {
+  const repo = createRepo(env.DB);
+  return {
+    commands: { card: createCardCommand(repo) },
+    autocomplete: {},
+  };
+}
 
 export interface Env {
   DISCORD_PUBLIC_KEY: string;
@@ -50,7 +55,7 @@ export default {
       return new Response("malformed body", { status: 400 });
     }
 
-    return json(await route(interaction, registry));
+    return json(await route(interaction, buildRegistry(env)));
   },
 
   // Sync path (HANDOFF §3). The production cron trigger lands in chunk 3.6;

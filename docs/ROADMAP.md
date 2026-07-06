@@ -148,7 +148,10 @@ Goal: a populated, versioned card cache. Verifiable entirely with SQL.
       one row per card.)_ Query module: lookup by exact `card_id`
       (+variant), by `card_id|variant` value, by normalized-name search — always
       filtered on `active_version`. Integration tests against seeded local D1.
-- [ ] **2.3 — `/card` command handler + embed builder.** ID hit → embed with
+- [x] **2.3 — `/card` command handler + embed builder.** _(Landed 2026-07-05.
+      Resolution ladder: `card_id|variant` token → card id → name search;
+      not-found/disambiguation replies are ephemeral; user input sanitized
+      before echoing.)_ ID hit → embed with
       image + card text; name search → single hit / closest-matches disambiguation
       / not-found. Must handle free-text values that aren't a `card_id|variant`
       token (HANDOFF §6.4 edge cases). Embed builder is a pure function — snapshot-

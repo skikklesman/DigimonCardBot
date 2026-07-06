@@ -143,7 +143,9 @@ Goal: a populated, versioned card cache. Verifiable entirely with SQL.
       2→command dispatch, 4→autocomplete dispatch (HANDOFF §6.4). Unknown
       types/commands get a polite error response, never a crash. Unit tests per
       branch.
-- [ ] **2.2 — Card repository.** Query module: lookup by exact `card_id`
+- [x] **2.2 — Card repository.** _(Landed 2026-07-05. Also ships
+      `listPrintings` for 3.2's `/alt`; name search returns base printings only,
+      one row per card.)_ Query module: lookup by exact `card_id`
       (+variant), by `card_id|variant` value, by normalized-name search — always
       filtered on `active_version`. Integration tests against seeded local D1.
 - [ ] **2.3 — `/card` command handler + embed builder.** ID hit → embed with

@@ -5,7 +5,8 @@ import { createRepo } from "./data/repo";
 import { createCardCommand } from "./interactions/commands/card";
 import { createAltCommand } from "./interactions/commands/alt";
 import { createCardAutocomplete } from "./interactions/autocomplete";
-import { runSync } from "./sync/run";
+import { checkStaleSync, runSync } from "./sync/run";
+import { sendSyncAlert } from "./sync/alert";
 
 // Handlers close over the repo, so the registry is built per request (the
 // D1 binding arrives with env).
@@ -22,6 +23,10 @@ function buildRegistry(env: Env): HandlerRegistry {
 export interface Env {
   DISCORD_PUBLIC_KEY: string;
   DB: D1Database;
+  /** Alert webhook (wrangler secret; optional — alerts log-and-drop without it). */
+  SYNC_ALERT_WEBHOOK?: string;
+  /** Card source override for staging/drills; defaults to the real source. */
+  CARD_SOURCE_URL?: string;
 }
 
 function json(payload: unknown, init?: ResponseInit): Response {
@@ -62,15 +67,29 @@ export default {
   },
 
   // Sync path (HANDOFF §3). The production cron trigger lands in chunk 3.6;
-  // until then this runs via `wrangler dev --test-scheduled`. Webhook
-  // alerting lands in 3.3 — for now failures go to Worker logs, and the
-  // rethrow marks the invocation failed in Cloudflare's metrics.
+  // until then this runs via `wrangler dev --test-scheduled`. Failures and
+  // warnings announce themselves to the alert webhook (HANDOFF §8 Defense
+  // 5); the rethrow additionally marks the invocation failed in
+  // Cloudflare's metrics.
   async scheduled(_controller, env): Promise<void> {
+    // Dead-man check first: if the last GOOD sync is older than cadence +
+    // margin, say so even if (especially if) this run is about to fail too.
+    const stale = await checkStaleSync(env.DB);
+    if (stale) {
+      await sendSyncAlert(env.SYNC_ALERT_WEBHOOK, `⚠️ ${stale}`);
+    }
     try {
-      const summary = await runSync(env.DB);
+      const summary = await runSync(env.DB, { sourceUrl: env.CARD_SOURCE_URL });
       console.log(`sync complete: ${JSON.stringify(summary)}`);
+      if (summary.warnings.length > 0) {
+        await sendSyncAlert(
+          env.SYNC_ALERT_WEBHOOK,
+          `⚠️ card sync v${summary.version} succeeded with warnings:\n• ${summary.warnings.join("\n• ")}`,
+        );
+      }
     } catch (error) {
       console.error(`sync failed: ${String(error)}`);
+      await sendSyncAlert(env.SYNC_ALERT_WEBHOOK, `❌ card sync FAILED: ${String(error)}`);
       throw error;
     }
   },

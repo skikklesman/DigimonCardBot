@@ -6,7 +6,7 @@ import { env } from "cloudflare:test";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import fixture from "../../test/fixtures/digimoncard-app-cards.json";
 import { getActiveVersion } from "./load";
-import { runSync } from "./run";
+import { checkStaleSync, runSync } from "./run";
 
 const feed = (body: unknown): typeof fetch =>
   (() => Promise.resolve(new Response(JSON.stringify(body), { status: 200 }))) as typeof fetch;
@@ -93,5 +93,48 @@ describe("runSync (fetch → gates → load → flip)", () => {
     const summary = await runSync(env.DB, { fetchImpl: feed(withBad) });
     expect(summary.dropped).toBe(1);
     await expect(servedCount()).resolves.toBe(summary.loaded);
+  });
+
+  it("fetches from the sourceUrl override when provided", async () => {
+    const seen: string[] = [];
+    const spy: typeof fetch = ((url: unknown) => {
+      seen.push(String(url));
+      return Promise.resolve(new Response(JSON.stringify(fixture), { status: 200 }));
+    }) as typeof fetch;
+    await runSync(env.DB, { fetchImpl: spy, sourceUrl: "https://staging.example/cards.json" });
+    expect(seen).toEqual(["https://staging.example/cards.json"]);
+  });
+});
+
+describe("checkStaleSync (dead-man check)", () => {
+  beforeEach(resetDb);
+  afterAll(resetDb);
+
+  const setSyncTime = (iso: string) =>
+    env.DB.prepare("INSERT INTO meta (key, value) VALUES ('last_successful_sync', ?)")
+      .bind(iso)
+      .run();
+
+  it("is quiet when the last sync is within cadence + margin", async () => {
+    await setSyncTime("2026-07-01T00:00:00.000Z");
+    // 7 days later: within the 8.75-day threshold
+    await expect(checkStaleSync(env.DB, new Date("2026-07-08T00:00:00Z"))).resolves.toBeNull();
+  });
+
+  it("alerts when the last sync is older than cadence + margin", async () => {
+    await setSyncTime("2026-07-01T00:00:00.000Z");
+    const message = await checkStaleSync(env.DB, new Date("2026-07-10T00:00:00Z"));
+    expect(message).toContain("STALE");
+    expect(message).toContain("9.0 days");
+  });
+
+  it("is quiet before any sync has ever succeeded (not staleness)", async () => {
+    await expect(checkStaleSync(env.DB)).resolves.toBeNull();
+  });
+
+  it("alerts on an unparseable timestamp rather than staying silent", async () => {
+    await setSyncTime("not-a-date");
+    const message = await checkStaleSync(env.DB, new Date("2026-07-10T00:00:00Z"));
+    expect(message).toContain("unparseable");
   });
 });

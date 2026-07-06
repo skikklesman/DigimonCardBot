@@ -222,6 +222,8 @@ export function normalize(raw: RawCard): Card[] {
 export interface FetchCardsOptions {
   /** Injection point for tests — unit tests never touch the network. */
   fetchImpl?: typeof fetch;
+  /** Source override (staging / forced-failure drills); defaults to SOURCE_URL. */
+  url?: string;
   /** Attempts beyond the first (HANDOFF §8 Defense 1). */
   retries?: number;
   /** Delay before retry n (ms), doubled each attempt. */
@@ -236,14 +238,20 @@ export interface FetchCardsOptions {
  * pipeline) treats any throw as "abort, live cache untouched".
  */
 export async function fetchCards(options: FetchCardsOptions = {}): Promise<RawCard[]> {
-  const { fetchImpl = fetch, retries = 2, backoffMs = 1000, timeoutMs = 30_000 } = options;
+  const {
+    fetchImpl = fetch,
+    url = SOURCE_URL,
+    retries = 2,
+    backoffMs = 1000,
+    timeoutMs = 30_000,
+  } = options;
   let lastError: unknown;
   for (let attempt = 0; attempt <= retries; attempt++) {
     if (attempt > 0) {
       await new Promise((resolve) => setTimeout(resolve, backoffMs * 2 ** (attempt - 1)));
     }
     try {
-      const response = await fetchImpl(SOURCE_URL, {
+      const response = await fetchImpl(url, {
         signal: AbortSignal.timeout(timeoutMs),
       });
       if (!response.ok) {

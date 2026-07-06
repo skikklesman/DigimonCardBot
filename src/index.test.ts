@@ -95,6 +95,27 @@ describe("interaction endpoint", () => {
       expect(body.data.embeds[0].image.url).toBe("https://example.com/EX1-066.webp");
     });
 
+    it("answers a signed autocomplete interaction with prefix-matched choices", async () => {
+      await seed();
+      const res = await SELF.fetch(
+        ENDPOINT,
+        await signedInteraction({
+          type: 4,
+          data: {
+            name: "card",
+            options: [{ name: "card-name", type: 3, value: "analog", focused: true }],
+          },
+        }),
+      );
+      expect(res.status).toBe(200);
+      const body = (await res.json()) as {
+        type: number;
+        data: { choices: Array<{ name: string; value: string }> };
+      };
+      expect(body.type).toBe(8); // APPLICATION_COMMAND_AUTOCOMPLETE_RESULT
+      expect(body.data.choices).toEqual([{ name: "Analog Youth (EX1-066)", value: "EX1-066|0" }]);
+    });
+
     it("answers a signed /card miss with the ephemeral not-found message", async () => {
       await seed();
       const res = await SELF.fetch(

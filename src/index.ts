@@ -3,16 +3,16 @@ import { verifyDiscordSignature } from "./interactions/verify";
 import { route, type HandlerRegistry } from "./interactions/router";
 import { createRepo } from "./data/repo";
 import { createCardCommand } from "./interactions/commands/card";
+import { createCardAutocomplete } from "./interactions/autocomplete";
 import { runSync } from "./sync/run";
 
 // Handlers close over the repo, so the registry is built per request (the
-// D1 binding arrives with env). Still to register: /card autocomplete
-// (3.1), /alt (3.2).
+// D1 binding arrives with env). Still to register: /alt (3.2).
 function buildRegistry(env: Env): HandlerRegistry {
   const repo = createRepo(env.DB);
   return {
     commands: { card: createCardCommand(repo) },
-    autocomplete: {},
+    autocomplete: { card: createCardAutocomplete(repo) },
   };
 }
 

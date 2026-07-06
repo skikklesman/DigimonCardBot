@@ -179,7 +179,9 @@ the test guild. **Reached:** 2026-07-05
 
 ## Phase 3 — MVP hardening → 🚀 Gate C: "MVP"
 
-- [ ] **3.1 — Autocomplete.** Type-4 branch: prefix query on `search_name`,
+- [x] **3.1 — Autocomplete.** _(Landed 2026-07-05. Labels are `Name (CARD-ID)`
+      rather than set name — see DECISIONS.md.)_ Type-4 branch: prefix query on
+      `search_name`,
       ≤25 choices, label `Name (Set)`, value `card_id|variant`, exact-prefix
       prioritized (HANDOFF §6.4). **Never deferred.** Integration tests; manual
       gate: typing `goldr` offers the Goldramon printings.

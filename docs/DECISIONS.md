@@ -10,6 +10,21 @@
 
 ---
 
+## 2026-07-05 — Autocomplete labels use card id, not set name (chunk 3.1)
+
+- **Decision:** Autocomplete choice labels are `Name (CARD-ID)` — e.g.
+  `Goldramon (EX3-035)` — not HANDOFF §6.4's literal `Name (set_name)`
+  sketch. Values are unchanged (`card_id|variant`).
+- **Why:** Our source's set names are long (`BOOSTER BLAST ACE [BT-14]`)
+  and would crowd Discord's 100-char label cap; the card id is short,
+  collision-free even when one set contains two same-named cards, and it's
+  the string players already type into `/card`. HANDOFF's own examples
+  (`Goldramon (EX3)`) are set _codes_, which the id contains anyway.
+- **Revisit if:** the community finds ids less scannable than set names in
+  practice (soak feedback) — the label lives in one function.
+
+---
+
 ## 2026-07-05 — Adapter mapping choices (chunk 1.3)
 
 - **Decisions** (all localized to `src/sync/adapter/digimoncard-app.ts`;

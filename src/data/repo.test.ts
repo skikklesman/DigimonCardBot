@@ -5,7 +5,7 @@ import { env } from "cloudflare:test";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import type { Card } from "./schema.ts";
 import { loadNewVersion } from "../sync/load.ts";
-import { createRepo } from "./repo.ts";
+import { createRepo, SEARCH_BY_NAME_SQL } from "./repo.ts";
 
 function card(id: string, name: string, variant = "0", overrides: Partial<Card> = {}): Card {
   return {
@@ -115,6 +115,30 @@ describe("CardRepo", () => {
       // LIKE metacharacters are stripped by normalization, not interpreted:
       // '%' alone must NOT match the whole table.
       await expect(repo.searchByName("%")).resolves.toEqual([]);
+    });
+
+    it("does not bleed past the prefix range (adjacent names excluded)", async () => {
+      // "golds…" sorts right after every "goldr…" string — a sloppy upper
+      // bound would sweep it in.
+      await loadNewVersion(env.DB, [...SEED, card("XX9-001", "Goldsmith")]);
+      const found = await repo.searchByName("goldr");
+      expect(found.some((c) => c.cardId === "XX9-001")).toBe(false);
+      // …and the exact-prefix card itself is included, not fenced out.
+      expect(found.map((c) => c.cardId)).toContain("BT14-018");
+    });
+
+    it("QUERY PLAN PIN: the search narrows on the (version, search_name) index", async () => {
+      // The autocomplete hot path must be an index RANGE on search_name —
+      // not a filter over every row of the active version. D1 bills row
+      // reads: a full-version scan is ~8.4k reads per keystroke and blows
+      // the free tier at ~600 autocomplete queries/day (DECISIONS.md
+      // 2026-07-06). If this fails, the query shape regressed.
+      const { results } = await env.DB.prepare(`EXPLAIN QUERY PLAN ${SEARCH_BY_NAME_SQL}`)
+        .bind("goldr", "goldr{", 25)
+        .all<{ detail: string }>();
+      const cardsStep = results.find((r) => r.detail.includes("idx_cards_search"));
+      expect(cardsStep?.detail).toContain("search_name>");
+      expect(cardsStep?.detail).toContain("search_name<");
     });
   });
 

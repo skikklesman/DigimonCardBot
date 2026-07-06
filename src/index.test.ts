@@ -3,7 +3,7 @@
 // routing, and (since 2.3) the /card read path against seeded local D1.
 import { env, SELF } from "cloudflare:test";
 import { afterAll, describe, expect, it } from "vitest";
-import { signedInteraction } from "../test/helpers/discord-sign.ts";
+import { signedInteraction, signedRawBody } from "../test/helpers/discord-sign.ts";
 import { loadNewVersion } from "./sync/load.ts";
 import { normalizeSearchName } from "./data/schema.ts";
 
@@ -32,6 +32,13 @@ describe("interaction endpoint", () => {
     await expect(res.json()).resolves.toEqual({ type: 1 });
   });
 
+  it("rejects a correctly signed but malformed JSON body with 400", async () => {
+    // Signature verification covers raw bytes and runs BEFORE parsing —
+    // valid-signature-invalid-JSON must land in the parse guard, not a throw.
+    const res = await SELF.fetch(ENDPOINT, await signedRawBody("{not json"));
+    expect(res.status).toBe(400);
+  });
+
   it("routes a verified command interaction (unknown command → polite ephemeral)", async () => {
     const res = await SELF.fetch(
       ENDPOINT,
@@ -45,6 +52,24 @@ describe("interaction endpoint", () => {
   });
 
   describe("full /card read path (seeded D1)", () => {
+    // Two Goldramon printings make "goldramon" a multi-match; Analog Youth
+    // is the single-hit free-text case.
+    const goldramon = (cardId: string) => ({
+      cardId,
+      variant: "0",
+      name: "Goldramon",
+      searchName: normalizeSearchName("Goldramon"),
+      cardType: "Digimon",
+      color: "Yellow",
+      level: 6,
+      playCost: 12,
+      dp: 12000,
+      effect: null,
+      inherited: null,
+      setName: null,
+      rarity: "SR",
+      imageUrl: `https://example.com/${cardId}.webp`,
+    });
     const seed = () =>
       loadNewVersion(env.DB, [
         {
@@ -63,6 +88,8 @@ describe("interaction endpoint", () => {
           rarity: "R",
           imageUrl: "https://example.com/EX1-066.webp",
         },
+        goldramon("BT14-018"),
+        goldramon("EX3-035"),
       ]);
 
     afterAll(async () => {
@@ -114,6 +141,40 @@ describe("interaction endpoint", () => {
       };
       expect(body.type).toBe(8); // APPLICATION_COMMAND_AUTOCOMPLETE_RESULT
       expect(body.data.choices).toEqual([{ name: "Analog Youth (EX1-066)", value: "EX1-066|0" }]);
+    });
+
+    it("answers free text with a single name match as the card embed (TESTING.md §3)", async () => {
+      await seed();
+      const res = await SELF.fetch(
+        ENDPOINT,
+        await signedInteraction({
+          type: 2,
+          data: {
+            name: "card",
+            options: [{ name: "card-name", type: 3, value: "analog you" }],
+          },
+        }),
+      );
+      const body = (await res.json()) as { data: { embeds: [{ title: string }] } };
+      expect(body.data.embeds[0].title).toBe("Analog Youth — EX1-066");
+    });
+
+    it("disambiguates a multi-match name with the candidate ids, ephemerally", async () => {
+      await seed();
+      const res = await SELF.fetch(
+        ENDPOINT,
+        await signedInteraction({
+          type: 2,
+          data: {
+            name: "card",
+            options: [{ name: "card-name", type: 3, value: "goldramon" }],
+          },
+        }),
+      );
+      const body = (await res.json()) as { data: { content: string; flags: number } };
+      expect(body.data.flags).toBe(64);
+      expect(body.data.content).toContain("BT14-018");
+      expect(body.data.content).toContain("EX3-035");
     });
 
     it("answers a signed /card miss with the ephemeral not-found message", async () => {

@@ -6,7 +6,7 @@ import { env } from "cloudflare:test";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import fixture from "../../test/fixtures/digimoncard-app-cards.json";
 import { getActiveVersion } from "./load.ts";
-import { checkStaleSync, runSync } from "./run.ts";
+import { checkStaleSync, runSync, runSyncWithAlerts } from "./run.ts";
 
 const feed = (body: unknown): typeof fetch =>
   (() => Promise.resolve(new Response(JSON.stringify(body), { status: 200 }))) as typeof fetch;
@@ -103,6 +103,74 @@ describe("runSync (fetch → gates → load → flip)", () => {
     }) as typeof fetch;
     await runSync(env.DB, { fetchImpl: spy, sourceUrl: "https://staging.example/cards.json" });
     expect(seen).toEqual(["https://staging.example/cards.json"]);
+  });
+});
+
+describe("runSyncWithAlerts (the sync's reporting glue)", () => {
+  beforeEach(resetDb);
+  afterAll(resetDb);
+
+  const WEBHOOK = "https://hooks.test/alert";
+
+  /** Serves `body` as the card feed and captures webhook posts. */
+  function dispatcher(body: unknown): { fetchImpl: typeof fetch; alerts: string[] } {
+    const alerts: string[] = [];
+    const fetchImpl: typeof fetch = (async (url: unknown, init?: RequestInit) => {
+      if (String(url) === WEBHOOK) {
+        alerts.push((JSON.parse(String(init?.body)) as { content: string }).content);
+        return new Response(null, { status: 204 });
+      }
+      return new Response(JSON.stringify(body), { status: 200 });
+    }) as typeof fetch;
+    return { fetchImpl, alerts };
+  }
+
+  it("clean success: ok with a summary, and the webhook stays quiet", async () => {
+    const { fetchImpl, alerts } = dispatcher(fixture);
+    const outcome = await runSyncWithAlerts(env.DB, { fetchImpl, webhookUrl: WEBHOOK });
+    expect(outcome).toMatchObject({ ok: true, summary: { version: 1, warnings: [] } });
+    expect(alerts).toEqual([]);
+  });
+
+  it("success with warnings posts a single ⚠️ alert naming the warning", async () => {
+    const withNew = (fixture as object[]).map((r) => ({ ...r, overclockEffect: "x" }));
+    const { fetchImpl, alerts } = dispatcher(withNew);
+    const outcome = await runSyncWithAlerts(env.DB, { fetchImpl, webhookUrl: WEBHOOK });
+    expect(outcome.ok).toBe(true);
+    expect(alerts).toHaveLength(1);
+    expect(alerts[0]).toContain("⚠️");
+    expect(alerts[0]).toContain("overclockEffect");
+  });
+
+  it("failure returns ok:false (never throws) and posts a ❌ alert with the reason", async () => {
+    // Renamed id field → schema-drift abort on the first fetch, no retries.
+    const renamed = (fixture as Record<string, unknown>[]).map(({ id, ...rest }) => ({
+      ...rest,
+      cardCode: id,
+    }));
+    const { fetchImpl, alerts } = dispatcher(renamed);
+    const outcome = await runSyncWithAlerts(env.DB, { fetchImpl, webhookUrl: WEBHOOK });
+    expect(outcome).toMatchObject({ ok: false, error: expect.stringContaining("schema drift") });
+    expect(alerts).toHaveLength(1);
+    expect(alerts[0]).toContain("❌");
+    expect(alerts[0]).toContain("schema drift");
+    await expect(getActiveVersion(env.DB)).resolves.toBe(0);
+  });
+
+  it("a broken webhook cannot mask the sync outcome", async () => {
+    const renamed = (fixture as Record<string, unknown>[]).map(({ id, ...rest }) => ({
+      ...rest,
+      cardCode: id,
+    }));
+    const brokenHook: typeof fetch = (async (url: unknown) =>
+      String(url) === WEBHOOK
+        ? new Response("nope", { status: 500 })
+        : new Response(JSON.stringify(renamed), { status: 200 })) as typeof fetch;
+    const outcome = await runSyncWithAlerts(env.DB, {
+      fetchImpl: brokenHook,
+      webhookUrl: WEBHOOK,
+    });
+    expect(outcome).toMatchObject({ ok: false, error: expect.stringContaining("schema drift") });
   });
 });
 

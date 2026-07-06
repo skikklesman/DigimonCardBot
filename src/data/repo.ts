@@ -63,6 +63,25 @@ export interface CardRepo {
 
 const DEFAULT_SEARCH_LIMIT = 25;
 
+/**
+ * The autocomplete hot path — an explicit index range, NOT `LIKE ?`.
+ * SQLite's default case-insensitive LIKE cannot use the BINARY-collated
+ * (version, search_name) index, so `LIKE 'prefix%'` scanned every row of
+ * the active version (~8.4k row reads per keystroke, measured 2026-07-06 —
+ * see DECISIONS.md). The range form narrows on the index itself.
+ *
+ * Bounds are sound because normalizeSearchName guarantees the alphabet
+ * [a-z0-9 space], all below '{' (0x7b): every string starting with `prefix`
+ * sorts in [prefix, prefix + '{').
+ *
+ * Exported so repo.test.ts can EXPLAIN QUERY PLAN the exact SQL served and
+ * fail if a future edit de-indexes it.
+ */
+export const SEARCH_BY_NAME_SQL = `SELECT ${COLUMNS} FROM cards
+   WHERE ${LIVE} AND search_name >= ? AND search_name < ? AND variant = '0'
+   ORDER BY search_name, card_id
+   LIMIT ?`;
+
 export function createRepo(db: D1Database): CardRepo {
   return {
     async findPrinting(cardId, variant = "0") {
@@ -81,18 +100,11 @@ export function createRepo(db: D1Database): CardRepo {
 
     async searchByName(query, limit = DEFAULT_SEARCH_LIMIT) {
       const prefix = normalizeSearchName(query);
-      // Normalization strips LIKE metacharacters (%, _) along with all other
-      // punctuation, so binding `prefix%` is injection-safe by construction.
-      // An empty prefix would LIKE-match the whole table — refuse instead.
+      // An empty prefix would range-match the whole table — refuse instead.
       if (prefix === "") return [];
       const { results } = await db
-        .prepare(
-          `SELECT ${COLUMNS} FROM cards
-           WHERE ${LIVE} AND search_name LIKE ? AND variant = '0'
-           ORDER BY search_name, card_id
-           LIMIT ?`,
-        )
-        .bind(`${prefix}%`, limit)
+        .prepare(SEARCH_BY_NAME_SQL)
+        .bind(prefix, `${prefix}{`, limit)
         .all<CardRow>();
       return results.map(toCard);
     },

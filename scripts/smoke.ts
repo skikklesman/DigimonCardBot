@@ -6,7 +6,9 @@
 // We cannot forge Discord-signed interactions against production (Discord
 // holds the private key), so the checks are boundary + vitals:
 //   1. unsigned POST /interactions → 401  (verification is ON)
-//   2. GET /health vitals             (D1 answers; data present and fresh)
+//   2. GET /health vitals             (D1 answers; data present and fresh —
+//      a 503 here means the Worker is up but the data is stale by the
+//      dead-man rule; see src/health.ts)
 //   3. unknown route → 404            (no accidental catch-all)
 
 // No imports by design (see above) — this marks the file as a module so

@@ -22,7 +22,12 @@ function bytesToHex(bytes: Uint8Array): string {
 
 /** Builds a correctly signed POST /interactions request init for `payload`. */
 export async function signedInteraction(payload: unknown): Promise<RequestInit> {
-  const body = JSON.stringify(payload);
+  return signedRawBody(JSON.stringify(payload));
+}
+
+/** Signs an arbitrary raw body — for testing what a valid signature over
+ * NON-JSON bytes does to the endpoint (signature checks precede parsing). */
+export async function signedRawBody(body: string): Promise<RequestInit> {
   const timestamp = Math.floor(Date.now() / 1000).toString();
   const key = await getPrivateKey();
   const sig = await crypto.subtle.sign("Ed25519", key, new TextEncoder().encode(timestamp + body));

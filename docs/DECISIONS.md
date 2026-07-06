@@ -10,6 +10,45 @@
 
 ---
 
+## 2026-07-06 — Autocomplete search uses an explicit index range, not LIKE (test-coverage audit)
+
+- **Decision:** `searchByName` filters with
+  `search_name >= ?prefix AND search_name < ?prefix || '{'` instead of
+  `search_name LIKE 'prefix%'`. A `QUERY PLAN PIN` test in `repo.test.ts`
+  EXPLAINs the exact exported SQL and fails if the range constraint ever
+  drops off the index.
+- **Why (measured 2026-07-06):** SQLite's default case-insensitive `LIKE`
+  cannot use the BINARY-collated `(version, search_name)` index — the plan
+  was `SEARCH … (version=?)`, i.e. a filter over **every row of the active
+  version**: ~8.4k row reads per autocomplete keystroke. D1 bills row
+  reads; at the 5M/day free tier that capped autocomplete at roughly 600
+  keystrokes/day — untenable at the ~1,000-server target. The range form
+  plans as `(version=? AND search_name>? AND search_name<?)` and reads only
+  the matches. Bounds are sound because `normalizeSearchName` guarantees
+  the alphabet `[a-z0-9 space]`, all below `'{'` (0x7b).
+- **Revisit if:** normalization ever admits characters ≥ `'{'` (the upper
+  bound must widen), or search outgrows prefix matching entirely.
+
+---
+
+## 2026-07-06 — /health carries the freshness verdict in its status code (test-coverage audit)
+
+- **Decision:** `GET /health` returns **503 when the data is stale** by the
+  dead-man rule (`checkStaleSync`, cadence + 25% margin — one shared
+  implementation), including for an unparseable sync timestamp; 200
+  otherwise. Body unchanged (same three public-safe fields). Pre-first-sync
+  stays 200, matching `checkStaleSync`'s "never synced isn't stale."
+- **Why:** the stale-sync alert ran only inside the cron it monitors — a
+  dead cron trigger (dropped from wrangler.toml, disabled schedule, account
+  issue) would never announce itself. With the verdict in the status code,
+  any dumb external pinger asserting "200" catches a dead cron from outside
+  Cloudflare (see OWNER-TODO: uptime ping). The smoke script's independent
+  freshness check remains as depth.
+- **Revisit if:** an uptime service needs a body probe instead, or 503
+  confuses some consumer that treats /health as a plain liveness check.
+
+---
+
 ## 2026-07-06 — /keyword ships a curated static dataset (chunk 4.1)
 
 - **Decision:** `/keyword` looks up a **static, curated glossary**

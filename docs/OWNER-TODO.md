@@ -29,10 +29,14 @@
       in `.dev.vars` on the dev machine (generated remotely 2026-07-06,
       never displayed in any transcript). Copy it into your password
       manager next to the webhook URL.
-- [ ] **Optional — external uptime ping:** point a free pinger (e.g.
-      UptimeRobot) at `GET /health` on the Worker so "endpoint down" and
-      "Cloudflare account problem" get caught from outside Cloudflare
-      (TESTING.md §7 monitoring matrix). Not urgent pre-launch.
+- [ ] **External uptime ping** _(upgraded from optional 2026-07-06)_: point
+      a free pinger (e.g. UptimeRobot) at `GET /health` on the Worker.
+      `/health` now returns **503 when card data goes stale**, so a plain
+      "is it 200?" ping catches endpoint-down, Cloudflare account problems,
+      AND a silently dead cron trigger — the one failure the webhook alerts
+      can't report, because they run inside the cron itself (TESTING.md §7,
+      DECISIONS.md 2026-07-06). Five browser-minutes; worth doing before
+      launch.
 - [ ] **Optional — alert webhook in GitHub:** add `SYNC_ALERT_WEBHOOK` as a
       repo Actions secret (same URL as the Worker secret) so the Monday
       source-contract job pings your alert channel on failure instead of

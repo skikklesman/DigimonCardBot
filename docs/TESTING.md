@@ -46,7 +46,8 @@ Target: all pure logic. These are the bulk of the suite and must stay fast
 - **Embed builder** — snapshot tests of response JSON for: ID hit, name hit,
   multi-match, not-found, alt-art listing.
 - **Autocomplete choice construction** — ≤25 cap, exact-prefix prioritization,
-  label format `Name (Set)`, value format `card_id|variant`.
+  label format `Name (CARD-ID)` (DECISIONS.md 2026-07-05), value format
+  `card_id|variant`.
 - **Keyword glossary** (chunk 4.1) — dataset-integrity checks on the static
   glossary: every entry well-formed, numbers normalized to "N", and the
   in-memory autocomplete filters/caps the list correctly.
@@ -74,6 +75,15 @@ real local SQLite-backed D1. Key suites:
   only old-version rows. This is the core promise of the architecture — test it
   explicitly.
 - **Auth on manual resync route:** missing/bad/good token.
+- **Cron wiring (`scheduled()` + `runSyncWithAlerts`):** the glue, not the
+  pieces — failure posts the ❌ alert AND rethrows (so Cloudflare marks the
+  invocation failed); warnings post ⚠️; the stale dead-man alert fires before
+  the sync attempt and also alongside a failure; a broken webhook cannot mask
+  the sync outcome. Outbound traffic is intercepted by stubbing global fetch
+  (the main worker shares the test isolate).
+- **Query-plan pin:** EXPLAIN QUERY PLAN on the exported `searchByName` SQL
+  must show an index RANGE on `(version, search_name)` — the autocomplete hot
+  path's D1 row-read bill depends on it (DECISIONS.md 2026-07-06).
 
 ---
 
@@ -91,7 +101,10 @@ flow where possible and falls back to boundary checks:
 2. **Health route:** a trivial `GET /health` on the Worker returning
    `{ activeVersion, cardCount, lastSuccessfulSync }` — the smoke script
    asserts version > 0, count within expected range, sync timestamp fresh.
-   This route is read-only and public-safe (no secrets in output).
+   This route is read-only and public-safe (no secrets in output). The status
+   code carries the freshness verdict: **200 healthy, 503 stale** by the
+   dead-man rule — so a dumb external pinger catches a dead cron trigger
+   (DECISIONS.md 2026-07-06).
 3. **Real interaction probe (manual or semi-automated):** after deploy, run
    `/card <known ID>` in the test guild. Automatable later via a Discord test
    harness if it proves worth it; do not over-engineer this on day one.
@@ -154,7 +167,7 @@ Everything in Gate B, plus:
 | Signal                             | Source                                                              | Alert path                                                                       | Threshold                |
 | ---------------------------------- | ------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ------------------------ |
 | Sync failure                       | `scheduled()` catch → webhook                                       | Private Discord channel                                                          | Any failure              |
-| Stale data                         | `last_successful_sync` age check                                    | Webhook                                                                          | > cadence + 25% margin   |
+| Stale data                         | `last_successful_sync` age check                                    | Webhook (from the cron) **and** `/health` → 503 (catches a dead cron via pinger) | > cadence + 25% margin   |
 | Worker errors / failed invocations | Cloudflare Workers analytics                                        | Manual review weekly; Cloudflare notification if available on free tier (verify) | Any sustained error rate |
 | Endpoint down                      | External uptime ping on `/health` (free tier of any uptime service) | Email/Discord                                                                    | 2 consecutive failures   |
 | Drop-count spike                   | Validation gate counts, reported in sync summary                    | Webhook (warn, not fail)                                                         | > 1% of batch            |

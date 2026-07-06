@@ -73,4 +73,39 @@ describe("GET /health", () => {
     const res = await SELF.fetch(URL_, { method: "POST" });
     expect(res.status).toBe(404);
   });
+
+  describe("freshness verdict in the status code (dead-man rule)", () => {
+    const setSyncTime = (iso: string) =>
+      env.DB.prepare(
+        "INSERT INTO meta (key, value) VALUES ('last_successful_sync', ?) " +
+          "ON CONFLICT (key) DO UPDATE SET value = excluded.value",
+      )
+        .bind(iso)
+        .run();
+
+    it("answers 200 while the last sync is within cadence + margin", async () => {
+      await setSyncTime(new Date().toISOString());
+      const res = await SELF.fetch(URL_);
+      expect(res.status).toBe(200);
+    });
+
+    it("answers 503 once the data goes stale, still with the same public body", async () => {
+      await setSyncTime("2020-01-01T00:00:00.000Z");
+      const res = await SELF.fetch(URL_);
+      expect(res.status).toBe(503);
+      const body = (await res.json()) as Record<string, unknown>;
+      expect(Object.keys(body).sort()).toEqual([
+        "activeVersion",
+        "cardCount",
+        "lastSuccessfulSync",
+      ]);
+      expect(body.lastSuccessfulSync).toBe("2020-01-01T00:00:00.000Z");
+    });
+
+    it("answers 503 on an unparseable sync timestamp (health unknown ≠ healthy)", async () => {
+      await setSyncTime("not-a-date");
+      const res = await SELF.fetch(URL_);
+      expect(res.status).toBe(503);
+    });
+  });
 });

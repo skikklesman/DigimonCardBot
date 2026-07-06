@@ -70,6 +70,9 @@ export async function runSyncWithAlerts(
   db: D1Database,
   options: SyncWithAlertsOptions = {},
 ): Promise<SyncOutcome> {
+  // The alert rides the same injected fetch as the card source, so tests
+  // capture webhook posts without touching the network.
+  const alertOptions = { fetchImpl: options.fetchImpl };
   try {
     const summary = await runSync(db, options);
     console.log(`sync complete: ${JSON.stringify(summary)}`);
@@ -77,13 +80,14 @@ export async function runSyncWithAlerts(
       await sendSyncAlert(
         options.webhookUrl,
         `⚠️ card sync v${summary.version} succeeded with warnings:\n• ${summary.warnings.join("\n• ")}`,
+        alertOptions,
       );
     }
     return { ok: true, summary };
   } catch (error) {
     const message = String(error);
     console.error(`sync failed: ${message}`);
-    await sendSyncAlert(options.webhookUrl, `❌ card sync FAILED: ${message}`);
+    await sendSyncAlert(options.webhookUrl, `❌ card sync FAILED: ${message}`, alertOptions);
     return { ok: false, error: message };
   }
 }

@@ -2,10 +2,10 @@
 // against an in-memory repo fake — the real repo has its own D1 suite.
 import { describe, expect, it } from "vitest";
 import type { APIInteractionResponse } from "discord-api-types/v10";
-import type { Card } from "../../data/schema";
-import type { CardRepo } from "../../data/repo";
-import { normalizeSearchName } from "../../data/schema";
-import { createCardCommand } from "./card";
+import type { Card } from "../../data/schema.ts";
+import type { CardRepo } from "../../data/repo.ts";
+import { normalizeSearchName } from "../../data/schema.ts";
+import { createCardCommand } from "./card.ts";
 
 function card(id: string, name: string, variant = "0"): Card {
   return {

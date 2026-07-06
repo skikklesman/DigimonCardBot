@@ -217,7 +217,14 @@ the test guild. **Reached:** 2026-07-05
       interactions
       against the _live_ endpoint: PING, `/card` by ID, autocomplete query. Runs in
       CI after every deploy. (Details: [TESTING.md](TESTING.md).)
-- [ ] **3.6 — Cron live + soak.** Enable the production cron schedule. Start the
+- [x] **3.6 — Cron live + soak.** _(Cron enabled 2026-07-06: Tuesdays 06:00
+      UTC — see DECISIONS.md for the day choice; expected automated runs Jul 7 + Jul 14. Also closed a plan gap: the TESTING.md §5 weekly
+      source-contract CI job now exists — Mondays 06:00 UTC, one day ahead of
+      the sync; verified green against the real upstream. **Soak runs
+      2026-07-06 → 2026-07-13**; owner duties in OWNER-TODO.md. Repo-wide
+      change: relative imports carry explicit `.ts` extensions so scripts,
+      deploys, and tests share one resolution style.)_ Enable the production
+      cron schedule. Start the
       7-day soak: bot in test guild, daily use, watch logs/alerts. Fix anything the
       soak surfaces.
 

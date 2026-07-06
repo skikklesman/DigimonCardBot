@@ -4,7 +4,9 @@
   // accidentally use Node globals. `npm run typecheck` checks both.
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "types": ["node"],
+    // workers-types too: scripts/source-contract.ts imports src/sync
+    // modules whose signatures mention D1Database.
+    "types": ["node", "@cloudflare/workers-types"],
     // Node's ESM loader requires explicit .ts extensions on relative imports.
     "allowImportingTsExtensions": true
   },

@@ -2,7 +2,7 @@
 // the sync (write) and autocomplete (query) paths both call this function,
 // so this table IS the definition of what users can type and still match.
 import { describe, expect, it } from "vitest";
-import { normalizeSearchName } from "./schema";
+import { normalizeSearchName } from "./schema.ts";
 
 const CASES: ReadonlyArray<[input: string, expected: string]> = [
   // plain names

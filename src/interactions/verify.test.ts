@@ -2,7 +2,7 @@
 // mocks. Running under the Workers pool also proves workerd itself supports
 // Ed25519 — a drift-prone fact we'd rather catch here than in production.
 import { beforeAll, describe, expect, it } from "vitest";
-import { verifyDiscordSignature } from "./verify";
+import { verifyDiscordSignature } from "./verify.ts";
 
 function bytesToHex(bytes: Uint8Array): string {
   return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");

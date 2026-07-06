@@ -5,7 +5,7 @@
 // network, which tests never do).
 import { env, SELF } from "cloudflare:test";
 import { describe, expect, it } from "vitest";
-import { handleResync, type ResyncEnv, type SyncRunner } from "./admin";
+import { handleResync, type ResyncEnv, type SyncRunner } from "./admin.ts";
 
 const URL_ = "https://example.com/admin/resync";
 // Must match the RESYNC_TOKEN binding in vitest.config.ts.

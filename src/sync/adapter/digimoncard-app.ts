@@ -2,7 +2,7 @@
 // 2026-07-05). This module is the ONLY place that knows the upstream's shape
 // (TECH-DESIGN §3.3); everything past it speaks `Card`. Swapping sources
 // must touch only this directory.
-import { normalizeSearchName, type Card } from "../../data/schema";
+import { normalizeSearchName, type Card } from "../../data/schema.ts";
 
 export const SOURCE_URL =
   "https://raw.githubusercontent.com/TakaOtaku/Digimon-Card-App/main/src/assets/cardlists/DigimonCards.json";

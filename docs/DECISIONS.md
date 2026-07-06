@@ -10,6 +10,26 @@
 
 ---
 
+## 2026-07-06 — Sync cron on Tuesdays; source-contract check owns Mondays (chunk 3.6)
+
+- **Decision:** Production sync cron is `0 6 * * 2` (Tuesdays 06:00 UTC),
+  not the HANDOFF sketch's illustrative Monday. The TESTING.md §5 weekly
+  source-contract CI job (which had no roadmap chunk — gap closed in 3.6)
+  runs Mondays 06:00 UTC, one day ahead of the sync.
+- **Why:** (a) The contract check must precede the sync to deliver its
+  "we knew a day early" promise — Monday-check/Tuesday-sync does that
+  cleanly. (b) Cron enabled Monday 2026-07-06 afternoon: a Tuesday
+  schedule yields automated runs on Jul 7 and Jul 14, completing Gate C's
+  "two successful automated runs" criterion ~6 days sooner than a Monday
+  schedule (Jul 13/20) — meaningful against the 2026-07-31 deadline.
+- **Also:** the contract check posts failures to the alert webhook only if
+  a `SYNC_ALERT_WEBHOOK` repo secret is configured (owner-optional); a red
+  workflow run + GitHub's failure email is the baseline signal.
+- **Revisit if:** upstream's update rhythm changes, or the community needs
+  fresher-than-weekly data (cadence is one line in wrangler.toml).
+
+---
+
 ## 2026-07-05 — Autocomplete labels use card id, not set name (chunk 3.1)
 
 - **Decision:** Autocomplete choice labels are `Name (CARD-ID)` — e.g.

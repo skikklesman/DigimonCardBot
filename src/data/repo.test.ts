@@ -3,9 +3,9 @@
 // arrives exactly the way production data will.
 import { env } from "cloudflare:test";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
-import type { Card } from "./schema";
-import { loadNewVersion } from "../sync/load";
-import { createRepo } from "./repo";
+import type { Card } from "./schema.ts";
+import { loadNewVersion } from "../sync/load.ts";
+import { createRepo } from "./repo.ts";
 
 function card(id: string, name: string, variant = "0", overrides: Partial<Card> = {}): Card {
   return {

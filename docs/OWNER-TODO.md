@@ -22,6 +22,10 @@
       UptimeRobot) at `GET /health` on the Worker so "endpoint down" and
       "Cloudflare account problem" get caught from outside Cloudflare
       (TESTING.md §7 monitoring matrix). Not urgent pre-launch.
+- [ ] **Optional — alert webhook in GitHub:** add `SYNC_ALERT_WEBHOOK` as a
+      repo Actions secret (same URL as the Worker secret) so the Monday
+      source-contract job pings your alert channel on failure instead of
+      relying on GitHub's failure email.
 
 ## During the 3.6 soak (starts when the cron lands)
 

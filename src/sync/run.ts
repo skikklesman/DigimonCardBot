@@ -2,10 +2,10 @@
 // normalize → per-record validation → shrink guard → versioned load +
 // atomic flip. Any throw aborts with the live dataset untouched — callers
 // (the scheduled handler now, alerting in 3.3) decide how to report it.
-import { EXPECTED_FIELDS, fetchCards, normalize } from "./adapter/digimoncard-app";
-import { checkSchemaDrift, checkShrink, validateCards } from "./validate";
-import { getLiveCardCount, loadNewVersion } from "./load";
-import { sendSyncAlert } from "./alert";
+import { EXPECTED_FIELDS, fetchCards, normalize } from "./adapter/digimoncard-app.ts";
+import { checkSchemaDrift, checkShrink, validateCards } from "./validate.ts";
+import { getLiveCardCount, loadNewVersion } from "./load.ts";
+import { sendSyncAlert } from "./alert.ts";
 
 export interface SyncSummary {
   version: number;

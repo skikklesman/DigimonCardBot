@@ -7,7 +7,7 @@ import {
   MessageFlags,
   type APIInteractionResponse,
 } from "discord-api-types/v10";
-import { route, type HandlerRegistry } from "./router";
+import { route, type HandlerRegistry } from "./router.ts";
 
 const empty: HandlerRegistry = { commands: {}, autocomplete: {} };
 

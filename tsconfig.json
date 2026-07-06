@@ -6,6 +6,9 @@
     "moduleResolution": "bundler",
     "types": ["@cloudflare/workers-types", "@cloudflare/vitest-pool-workers/types"],
     "strict": true,
+    // Relative imports carry explicit .ts extensions repo-wide so the same
+    // specifiers resolve under Node (scripts), esbuild (deploy), and vitest.
+    "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "noUncheckedIndexedAccess": true,
     "verbatimModuleSyntax": true,

@@ -1,14 +1,14 @@
 // Worker entry point. Stays thin: verify → route → respond (TECH-DESIGN §3.5).
-import { verifyDiscordSignature } from "./interactions/verify";
-import { route, type HandlerRegistry } from "./interactions/router";
-import { createRepo } from "./data/repo";
-import { createCardCommand } from "./interactions/commands/card";
-import { createAltCommand } from "./interactions/commands/alt";
-import { createCardAutocomplete } from "./interactions/autocomplete";
-import { checkStaleSync, runSyncWithAlerts } from "./sync/run";
-import { sendSyncAlert } from "./sync/alert";
-import { handleResync } from "./admin";
-import { handleHealth } from "./health";
+import { verifyDiscordSignature } from "./interactions/verify.ts";
+import { route, type HandlerRegistry } from "./interactions/router.ts";
+import { createRepo } from "./data/repo.ts";
+import { createCardCommand } from "./interactions/commands/card.ts";
+import { createAltCommand } from "./interactions/commands/alt.ts";
+import { createCardAutocomplete } from "./interactions/autocomplete.ts";
+import { checkStaleSync, runSyncWithAlerts } from "./sync/run.ts";
+import { sendSyncAlert } from "./sync/alert.ts";
+import { handleResync } from "./admin.ts";
+import { handleHealth } from "./health.ts";
 
 // Handlers close over the repo, so the registry is built per request (the
 // D1 binding arrives with env).

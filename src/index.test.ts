@@ -3,9 +3,9 @@
 // routing, and (since 2.3) the /card read path against seeded local D1.
 import { env, SELF } from "cloudflare:test";
 import { afterAll, describe, expect, it } from "vitest";
-import { signedInteraction } from "../test/helpers/discord-sign";
-import { loadNewVersion } from "./sync/load";
-import { normalizeSearchName } from "./data/schema";
+import { signedInteraction } from "../test/helpers/discord-sign.ts";
+import { loadNewVersion } from "./sync/load.ts";
+import { normalizeSearchName } from "./data/schema.ts";
 
 const ENDPOINT = "https://example.com/interactions";
 

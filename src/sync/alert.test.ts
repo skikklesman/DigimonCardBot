@@ -1,7 +1,7 @@
 // Alert module unit tests (chunk 3.3). The cardinal property: sendSyncAlert
 // never throws, whatever the webhook does.
 import { describe, expect, it } from "vitest";
-import { sendSyncAlert } from "./alert";
+import { sendSyncAlert } from "./alert.ts";
 
 describe("sendSyncAlert", () => {
   it("POSTs the message as Discord webhook JSON", async () => {

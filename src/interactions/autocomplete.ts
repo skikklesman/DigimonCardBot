@@ -7,10 +7,10 @@ import {
   type APIApplicationCommandAutocompleteInteraction,
   type APIApplicationCommandOptionChoice,
 } from "discord-api-types/v10";
-import type { CardRepo } from "../data/repo";
-import type { AutocompleteHandler } from "./router";
-import type { Card } from "../data/schema";
-import { CARD_NAME_OPTION } from "./commands/card";
+import type { CardRepo } from "../data/repo.ts";
+import type { AutocompleteHandler } from "./router.ts";
+import type { Card } from "../data/schema.ts";
+import { CARD_NAME_OPTION } from "./commands/card.ts";
 
 /** Discord's cap; the repo query LIMITs to this so we never over-fetch. */
 const MAX_CHOICES = 25;

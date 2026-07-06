@@ -7,11 +7,11 @@ import {
   type APIChatInputApplicationCommandInteraction,
   type APIInteractionResponse,
 } from "discord-api-types/v10";
-import type { CardRepo } from "../../data/repo";
-import type { CommandHandler } from "../router";
-import { altGalleryResponse, disambiguationResponse, notFoundResponse } from "../embeds";
-import { cardNameValue, MISSING_OPTION_RESPONSE } from "./card";
-import { resolveCardValue } from "./resolve";
+import type { CardRepo } from "../../data/repo.ts";
+import type { CommandHandler } from "../router.ts";
+import { altGalleryResponse, disambiguationResponse, notFoundResponse } from "../embeds.ts";
+import { cardNameValue, MISSING_OPTION_RESPONSE } from "./card.ts";
+import { resolveCardValue } from "./resolve.ts";
 
 export function createAltCommand(repo: CardRepo): CommandHandler {
   return async (interaction): Promise<APIInteractionResponse> => {

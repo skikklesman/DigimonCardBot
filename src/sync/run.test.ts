@@ -5,8 +5,8 @@
 import { env } from "cloudflare:test";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import fixture from "../../test/fixtures/digimoncard-app-cards.json";
-import { getActiveVersion } from "./load";
-import { checkStaleSync, runSync } from "./run";
+import { getActiveVersion } from "./load.ts";
+import { checkStaleSync, runSync } from "./run.ts";
 
 const feed = (body: unknown): typeof fetch =>
   (() => Promise.resolve(new Response(JSON.stringify(body), { status: 200 }))) as typeof fetch;

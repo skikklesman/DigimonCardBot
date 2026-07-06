@@ -11,6 +11,8 @@ binding = "DB"
 database_name = "cards"
 database_id = "004a6c30-4560-4990-9b41-2bf7805bb94e"
 
-# Sync cron lands with chunk 3.6:
-# [triggers]
-# crons = ["0 6 * * 1"]   # Mondays 06:00 UTC
+# Weekly sync (HANDOFF §3). Tuesdays — not the sketch's Monday — so the
+# CI source-contract check (Mondays 06:00 UTC) fires a day AHEAD of the
+# sync (TESTING.md §5); rationale in DECISIONS.md 2026-07-06.
+[triggers]
+crons = ["0 6 * * 2"] # Tuesdays 06:00 UTC

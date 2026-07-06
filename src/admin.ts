@@ -4,7 +4,7 @@
 // week. Security posture: bad or missing auth gets the SAME 404 as any
 // unknown route, so the endpoint's existence is not probeable; with no
 // RESYNC_TOKEN secret configured the route simply doesn't exist.
-import { runSyncWithAlerts, type SyncOutcome, type SyncWithAlertsOptions } from "./sync/run";
+import { runSyncWithAlerts, type SyncOutcome, type SyncWithAlertsOptions } from "./sync/run.ts";
 
 /** Structural slice of the Worker Env this route needs (avoids importing
  * the entry point's Env type back into a module the entry point imports). */

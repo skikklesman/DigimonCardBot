@@ -2,7 +2,7 @@
 // lazily and cryptically at registration time — catch the rules here.
 import { describe, expect, it } from "vitest";
 import { ApplicationCommandOptionType } from "discord-api-types/v10";
-import { COMMAND_DEFINITIONS } from "./command-definitions";
+import { COMMAND_DEFINITIONS } from "./command-definitions.ts";
 
 // Discord's naming rule for commands and options.
 const NAME_PATTERN = /^[-_a-z0-9]{1,32}$/;

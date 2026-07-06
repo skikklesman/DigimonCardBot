@@ -4,7 +4,7 @@
 // catches it live; these tests pin what we BELIEVED the shape was.
 import { describe, expect, it } from "vitest";
 import fixture from "../../../test/fixtures/digimoncard-app-cards.json";
-import { fetchCards, normalize, SOURCE_URL, type RawCard } from "./digimoncard-app";
+import { fetchCards, normalize, SOURCE_URL, type RawCard } from "./digimoncard-app.ts";
 
 const raws = fixture as RawCard[];
 const byId = new Map(raws.map((r) => [r.id as string, r]));

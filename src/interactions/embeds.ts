@@ -8,7 +8,7 @@ import {
   type APIEmbed,
   type APIInteractionResponse,
 } from "discord-api-types/v10";
-import type { Card } from "../data/schema";
+import type { Card } from "../data/schema.ts";
 
 // Discord embed limits (title 256 / field value 1024). Long effects get cut
 // with an ellipsis — the full text is on the card image anyway.

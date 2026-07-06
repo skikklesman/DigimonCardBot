@@ -3,7 +3,7 @@
 // failure aborts the sync with the live cache untouched. The distinction
 // that matters (HANDOFF §8): one bad card → skip it; the whole feed wrong →
 // abort the batch.
-import type { Card } from "../data/schema";
+import type { Card } from "../data/schema.ts";
 
 /** Expected upstream shape, provided by the source adapter — the gate itself
  * is source-agnostic. `required`: fields the adapter depends on (missing

@@ -2,7 +2,7 @@
 // every query filters on the active version by construction: there is no
 // raw-query escape hatch, so a reader cannot accidentally see a staged or
 // stale dataset. Command handlers receive a CardRepo and stay SQL-free.
-import { normalizeSearchName, type Card } from "./schema";
+import { normalizeSearchName, type Card } from "./schema.ts";
 
 // Interpolated into every statement — the version-pointer read (HANDOFF §5).
 const LIVE = "version = (SELECT value FROM meta WHERE key = 'active_version')";

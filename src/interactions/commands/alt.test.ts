@@ -1,10 +1,10 @@
 // /alt handler unit tests (chunk 3.2) against an in-memory repo fake.
 import { describe, expect, it } from "vitest";
 import type { APIInteractionResponse } from "discord-api-types/v10";
-import type { CardRepo } from "../../data/repo";
-import type { Card } from "../../data/schema";
-import { normalizeSearchName } from "../../data/schema";
-import { createAltCommand } from "./alt";
+import type { CardRepo } from "../../data/repo.ts";
+import type { Card } from "../../data/schema.ts";
+import { normalizeSearchName } from "../../data/schema.ts";
+import { createAltCommand } from "./alt.ts";
 
 function card(id: string, name: string, variant = "0"): Card {
   return {

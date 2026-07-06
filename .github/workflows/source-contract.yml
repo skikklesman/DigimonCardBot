@@ -1,0 +1,27 @@
+# Weekly source-contract check (TESTING.md §5): Mondays 06:00 UTC — one day
+# BEFORE the Tuesday sync cron in wrangler.toml, so upstream drift is known
+# before the sync trips over it. Writes nothing anywhere.
+name: Source contract
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch: # manual trigger for testing
+
+jobs:
+  contract:
+    name: Fetch real source through the validation gates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      # SYNC_ALERT_WEBHOOK is an optional repo secret — with it, failures
+      # ping the alert channel; without it, the red run (and GitHub's
+      # failure email) is the signal.
+      - run: npm run source-contract
+        env:
+          SYNC_ALERT_WEBHOOK: ${{ secrets.SYNC_ALERT_WEBHOOK }}

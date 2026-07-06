@@ -1,10 +1,10 @@
 // Autocomplete handler unit tests (chunk 3.1): choice construction against
 // an in-memory repo fake. The full type-4 round-trip lives in index.test.ts.
 import { describe, expect, it } from "vitest";
-import type { CardRepo } from "../data/repo";
-import type { Card } from "../data/schema";
-import { normalizeSearchName } from "../data/schema";
-import { createCardAutocomplete } from "./autocomplete";
+import type { CardRepo } from "../data/repo.ts";
+import type { Card } from "../data/schema.ts";
+import { normalizeSearchName } from "../data/schema.ts";
+import { createCardAutocomplete } from "./autocomplete.ts";
 
 function card(id: string, name: string): Card {
   return {

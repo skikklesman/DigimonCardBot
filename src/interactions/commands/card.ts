@@ -8,10 +8,10 @@ import {
   type APIChatInputApplicationCommandInteraction,
   type APIInteractionResponse,
 } from "discord-api-types/v10";
-import type { CardRepo } from "../../data/repo";
-import type { CommandHandler } from "../router";
-import { cardResponse, disambiguationResponse, notFoundResponse } from "../embeds";
-import { resolveCardValue } from "./resolve";
+import type { CardRepo } from "../../data/repo.ts";
+import type { CommandHandler } from "../router.ts";
+import { cardResponse, disambiguationResponse, notFoundResponse } from "../embeds.ts";
+import { resolveCardValue } from "./resolve.ts";
 
 export const CARD_NAME_OPTION = "card-name";
 

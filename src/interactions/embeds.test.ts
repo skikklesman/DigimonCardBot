@@ -1,13 +1,13 @@
 // Embed builder snapshot tests (TESTING.md §2): pure functions, so the
 // snapshots ARE the response contract — review diffs like API changes.
 import { describe, expect, it } from "vitest";
-import type { Card } from "../data/schema";
+import type { Card } from "../data/schema.ts";
 import {
   altGalleryResponse,
   cardResponse,
   disambiguationResponse,
   notFoundResponse,
-} from "./embeds";
+} from "./embeds.ts";
 
 const goldramon: Card = {
   cardId: "BT14-018",

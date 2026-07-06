@@ -4,8 +4,8 @@
 //   1. looks like a `card_id|variant` token → exact printing lookup
 //   2. looks like a card id (EX1-066) → base printing lookup
 //   3. anything else → normalized name search
-import type { CardRepo } from "../../data/repo";
-import type { Card } from "../../data/schema";
+import type { CardRepo } from "../../data/repo.ts";
+import type { Card } from "../../data/schema.ts";
 
 /** EX1-066, BT14-018, ST9-15, P-001 … — set prefix, dash, number. */
 const CARD_ID_PATTERN = /^[A-Za-z]+\d*-\d+$/;

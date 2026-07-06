@@ -1,7 +1,7 @@
 // GET /health integration tests (chunk 3.5) via the real Worker in workerd.
 import { env, SELF } from "cloudflare:test";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
-import { loadNewVersion } from "./sync/load";
+import { loadNewVersion } from "./sync/load.ts";
 
 const URL_ = "https://example.com/health";
 

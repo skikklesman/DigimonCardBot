@@ -4,10 +4,10 @@
 // HTML error page both fail fetchCards' parse/array check. Their degraded
 // cousins (parseable-but-short feed, junk records) land here.
 import { describe, expect, it } from "vitest";
-import type { Card } from "../data/schema";
+import type { Card } from "../data/schema.ts";
 import fixture from "../../test/fixtures/digimoncard-app-cards.json";
-import { EXPECTED_FIELDS } from "./adapter/digimoncard-app";
-import { checkSchemaDrift, checkShrink, validateCards } from "./validate";
+import { EXPECTED_FIELDS } from "./adapter/digimoncard-app.ts";
+import { checkSchemaDrift, checkShrink, validateCards } from "./validate.ts";
 
 const raws = fixture as Record<string, unknown>[];
 

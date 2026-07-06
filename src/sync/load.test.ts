@@ -3,8 +3,8 @@
 // mid-load failure leaving the live version untouched, and version GC.
 import { env } from "cloudflare:test";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
-import type { Card } from "../data/schema";
-import { getActiveVersion, getLiveCardCount, loadNewVersion } from "./load";
+import type { Card } from "../data/schema.ts";
+import { getActiveVersion, getLiveCardCount, loadNewVersion } from "./load.ts";
 
 function card(id: string, variant = "0", overrides: Partial<Card> = {}): Card {
   return {

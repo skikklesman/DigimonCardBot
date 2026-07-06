@@ -43,6 +43,71 @@ export interface RawCard {
   AAs?: unknown;
 }
 
+/**
+ * The upstream shape contract for schema-drift detection (validate.ts).
+ * `required`: fields normalize() depends on — missing across the board means
+ * the upstream renamed/restructured and the sync must abort. `known`: every
+ * field observed in the dataset at capture (2026-07-05), whether we map it
+ * or consciously ignore it — anything NEW beyond this list triggers the
+ * new-mechanic warning (DECISIONS.md 2026-07-05).
+ */
+export const EXPECTED_FIELDS = {
+  required: [
+    "id",
+    "name",
+    "cardType",
+    "color",
+    "cardLv",
+    "playCost",
+    "dp",
+    "effect",
+    "digivolveEffect",
+    "securityEffect",
+    "notes",
+    "rarity",
+    "AAs",
+  ],
+  known: [
+    "AAs",
+    "JAAs",
+    "aceEffect",
+    "assembly",
+    "attribute",
+    "block",
+    "burstDigivolve",
+    "cardImage",
+    "cardLv",
+    "cardNumber",
+    "cardType",
+    "color",
+    "digiXros",
+    "digivolveCondition",
+    "digivolveEffect",
+    "dnaDigivolve",
+    "dp",
+    "dualEffect",
+    "effect",
+    "form",
+    "id",
+    "illustrator",
+    "linkDP",
+    "linkEffect",
+    "linkRequirement",
+    "name",
+    "notes",
+    "optionCardColourRequirement",
+    "optionCardEffect",
+    "playCost",
+    "rarity",
+    "restrictions",
+    "rule",
+    "securityEffect",
+    "specialDigivolve",
+    "type",
+    "version",
+  ],
+} as const;
+
 /** Upstream null sentinel → null; anything non-string → null. */
 function text(value: unknown): string | null {
   if (typeof value !== "string") return null;

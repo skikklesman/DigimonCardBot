@@ -102,7 +102,10 @@ Goal: a populated, versioned card cache. Verifiable entirely with SQL.
       [DECISIONS.md](DECISIONS.md).)_ `fetchCards(): Promise<RawCard[]>` +
       `normalize(raw): Card` behind the adapter boundary (HANDOFF §9). Unit tests
       run against the fixture, never the network.
-- [ ] **1.4 — Validation gates.** Shrink guard, per-record validation with drop
+- [x] **1.4 — Validation gates.** _(Landed 2026-07-05. The adapter exports its
+      `EXPECTED_FIELDS` contract so the drift gate stays source-agnostic —
+      upstream-shape knowledge remains in `sync/adapter/` per TECH-DESIGN
+      §3.3.)_ Shrink guard, per-record validation with drop
       counting, schema-drift detection (HANDOFF §8, Defense 2). Pure functions.
       Drift detection is **two-directional** (DECISIONS 2026-07-05): a known
       field missing/renamed → abort the sync; an **unknown new field present →

@@ -7,6 +7,17 @@
 
 ## Anytime (no deadline, browser is enough)
 
+- [ ] **Judge review of the keyword glossary** (`src/data/keywords.ts`,
+      chunk 4.1): the owner is an **official Digimon TCG judge** — review
+      all ~45 definitions for rules accuracy (they were compiled from card
+      text + community sources, phrased as reminder text, numbers as "N"),
+      correct anything imprecise, and supply verified text for the four
+      deliberate omissions: `Training`, `Guard`, `Assembly`,
+      `Arts Digivolve`. Edit the file directly or dictate corrections in a
+      session; either way the dataset-integrity tests (`npm test`) validate
+      formatting automatically. Note the review in DECISIONS.md when done —
+      "judge-reviewed" is a quality stamp worth recording.
+
 - [ ] **Enable CI auto-deploys:** create a Cloudflare API token
       (dash.cloudflare.com → My Profile → API Tokens → template
       _"Edit Cloudflare Workers"_) and add it to the GitHub repo as the

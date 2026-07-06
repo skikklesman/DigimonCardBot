@@ -8,6 +8,7 @@ import { createCardAutocomplete } from "./interactions/autocomplete";
 import { checkStaleSync, runSyncWithAlerts } from "./sync/run";
 import { sendSyncAlert } from "./sync/alert";
 import { handleResync } from "./admin";
+import { handleHealth } from "./health";
 
 // Handlers close over the repo, so the registry is built per request (the
 // D1 binding arrives with env).
@@ -43,6 +44,9 @@ function json(payload: unknown, init?: ResponseInit): Response {
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+    if (request.method === "GET" && url.pathname === "/health") {
+      return handleHealth(env.DB);
+    }
     if (request.method === "POST" && url.pathname === "/admin/resync") {
       return handleResync(request, env);
     }

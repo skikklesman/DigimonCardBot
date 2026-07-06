@@ -24,12 +24,31 @@ jobs:
       - run: npm test
 
   deploy:
-    name: Deploy (stub)
+    name: Deploy + smoke
     needs: checks
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
-      # Real deploy lands with chunk 0.5 (docs/ROADMAP.md): cloudflare/wrangler-action
-      # with a CLOUDFLARE_API_TOKEN repo secret, followed by the post-deploy smoke
-      # script (chunk 3.5, docs/TESTING.md §4).
-      - run: echo "Deploy step stubbed — activated in chunk 0.5."
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      # Secrets aren't readable in job-level `if`s; gate via a step output.
+      # Without a CLOUDFLARE_API_TOKEN repo secret, deploys stay manual
+      # (wrangler deploy from the dev machine) and CI still smoke-checks
+      # the live production Worker on every master push.
+      - id: gate
+        run: echo "deploy=${{ secrets.CLOUDFLARE_API_TOKEN != '' }}" >> "$GITHUB_OUTPUT"
+      - name: Deploy to Cloudflare
+        if: steps.gate.outputs.deploy == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      - name: Deploy skipped (no CLOUDFLARE_API_TOKEN secret)
+        if: steps.gate.outputs.deploy != 'true'
+        run: echo "CI deploy inactive — add the CLOUDFLARE_API_TOKEN repo secret to enable. Smoke still runs against production."
+      # Post-deploy smoke (TESTING.md §4): a failed smoke fails the pipeline loudly.
+      - name: Smoke-check the live Worker
+        run: npm run smoke

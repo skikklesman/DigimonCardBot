@@ -208,7 +208,13 @@ the test guild. **Reached:** 2026-07-05
       `.dev.vars`.)_ Authenticated route on `fetch` triggering
       the sync (HANDOFF §8). Constant-time token check; 404 on bad auth. Tests:
       no-token, bad-token, good-token.
-- [ ] **3.5 — Post-deploy smoke suite.** Scripted signed synthetic interactions
+- [x] **3.5 — Post-deploy smoke suite.** _(Landed 2026-07-06 per TESTING.md
+      §4's boundary+vitals design — production signatures can't be forged, so:
+      unsigned POST → 401, `GET /health` vitals with freshness assertions,
+      unknown-route 404. CI deploy job de-stubbed: deploys activate when a
+      `CLOUDFLARE_API_TOKEN` repo secret is added; smoke runs against
+      production on every master push either way.)_ Scripted signed synthetic
+      interactions
       against the _live_ endpoint: PING, `/card` by ID, autocomplete query. Runs in
       CI after every deploy. (Details: [TESTING.md](TESTING.md).)
 - [ ] **3.6 — Cron live + soak.** Enable the production cron schedule. Start the

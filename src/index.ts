@@ -1,6 +1,7 @@
 // Worker entry point. Stays thin: verify → route → respond (TECH-DESIGN §3.5).
 import { InteractionResponseType, InteractionType } from "discord-api-types/v10";
 import { verifyDiscordSignature } from "./interactions/verify";
+import { runSync } from "./sync/run";
 
 export interface Env {
   DISCORD_PUBLIC_KEY: string;
@@ -51,5 +52,19 @@ export default {
       type: InteractionResponseType.ChannelMessageWithSource,
       data: { content: "DigimonCardBot is under construction — card lookup coming soon." },
     });
+  },
+
+  // Sync path (HANDOFF §3). The production cron trigger lands in chunk 3.6;
+  // until then this runs via `wrangler dev --test-scheduled`. Webhook
+  // alerting lands in 3.3 — for now failures go to Worker logs, and the
+  // rethrow marks the invocation failed in Cloudflare's metrics.
+  async scheduled(_controller, env): Promise<void> {
+    try {
+      const summary = await runSync(env.DB);
+      console.log(`sync complete: ${JSON.stringify(summary)}`);
+    } catch (error) {
+      console.error(`sync failed: ${String(error)}`);
+      throw error;
+    }
   },
 } satisfies ExportedHandler<Env>;

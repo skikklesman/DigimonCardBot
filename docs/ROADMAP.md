@@ -122,8 +122,12 @@ Goal: a populated, versioned card cache. Verifiable entirely with SQL.
       `last_successful_sync`, GC versions `< active - 1`. Integration tests against
       local D1: happy path, re-run idempotency, mid-load failure leaves the live
       version untouched.
-- [ ] **1.6 — `scheduled()` handler + first real sync.** Wire fetch → validate →
-      load → flip into the cron handler; trigger manually
+- [x] **1.6 — `scheduled()` handler + first real sync.** _(Landed 2026-07-05.
+      First real sync: version 1 promoted, 8,425 rows — 4,295 unique cards +
+      alt-art variants — 0 dropped, 0 warnings; EX1-066 P1–P5 and multi-printing
+      `goldramon%` search spot-checked in local D1. Production D1 is still
+      empty by design — populate it before 2.5's deploy-and-test.)_ Wire fetch
+      → validate → load → flip into the cron handler; trigger manually
       (`wrangler dev --test-scheduled` or the curl equivalent) against the real
       source. _(Gate per HANDOFF §13.3: cards table holds a full versioned
       dataset — spot-check row count and a few known cards.)_

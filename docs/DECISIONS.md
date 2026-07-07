@@ -10,6 +10,28 @@
 
 ---
 
+## 2026-07-06 — /banlist scope: English-only, public, D1-derived (chunk 4.7 planned)
+
+- **Decision (owner calls):** the planned `/banlist` (chunk 4.7) shows
+  **English restriction values only** and replies **publicly**. Data
+  comes from the `restriction` column chunk 4.6 adds — one D1 query, no
+  second source; the official announcement page
+  (`/rule/restriction_card`) is the build-time verification source, not
+  a scrape target.
+- **Why:** the owner (an official Digimon TCG judge) confirms that as
+  of **BT-21 the regions converged** — unified set release dates and a
+  single unified banned/restricted list — so the English value is the
+  whole truth, not a regional slice. This **amends the 4.6 entry's
+  "revisit if the community wants Japanese-format legality"**: there is
+  no separate JP list to show anymore. Public because a banlist lookup
+  usually settles a channel discussion, matching the /card convention
+  (hits public, misses ephemeral).
+- **Revisit if:** the regions ever diverge again (then add a `format`
+  option rather than changing the default), or the list outgrows one
+  embed (defined fallback: truncate + point at the official page).
+
+---
+
 ## 2026-07-06 — Restriction display becomes chunk 4.6 (official rule-page survey)
 
 - **Decision:** surveying Bandai's official rules hub

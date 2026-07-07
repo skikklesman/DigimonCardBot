@@ -284,10 +284,25 @@ Chunks 4.1–4.3 are independent — parallelizable.
       (en.digimoncard.com/rule/restriction_card). Tests: snapshot the
       embed for banned / restricted / unrestricted / not-released cards;
       adapter + loader coverage for the new field.
-- [ ] **4.7 — `/banlist`.** Add a command that will simply list out all of the
-      current banned and restricted cards (name and card ID), for easy reference.  
-      (Claude: fill out any info here that is important for your execution.  Also
-      ask the Owner first if you need any clarification, don't assume you know the answer.)
+- [ ] **4.7 — `/banlist`.** _(Depends on 4.6 — needs the `restriction`
+      column.)_ List all currently banned and restricted cards (name +
+      card ID) for easy reference. No options; **public** reply (owner
+      call, 2026-07-06). One D1 query over the active version:
+      base printings only (dedupe alt-art variants), `restriction` not
+      `Unrestricted`/`Not released`, sorted by card ID — a per-invocation
+      scan like `/release`'s tally, fine at this volume. **English values
+      only** — owner (judge) confirms regions converged on a unified
+      banned/restricted list (and unified set releases) as of BT-21, so
+      one list is the whole truth; revisit only if regions ever diverge
+      again. Embed grouped into **Banned** and **Restricted to 1**
+      sections (empty section omitted); current list fits one embed —
+      truncate with a "see official page" pointer if it ever outgrows
+      the 4096-char description. Footer links the official announcement
+      (en.digimoncard.com/rule/restriction_card), which is also the
+      verification source at build time. Tests: repo-query integration
+      test against seeded D1 (banned + restricted + unrestricted +
+      not-released + variant-dedupe cases); embed snapshot for a mixed
+      list and for the empty-list reply.
 
 **✅ Gate D criteria:** full command set live in the test guild; fuzz findings
 fixed. **Reached:** `pending`

@@ -56,8 +56,10 @@
       "is it 200?" ping catches endpoint-down, Cloudflare account problems,
       AND a silently dead cron trigger — the one failure the webhook alerts
       can't report, because they run inside the cron itself (TESTING.md §7,
-      DECISIONS.md 2026-07-06). Five browser-minutes; worth doing before
-      launch.
+      DECISIONS.md 2026-07-06). Five browser-minutes. _Upgraded again
+      2026-07-07: the Jul 7 cron miss (see the soak section) is exactly
+      this failure class happening for real — do this before Gate C, not
+      before launch._
 - [ ] **Optional — alert webhook in GitHub:** add `SYNC_ALERT_WEBHOOK` as a
       repo Actions secret (same URL as the Worker secret) so the Monday
       source-contract job pings your alert channel on failure instead of
@@ -65,6 +67,29 @@
 
 ## During the 3.6 soak (starts when the cron lands)
 
+- [ ] **TONIGHT (2026-07-07) — check the dashboard for the missed cron**:
+      the Jul 7 06:00 UTC sync cron **did not run** (confirmed 14:11 UTC:
+      D1 still v2, `lastSuccessfulSync` still Jul 6 12:39, zero worker
+      invocations in the 06:00 hour per Cloudflare analytics, nothing in
+      the alert channel). The schedule IS attached (`0 6 * * 2`), but its
+      `modified_on` is 04:18 UTC — the 4.9 deploy re-registered the
+      triggers less than 2h before fire time, and this was the cron's
+      **first-ever scheduled fire**. Go to dash.cloudflare.com → Workers
+      & Pages → digimon-tcg-bot → Settings → Triggers → Cron Triggers
+      (past events listed there; or Metrics filtered by trigger type) and
+      look for any event near Jul 7 06:00 UTC:
+      - **No event** → Cloudflare skipped it (likely the trigger
+        re-registration too close to fire time). Recovery decision
+        pending: a temporary one-off cron (proves the trigger works +
+        keeps two automated runs near the soak window) vs. waiting for
+        Jul 14 (slides Gate C's second run to Jul 21).
+      - **An event with an error** → the worker crashed before it could
+        even alert; that's our bug — bring the error text to the next
+        session.
+      Report findings next session; DECISIONS.md entry follows the
+      diagnosis. Related: the "external uptime ping" item above is the
+      permanent fix for this failure class (a dead cron can't report
+      itself) — today upgraded it from nice-to-have to pre-Gate-C.
 - [x] **Re-register commands for the 4.9 rename** _(done 2026-07-07 —
       registered and verified in the soak guilds)_.
 - [x] **Add the 2nd soak guild** _(done 2026-07-06 — installed,
@@ -92,9 +117,20 @@
 
 ## Launch-phase (Phase 5 — before the old bot dies 2026-07-31)
 
-- [ ] **Discord bot verification** (HANDOFF §12): submit in the Developer
-      Portal **well before 100 servers** — needs your government ID,
+- [ ] **Discord bot verification** (HANDOFF §12; gate detail verified
+      2026-07-07, DECISIONS.md): needs your government ID (Stripe Identity),
       review takes ~5 days. The single hardest deadline dependency.
+      **You can't start it early** — the "App Verification" tab only
+      appears at **>75 servers**; **100 servers** is the hard freeze. That
+      leaves a narrow **75→100 window**: submit the moment the tab appears,
+      and **throttle invites to stay under 100** until the badge lands (a
+      fast rollout can hit 100 during the ~5-day review and freeze). Prep
+      the two items below now so submission is instant at 75.
+- [ ] **Pre-draft the verification checklist answers** (do anytime before
+      75 servers): the App Verification form asks what the bot does and how
+      it stores data. Draft answers are ready to paste in
+      [DISCORD-VERIFICATION.md](DISCORD-VERIFICATION.md) — review/tweak them
+      once, so 5.3 is copy-paste-submit.
 - [ ] **License + public README** (DECISIONS open decision): pick a license
       (MIT is the path of least resistance) before flipping the repo
       public.

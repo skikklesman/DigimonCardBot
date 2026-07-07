@@ -254,9 +254,13 @@ Chunks 4.1–4.3 are independent — parallelizable.
       against the full real dataset. DECISIONS.md has scope + conventions.
       Registered + deployed.)_ Set/release info lookup. Check what the card
       source exposes about sets; scope accordingly.
-- [ ] **4.3 — `/page`.** Whatever the old bot's `/page` did — **confirm with the
-      community what this command actually does before building** (open decision,
-      HANDOFF §14).
+- [x] **4.3 — `/page`.** _(Closed 2026-07-06 as **Will Not Do** — owner
+      call, DECISIONS.md. Nobody could describe what the old bot's `/page`
+      did, and a wrong guess at a parity feature is worse than an honest
+      gap. Reopens only if 4.4's community input or post-launch feedback
+      supplies the missing spec.)_ Whatever the old bot's `/page` did —
+      **confirm with the community what this command actually does before
+      building** (open decision, HANDOFF §14).
 - [ ] **4.4 — Command-set parity review.** Compare against the old bot with
       community input; finalize names/options (HANDOFF §14).
 - [ ] **4.5 — Hardening pass.** Input fuzzing on interaction payloads

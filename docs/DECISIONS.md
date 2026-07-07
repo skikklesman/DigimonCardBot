@@ -10,6 +10,22 @@
 
 ---
 
+## 2026-07-06 — /page: Will Not Do (resolves open decision #3, closes chunk 4.3)
+
+- **Decision (owner call):** `/page` will **not** be built. The chunk is
+  closed without code; no command is reserved for it.
+- **Why:** nobody could say what the old bot's `/page` actually did — the
+  founding spec lists only the name (HANDOFF §1), and every guess implied a
+  different build. The project's standing rule applies: shipping a wrong
+  guess at a parity feature is worse than an honest gap, and four commands
+  (`/card`, `/alt`, `/keyword`, `/release`) already cover the documented
+  product ("lookup behavior is the whole product").
+- **Revisit if:** the 4.4 parity review or post-launch feedback shows the
+  community actually used `/page` and can describe it — that description
+  becomes the chunk's missing spec, and the command name is still free.
+
+---
+
 ## 2026-07-06 — /release ships curated set data + live D1 tallies (chunk 4.2)
 
 - **Decision:** `/release` looks up a **static, curated dataset**
@@ -335,10 +351,10 @@
 
 Carried from HANDOFF §14 plus new ones raised by the roadmap. Resolved ones
 move up into the log above — so far #1 (card source), #2 (`/alt` in MVP),
-#4 (keyword source), #5 (Team owner), and #6 (sync cadence).
+#3 (`/page`: Will Not Do), #4 (keyword source), #5 (Team owner), and
+#6 (sync cadence).
 
 | #   | Decision                                           | Default until decided              | Needed by |
 | --- | -------------------------------------------------- | ---------------------------------- | --------- |
-| 3   | What does the old bot's `/page` actually do?       | Ask community                      | Chunk 4.3 |
 | 7   | Final command names/options parity                 | Mirror old bot                     | Chunk 4.4 |
 | 8   | Open-source license (repo goes public post-launch) | MIT unless owner prefers otherwise | Phase 5   |

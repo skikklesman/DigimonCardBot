@@ -17,7 +17,7 @@ minimal maintenance.
   verification (human action, ~5-day review) must be submitted before the bot
   reaches 100 servers.
 
-### Live deployment (current through chunk 4.1, 2026-07-06)
+### Live deployment (current through chunk 4.9, 2026-07-07)
 
 - **Worker is deployed and live** (production) at
   `https://digimon-tcg-bot.rstewart555.workers.dev`; the interactions endpoint

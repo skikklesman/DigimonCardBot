@@ -309,7 +309,18 @@ Chunks 4.1–4.3 are independent — parallelizable.
       against the official Banned & Restricted announcement
       (en.digimoncard.com/rule/restriction_card). Tests: snapshot the
       embed for banned / restricted / unrestricted / not-released cards;
-      adapter + loader coverage for the new field.
+      adapter + loader coverage for the new field. _Implementation map
+      (verified 2026-07-07): new `migrations/0002_*.sql` (ALTER TABLE
+      cards ADD COLUMN, nullable TEXT); `src/data/schema.ts` (`Card`
+      interface); `src/data/repo.ts` (`CardRow` + the row→Card mapping +
+      SELECT column lists); `src/sync/adapter/digimoncard-app.ts`
+      (`normalize` maps `restrictions.english`; the field is already in
+      EXPECTED_FIELDS so no drift-gate change); `src/sync/load.ts`
+      (INSERT column); `src/interactions/embeds.ts` (`cardResponse`
+      description line — the slot is reserved, see the 4.8 comment
+      there). Store null for "Unrestricted" so the embed's
+      only-when-present logic stays a simple truthy check — decide
+      in-chunk after the value survey._
 - [ ] **4.7 — `/banlist`.** _(Depends on 4.6 — needs the `restriction`
       column.)_ List all currently banned and restricted cards (name +
       card ID) for easy reference. No options; **public** reply (owner

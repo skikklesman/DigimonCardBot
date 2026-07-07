@@ -359,8 +359,7 @@ Chunks 4.1–4.3 are independent — parallelizable.
       "Ignition of X", ST-25/ST-26 Alysion decks, EX-14, BT-28, ST-27)
       has NO official EN product listings yet — community leaks only, so
       per the 4.2 convention nothing was added; OWNER-TODO has the watch
-      item. Owner action pending: `npm run register` to swap the
-      commands in the soak guilds.)_ _(Owner parity feedback,
+      item. Registered + verified in the soak guilds 2026-07-07.)_ _(Owner parity feedback,
       2026-07-07 — DECISIONS.md. Do before Gate D: renames are free
       while the commands are guild-only, breaking after global launch.)_
       **(a) Rename** the current set-lookup command `/release` → `/set` —

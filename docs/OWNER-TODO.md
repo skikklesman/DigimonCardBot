@@ -65,11 +65,8 @@
 
 ## During the 3.6 soak (starts when the cron lands)
 
-- [ ] **Re-register commands for the 4.9 rename** (one `npm run register`
-      run): swaps `/release` → `/set` and adds the new no-argument
-      `/release` forecast in both soak guilds at once. Do it after the
-      4.9 deploy is live (already done if Claude deployed in-session);
-      then verify `/set bt-14` and a bare `/release` both answer.
+- [x] **Re-register commands for the 4.9 rename** _(done 2026-07-07 —
+      registered and verified in the soak guilds)_.
 - [x] **Add the 2nd soak guild** _(done 2026-07-06 — installed,
       registered, verified)_ (chunk 3.6.1 — do this EARLY in the week
       so the extra traffic counts): ① authorize the app in guild 2 via the

@@ -227,6 +227,26 @@ the test guild. **Reached:** 2026-07-05
       cron schedule. Start the
       7-day soak: bot in test guild, daily use, watch logs/alerts. Fix anything the
       soak surfaces.
+- [ ] **3.6.1 — Expand soak coverage to a 2nd guild.** _(Time-sensitive:
+      do early in the soak week — 2026-07-06 → 07-13 — so the extra
+      traffic actually accrues. Joining mid-soak does NOT reset the 7-day
+      clock: the soak measures the bot's stability, and more real usage
+      is more signal.)_ To get more user commands during the soak,
+      install the bot on a second guild and confirm every command works
+      there. **Script change:** `DISCORD_TEST_GUILD_ID` accepts a
+      comma-separated list of guild ids; `npm run register` PUTs the
+      command set to each listed guild, so any future command change
+      keeps all soak guilds in sync with one run. Unit-test the
+      list parsing (whitespace/empty entries ignored). **Owner steps
+      (human, like 2.5):** authorize the app in guild 2 via the OAuth2
+      install link with the `applications.commands` scope only (no `bot`
+      scope — HTTP interactions, no bot member, per HANDOFF §15); append
+      the guild id to `DISCORD_TEST_GUILD_ID` in `.dev.vars`; run
+      `npm run register`; verify `/card`, `/alt`, `/keyword`, `/release`
+      and autocomplete all respond in guild 2. Add guild-2 spot checks
+      to the OWNER-TODO.md soak duties. Note: the unverified-bot ceiling
+      is 100 servers (HANDOFF §12) — two is nowhere close, but the
+      server count officially starts mattering now.
 
 **🚀 Gate C criteria:** all five MVP-definition bullets above are true.
 **Reached:** `pending`

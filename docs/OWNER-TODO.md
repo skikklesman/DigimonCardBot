@@ -52,15 +52,27 @@
 
 ## During the 3.6 soak (starts when the cron lands)
 
+- [ ] **Add the 2nd soak guild** (chunk 3.6.1 — do this EARLY in the week
+      so the extra traffic counts): ① authorize the app in guild 2 via the
+      OAuth2 install link with **only** the `applications.commands` scope
+      (no `bot` scope — this bot never has a server member); ② append the
+      guild id to `DISCORD_TEST_GUILD_ID` in `.dev.vars`, comma-separated
+      (`<current-id>,<guild-2-id>` — id via right-click the server with
+      developer mode on); ③ `npm run register` — the script now registers
+      every listed guild; ④ verify `/card`, `/alt`, `/keyword`, `/release`
+      and autocomplete respond in guild 2, then check 3.6.1 off in the
+      roadmap.
 - [ ] **Use the bot daily in the test guild** — a few `/card` and `/alt`
       lookups per day for 7 consecutive days; variety beats volume
       (autocomplete picks, free text, an ID, a typo). This is Gate C
-      criterion #4.
+      criterion #4. Once guild 2 is live, spread some of the daily use
+      there too.
 - [ ] **Glance at the alert channel daily** — silence is expected; anything
       that appears is soak findings.
-- [ ] **After the first two Monday crons**, confirm two ✅ automated syncs
-      happened (`/health` timestamp refreshes, or the Cloudflare dashboard
-      cron log) — Gate C criterion #2.
+- [ ] **After the first two Tuesday crons** (expected Jul 7 + Jul 14),
+      confirm two ✅ automated syncs happened (`/health` timestamp
+      refreshes, or the Cloudflare dashboard cron log) — Gate C
+      criterion #2.
 
 ## Launch-phase (Phase 5 — before the old bot dies 2026-07-31)
 

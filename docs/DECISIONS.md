@@ -10,6 +10,34 @@
 
 ---
 
+## 2026-07-07 — Discord verification opens at 75 servers, not 100 (drift-fact check, scopes 5.3/5.5)
+
+- **Finding (re-verified 2026-07-07, part of the HANDOFF §16 / chunk 5.1
+  drift facts):** the App Verification flow — including the Stripe Identity
+  step — is **gated at >75 servers**, when an "App Verification" tab +
+  banner appear on the app's Developer Portal page. **100 servers** is the
+  hard freeze (unverified bot can't join server #101 until verified). So
+  the ~5-day review clock **cannot be started early** at our current 2 soak
+  guilds — the blocker is Discord's own gate, not our code.
+- **Consequence (sequencing):** there is only a **75 → 100 server window**
+  to submit and clear verification before the freeze. A rollout toward
+  ~1,000 servers can blow through 100 during the ~5-day review, freezing
+  mid-launch. **Chunk 5.5 (Rollout) must throttle invites:** reach ~75,
+  submit, and hold below 100 until the verified badge lands. Chunk 5.3
+  amended to note the 75-server floor.
+- **Also confirmed:** the 2026 **10,000-user Privileged Intents** rule is
+  now separate from server count and **does not apply** to this bot — HTTP
+  interactions use no privileged intents. Not a second clock.
+- **Startable now (does not need the portal gate):** pre-draft the App
+  Verification checklist answers (features + data-storage practices) and
+  the ToS/Privacy Policy pages, so 5.3 is submit-and-wait the moment we
+  cross 75. Draft answers captured in
+  [DISCORD-VERIFICATION.md](DISCORD-VERIFICATION.md).
+- **Revisit if:** Discord changes the thresholds again (it has before —
+  re-check at rollout time), or the app is somehow able to apply earlier.
+
+---
+
 ## 2026-07-07 — Soak user-testing feedback triaged (no scope change)
 
 - **Context:** first outside-tester feedback of the Gate C soak (two

@@ -421,12 +421,20 @@ Sequencing here is dictated by Discord's rules — HUMAN actions included
       the fast-iteration path.
 - [ ] **5.3 — Submit Discord bot verification** _(human, government ID)_
       **before crossing 100 servers** — the bot freezes at #100 otherwise
-      (HANDOFF §12). Historically ~5-day review; start early.
+      (HANDOFF §12). Historically ~5-day review. _Can't be started before
+      **75 servers** — the App Verification tab only appears then (verified
+      2026-07-07, DECISIONS.md), so the earliest submit and the #100 freeze
+      are only ~25 servers apart. Prep the checklist answers ahead of time
+      ([DISCORD-VERIFICATION.md](DISCORD-VERIFICATION.md)) so it's
+      submit-on-sight._
 - [ ] **5.4 — Launch checklist.** Run the release checklist in
       [TESTING.md](TESTING.md); confirm alerting, rollback procedure rehearsed,
       soak-period learnings addressed.
 - [ ] **5.5 — Rollout.** Publish invite link to the community; monitor closely
       for the first week (alerts + Worker analytics + D1 metrics).
+      **Throttle the invite pace across the 75→100 window** so verification
+      (5.3) clears before server #100 — a fast rollout can hit the freeze
+      mid-review (DECISIONS 2026-07-07).
 
 **🌍 Gate E criteria:** verified, global, invited, first-week monitoring
 clean. **Reached:** `pending`

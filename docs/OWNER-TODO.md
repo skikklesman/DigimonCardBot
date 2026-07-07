@@ -52,7 +52,8 @@
 
 ## During the 3.6 soak (starts when the cron lands)
 
-- [ ] **Add the 2nd soak guild** (chunk 3.6.1 — do this EARLY in the week
+- [x] **Add the 2nd soak guild** _(done 2026-07-06 — installed,
+      registered, verified)_ (chunk 3.6.1 — do this EARLY in the week
       so the extra traffic counts): ① authorize the app in guild 2 via the
       OAuth2 install link with **only** the `applications.commands` scope
       (no `bot` scope — this bot never has a server member); ② append the

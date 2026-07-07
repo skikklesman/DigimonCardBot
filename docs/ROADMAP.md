@@ -227,7 +227,12 @@ the test guild. **Reached:** 2026-07-05
       cron schedule. Start the
       7-day soak: bot in test guild, daily use, watch logs/alerts. Fix anything the
       soak surfaces.
-- [ ] **3.6.1 — Expand soak coverage to a 2nd guild.** _(Time-sensitive:
+- [x] **3.6.1 — Expand soak coverage to a 2nd guild.** _(Landed
+      2026-07-06: `npm run register` handles a comma-separated
+      `DISCORD_TEST_GUILD_ID` list; owner installed the app in guild 2
+      (`applications.commands` scope only), registered, and verified the
+      commands respond — day one of the soak week, so the full window
+      gets two-guild traffic.)_ _(Time-sensitive:
       do early in the soak week — 2026-07-06 → 07-13 — so the extra
       traffic actually accrues. Joining mid-soak does NOT reset the 7-day
       clock: the soak measures the bot's stability, and more real usage

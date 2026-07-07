@@ -153,6 +153,47 @@ describe("CardRepo", () => {
     });
   });
 
+  describe("countSetCards (/release live tally)", () => {
+    // SEED gives EX1-066 (setName "TEST SET") three printings; retag two
+    // cards into a bracketed set string like upstream's.
+    const tagged = () =>
+      loadNewVersion(env.DB, [
+        ...SEED.map((c) =>
+          c.cardId.startsWith("EX3")
+            ? { ...c, setName: "▹THEME BOOSTER DRAGONIC ROAR [EX-03]" }
+            : c,
+        ),
+      ]);
+
+    it("counts distinct cards and total printings for a matcher", async () => {
+      await tagged();
+      // EX3-035 has a base + P1 printing — one card, two printings.
+      await expect(repo.countSetCards(["[EX-03]"])).resolves.toEqual({
+        cards: 1,
+        printings: 2,
+      });
+    });
+
+    it("ORs multiple matchers together", async () => {
+      await tagged();
+      const both = await repo.countSetCards(["[EX-03]", "TEST SET"]);
+      expect(both.printings).toBe(SEED.length);
+    });
+
+    it("returns zeros for no match and for an empty matcher list (no query)", async () => {
+      await expect(repo.countSetCards(["[ZZ-99]"])).resolves.toEqual({ cards: 0, printings: 0 });
+      await expect(repo.countSetCards([])).resolves.toEqual({ cards: 0, printings: 0 });
+    });
+
+    it("only counts the active version", async () => {
+      await env.DB.prepare(
+        `INSERT INTO cards (version, card_id, variant, name, search_name, set_name)
+         VALUES (99, 'ZZ9-001', '0', 'Staged', 'staged', 'STAGED SET [ZZ-99]')`,
+      ).run();
+      await expect(repo.countSetCards(["[ZZ-99]"])).resolves.toEqual({ cards: 0, printings: 0 });
+    });
+  });
+
   describe("version isolation", () => {
     it("never returns rows from a staged, unpromoted version", async () => {
       // Stage a doppelganger dataset under version 2 without flipping.

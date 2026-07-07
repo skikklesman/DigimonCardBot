@@ -9,6 +9,7 @@ import {
   type APIInteractionResponse,
 } from "discord-api-types/v10";
 import type { Card } from "../data/schema.ts";
+import type { ReleaseSet } from "../data/releases.ts";
 
 // Discord embed limits (title 256 / field value 1024). Long effects get cut
 // with an ellipsis — the full text is on the card image anyway.
@@ -92,6 +93,70 @@ export function keywordResponse(keyword: { name: string; text: string }): APIInt
           description: truncate(keyword.text, 4096),
           color: DEFAULT_COLOR,
           footer: { text: "Digimon Card Game keyword" },
+        },
+      ],
+    },
+  };
+}
+
+const MONTHS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+/** "2023-11-17" → "November 17, 2023"; "2025-10" → "October 2025". */
+function formatReleaseDate(iso: string): string {
+  const [year, month, day] = iso.split("-");
+  const monthName = MONTHS[Number(month) - 1] ?? month ?? "";
+  return day ? `${monthName} ${Number(day)}, ${year}` : `${monthName} ${year}`;
+}
+
+/** Set/release info (/release). `now` decides released-vs-upcoming phrasing
+ * — injected so the builder stays a pure, snapshot-testable function. */
+export function releaseResponse(
+  set: ReleaseSet,
+  counts: { cards: number; printings: number } | null,
+  now: Date,
+): APIInteractionResponse {
+  // Lexicographic compare works: releasedEN is ISO-ordered, and a bare
+  // "YYYY-MM" sorts before any day within that month (upcoming-ish is the
+  // right call for a month-only announcement).
+  const upcoming = set.releasedEN > now.toISOString().slice(0, 10);
+  const dateLine = `${upcoming ? "Releases" : "Released"} ${formatReleaseDate(set.releasedEN)}`;
+
+  const fields = [
+    { name: "Product", value: set.product, inline: true },
+    { name: "English release", value: dateLine, inline: true },
+  ];
+  if (counts && counts.printings > 0) {
+    fields.push({
+      name: "In my card data",
+      value: `${counts.cards} cards · ${counts.printings} printings`,
+      inline: true,
+    });
+  } else if (counts && upcoming) {
+    fields.push({ name: "In my card data", value: "Nothing yet — not out!", inline: true });
+  }
+
+  return {
+    type: InteractionResponseType.ChannelMessageWithSource,
+    data: {
+      embeds: [
+        {
+          title: truncate(`${set.code} — ${set.name}`, MAX_TITLE),
+          color: DEFAULT_COLOR,
+          fields,
+          footer: { text: "Digimon Card Game set" },
         },
       ],
     },

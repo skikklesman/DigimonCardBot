@@ -195,6 +195,29 @@ describe("interaction endpoint", () => {
     });
   });
 
+  it("answers a signed /release interaction with the set embed (static data + live tally)", async () => {
+    const res = await SELF.fetch(
+      ENDPOINT,
+      await signedInteraction({
+        type: 2,
+        data: {
+          name: "release",
+          options: [{ name: "set", type: 3, value: "BT-14" }],
+        },
+      }),
+    );
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as {
+      data: { embeds: [{ title: string; fields: Array<{ name: string; value: string }> }] };
+    };
+    expect(body.data.embeds[0].title).toBe("BT-14 — Blast Ace");
+    expect(body.data.embeds[0].fields).toContainEqual({
+      name: "English release",
+      value: "Released November 17, 2023",
+      inline: true,
+    });
+  });
+
   it("returns 404 for non-interaction routes", async () => {
     const res = await SELF.fetch("https://example.com/");
     expect(res.status).toBe(404);

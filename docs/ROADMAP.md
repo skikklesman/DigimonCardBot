@@ -244,8 +244,16 @@ Chunks 4.1–4.3 are independent — parallelizable.
       Registered + deployed.)_ Keyword/rules-term lookup. Needs a keyword data
       source — may be a small static dataset shipped with the bot; decide and
       record in DECISIONS.md.
-- [ ] **4.2 — `/release`.** Set/release info lookup. Check what the card source
-      exposes about sets; scope accordingly.
+- [x] **4.2 — `/release`.** _(Landed 2026-07-06. Scoping finding: the card
+      source has NO release dates — set names per card only (122 messy
+      distinct strings, most of them promo/event packs). So: curated static
+      dataset of the ~71 real products (BT/EX/ST/LM/RB/AD + special
+      boosters) with EN dates verified against official Bandai product
+      pages, plus a live D1 card tally per set. Autocomplete is in-memory
+      like /keyword — zero D1 reads per keystroke. Matchers validated
+      against the full real dataset. DECISIONS.md has scope + conventions.
+      Registered + deployed.)_ Set/release info lookup. Check what the card
+      source exposes about sets; scope accordingly.
 - [ ] **4.3 — `/page`.** Whatever the old bot's `/page` did — **confirm with the
       community what this command actually does before building** (open decision,
       HANDOFF §14).

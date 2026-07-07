@@ -173,3 +173,105 @@ exports[`notFoundResponse > is friendly, ephemeral, and suggests next steps 1`] 
   "type": 4,
 }
 `;
+
+exports[`releaseResponse > renders a month-precision announcement date 1`] = `
+{
+  "data": {
+    "embeds": [
+      {
+        "color": 10070709,
+        "fields": [
+          {
+            "inline": true,
+            "name": "Product",
+            "value": "Limited Card Pack",
+          },
+          {
+            "inline": true,
+            "name": "English release",
+            "value": "Releases November 2026",
+          },
+          {
+            "inline": true,
+            "name": "In my card data",
+            "value": "Nothing yet — not out!",
+          },
+        ],
+        "footer": {
+          "text": "Digimon Card Game set",
+        },
+        "title": "LM-09 — Distancia Cero",
+      },
+    ],
+  },
+  "type": 4,
+}
+`;
+
+exports[`releaseResponse > renders a released set with its live tally 1`] = `
+{
+  "data": {
+    "embeds": [
+      {
+        "color": 10070709,
+        "fields": [
+          {
+            "inline": true,
+            "name": "Product",
+            "value": "Booster",
+          },
+          {
+            "inline": true,
+            "name": "English release",
+            "value": "Released November 17, 2023",
+          },
+          {
+            "inline": true,
+            "name": "In my card data",
+            "value": "104 cards · 118 printings",
+          },
+        ],
+        "footer": {
+          "text": "Digimon Card Game set",
+        },
+        "title": "BT-14 — Blast Ace",
+      },
+    ],
+  },
+  "type": 4,
+}
+`;
+
+exports[`releaseResponse > renders an upcoming set: future phrasing, no cards yet 1`] = `
+{
+  "data": {
+    "embeds": [
+      {
+        "color": 10070709,
+        "fields": [
+          {
+            "inline": true,
+            "name": "Product",
+            "value": "Booster",
+          },
+          {
+            "inline": true,
+            "name": "English release",
+            "value": "Releases September 4, 2026",
+          },
+          {
+            "inline": true,
+            "name": "In my card data",
+            "value": "Nothing yet — not out!",
+          },
+        ],
+        "footer": {
+          "text": "Digimon Card Game set",
+        },
+        "title": "BT-26 — Timeless Bonds",
+      },
+    ],
+  },
+  "type": 4,
+}
+`;

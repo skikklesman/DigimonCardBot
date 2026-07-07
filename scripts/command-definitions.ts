@@ -52,4 +52,18 @@ export const COMMAND_DEFINITIONS = [
       },
     ],
   },
+  {
+    name: "release",
+    type: ApplicationCommandType.ChatInput,
+    description: "Look up a Digimon TCG set's release info",
+    options: [
+      {
+        name: "set",
+        type: ApplicationCommandOptionType.String,
+        description: "Set code or name (e.g. BT-14, Beginning Observer)",
+        required: true,
+        autocomplete: true,
+      },
+    ],
+  },
 ] satisfies RESTPutAPIApplicationGuildCommandsJSONBody;

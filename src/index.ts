@@ -9,6 +9,10 @@ import {
   createKeywordAutocomplete,
   createKeywordCommand,
 } from "./interactions/commands/keyword.ts";
+import {
+  createReleaseAutocomplete,
+  createReleaseCommand,
+} from "./interactions/commands/release.ts";
 import { checkStaleSync, runSyncWithAlerts } from "./sync/run.ts";
 import { sendSyncAlert } from "./sync/alert.ts";
 import { handleResync } from "./admin.ts";
@@ -24,13 +28,15 @@ function buildRegistry(env: Env): HandlerRegistry {
       card: createCardCommand(repo),
       alt: createAltCommand(repo),
       keyword: createKeywordCommand(),
+      release: createReleaseCommand(repo),
     },
     // /alt shares /card's autocomplete — same option, same suggestions.
-    // /keyword's autocomplete is a static in-memory list (no D1).
+    // /keyword and /release autocomplete static in-memory lists (no D1).
     autocomplete: {
       card: cardAutocomplete,
       alt: cardAutocomplete,
       keyword: createKeywordAutocomplete(),
+      release: createReleaseAutocomplete(),
     },
   };
 }

@@ -7,7 +7,9 @@ import {
   cardResponse,
   disambiguationResponse,
   notFoundResponse,
+  releaseResponse,
 } from "./embeds.ts";
+import type { ReleaseSet } from "../data/releases.ts";
 
 const goldramon: Card = {
   cardId: "BT14-018",
@@ -119,5 +121,48 @@ describe("altGalleryResponse", () => {
 describe("notFoundResponse", () => {
   it("is friendly, ephemeral, and suggests next steps", () => {
     expect(notFoundResponse("zzzznotacard")).toMatchSnapshot();
+  });
+});
+
+describe("releaseResponse", () => {
+  const blastAce: ReleaseSet = {
+    code: "BT-14",
+    name: "Blast Ace",
+    product: "Booster",
+    releasedEN: "2023-11-17",
+  };
+  const NOW = new Date("2026-07-06T12:00:00Z");
+
+  it("renders a released set with its live tally", () => {
+    expect(releaseResponse(blastAce, { cards: 104, printings: 118 }, NOW)).toMatchSnapshot();
+  });
+
+  it("renders an upcoming set: future phrasing, no cards yet", () => {
+    const upcoming: ReleaseSet = {
+      code: "BT-26",
+      name: "Timeless Bonds",
+      product: "Booster",
+      releasedEN: "2026-09-04",
+    };
+    expect(releaseResponse(upcoming, { cards: 0, printings: 0 }, NOW)).toMatchSnapshot();
+  });
+
+  it("renders a month-precision announcement date", () => {
+    const announced: ReleaseSet = {
+      code: "LM-09",
+      name: "Distancia Cero",
+      product: "Limited Card Pack",
+      releasedEN: "2026-11",
+    };
+    expect(releaseResponse(announced, { cards: 0, printings: 0 }, NOW)).toMatchSnapshot();
+  });
+
+  it("omits the tally entirely when counts are unavailable (null)", () => {
+    const data = (
+      releaseResponse(blastAce, null, NOW) as unknown as {
+        data: { embeds: Array<{ fields: Array<{ name: string }> }> };
+      }
+    ).data;
+    expect(data.embeds[0]?.fields.map((f) => f.name)).toEqual(["Product", "English release"]);
   });
 });

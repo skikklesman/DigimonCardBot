@@ -51,6 +51,10 @@ Target: all pure logic. These are the bulk of the suite and must stay fast
 - **Keyword glossary** (chunk 4.1) — dataset-integrity checks on the static
   glossary: every entry well-formed, numbers normalized to "N", and the
   in-memory autocomplete filters/caps the list correctly.
+- **Release dataset** (chunk 4.2) — same discipline for the static set list:
+  unique codes, well-formed ISO dates, labels inside Discord's cap, LIKE-safe
+  matchers; resolution + in-memory autocomplete; every autocomplete value it
+  hands out must resolve.
 
 Conventions: tests live beside source as `*.test.ts`; no network access in unit
 tests, ever; fixtures in `test/fixtures/`.

@@ -10,6 +10,43 @@
 
 ---
 
+## 2026-07-06 — /release ships curated set data + live D1 tallies (chunk 4.2)
+
+- **Decision:** `/release` looks up a **static, curated dataset**
+  (`src/data/releases.ts`, ~71 products) of set codes, official EN names,
+  product lines, and English release dates — because the card source
+  exposes **no dates at all** (verified: per-card set names only, 122
+  distinct strings, mostly promo/event packs). The command adds a live
+  D1 tally (cards + printings per set) matched via curated `set_name`
+  substrings; its autocomplete is in-memory like `/keyword`'s.
+- **Scope:** main product lines only — BT boosters, EX theme/extra
+  boosters, ST starter/advanced decks, LM limited packs, RB-01, AD-01, and
+  the combined special boosters (BT01-03 ×2, BT18-19, BT19-20) — including
+  announced upcoming products (BT-26, EX-13, LM-08/09). Promo, tournament,
+  demo-deck, and PB accessory distributions are deliberately excluded:
+  they have event windows, not release dates.
+- **Sources & conventions:** dates verified 2026-07-06 against the
+  official Bandai product listings (world.digimoncard.com/products,
+  en.digimoncard.com product pages). `YYYY-MM-DD` = confirmed day;
+  `YYYY-MM` = month-only announcement. Regional EN splits use the earliest
+  date (ST-11: EU 2022-10-14 vs NA 10-21). LM-01/02 have no matchers —
+  upstream files their cards under BT-15's set string, so no tally beats a
+  wrong one. Matchers were validated against the full real dataset (every
+  entry hits plausible counts; only unreleased BT-26/EX-13 and the
+  reprints-only ST-11 hit zero).
+- **Why the tally scans:** `set_name` has no index, so the count scans the
+  active version — acceptable because it runs per `/release` _invocation_
+  only (low volume); the per-keystroke path (autocomplete) is static
+  precisely so no D1 query rides it (see the 2026-07-06 index-range entry).
+- **Update path:** a new set = one entry in `releases.ts`, same edit
+  cadence as the keyword glossary (a few times a year, when sets release).
+- **Revisit if:** the community wants promo-pack coverage, upstream starts
+  publishing dates (then sync them instead), or the tally's string
+  coupling breaks often enough to annoy (counts degrade to "no tally
+  shown", never wrong data).
+
+---
+
 ## 2026-07-06 — Autocomplete search uses an explicit index range, not LIKE (test-coverage audit)
 
 - **Decision:** `searchByName` filters with

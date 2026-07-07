@@ -50,6 +50,7 @@ const repo: CardRepo = {
     );
   },
   listPrintings: (id) => Promise.resolve(CARDS.filter((c) => c.cardId === id)),
+  countSetCards: () => Promise.resolve({ cards: 0, printings: 0 }), // /release-only, unused here
 };
 
 const handle = createAltCommand(repo);

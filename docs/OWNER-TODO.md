@@ -18,6 +18,14 @@
       formatting automatically. Note the review in DECISIONS.md when done —
       "judge-reviewed" is a quality stamp worth recording.
 
+- [ ] **Spot-check the /release dates** (`src/data/releases.ts`, chunk
+      4.2): ~71 sets with EN release dates, all pulled from official Bandai
+      product pages on 2026-07-06 — but a second pair of eyes on a handful
+      you know cold (BT-14? the special boosters?) is cheap insurance, same
+      as the keyword review. Conventions to know: earliest regional EN date
+      wins (ST-11), `YYYY-MM` = announced month only. Note the review in
+      DECISIONS.md when done.
+
 - [ ] **Enable CI auto-deploys:** create a Cloudflare API token
       (dash.cloudflare.com → My Profile → API Tokens → template
       _"Edit Cloudflare Workers"_) and add it to the GitHub repo as the

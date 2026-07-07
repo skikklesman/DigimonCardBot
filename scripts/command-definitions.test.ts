@@ -33,6 +33,16 @@ describe("command definitions", () => {
     },
   );
 
+  it("defines /release with a required, autocompleting set option", () => {
+    const command = COMMAND_DEFINITIONS.find((c) => c.name === "release");
+    const option = command?.options?.find((o) => o.name === "set");
+    expect(option).toMatchObject({
+      type: ApplicationCommandOptionType.String,
+      required: true,
+      autocomplete: true,
+    });
+  });
+
   it("never combines autocomplete with static choices (Discord rejects it)", () => {
     for (const command of COMMAND_DEFINITIONS) {
       for (const option of command.options ?? []) {

@@ -59,6 +59,11 @@ export interface CardRepo {
   searchByName(query: string, limit?: number): Promise<Card[]>;
   /** Every printing of a card (base + alt-arts), for /alt. */
   listPrintings(cardId: string): Promise<Card[]>;
+  /** Live tallies for /release: printings whose set_name contains any of
+   * the given substrings (case-insensitive), and the distinct cards among
+   * them. Matchers come from the curated static dataset, never from user
+   * input, and contain no LIKE metacharacters. */
+  countSetCards(matchers: string[]): Promise<{ cards: number; printings: number }>;
 }
 
 const DEFAULT_SEARCH_LIMIT = 25;
@@ -115,6 +120,23 @@ export function createRepo(db: D1Database): CardRepo {
         .bind(cardId)
         .all<CardRow>();
       return results.map(toCard);
+    },
+
+    async countSetCards(matchers) {
+      if (matchers.length === 0) return { cards: 0, printings: 0 };
+      // set_name has no index, so this scans the active version (~8.4k
+      // rows). That is fine HERE and only here: /release is a low-volume
+      // command invocation. Its autocomplete is a static in-memory list
+      // precisely so no per-keystroke query ever reaches this path.
+      const like = matchers.map(() => "set_name LIKE '%' || ? || '%'").join(" OR ");
+      const row = await db
+        .prepare(
+          `SELECT COUNT(DISTINCT card_id) AS cards, COUNT(*) AS printings
+           FROM cards WHERE ${LIVE} AND (${like})`,
+        )
+        .bind(...matchers)
+        .first<{ cards: number; printings: number }>();
+      return row ?? { cards: 0, printings: 0 };
     },
   };
 }

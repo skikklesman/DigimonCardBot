@@ -287,7 +287,13 @@ Chunks 4.1–4.3 are independent — parallelizable.
       **confirm with the community what this command actually does before
       building** (open decision, HANDOFF §14).
 - [ ] **4.4 — Command-set parity review.** Compare against the old bot with
-      community input; finalize names/options (HANDOFF §14).
+      community input; finalize names/options (HANDOFF §14). _Community
+      input collected so far (soak testing 2026-07-07, DECISIONS.md):
+      side-by-side card comparison (e.g. `/compare card1 card2` — the
+      `/alt` multi-embed machinery plus Discord's shared-`url` trick makes
+      this cheap); a discoverability gap around `/keyword` (tester didn't
+      know effect definitions existed — consider `/help` or richer command
+      descriptions)._
 - [ ] **4.5 — Hardening pass.** Input fuzzing on interaction payloads
       (malformed options, absurd lengths, weird unicode in names); D1 error
       handling (what does the user see if D1 errors mid-lookup? — must be a

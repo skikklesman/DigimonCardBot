@@ -10,6 +10,37 @@
 
 ---
 
+## 2026-07-07 — Soak user-testing feedback triaged (no scope change)
+
+- **Context:** first outside-tester feedback of the Gate C soak (two
+  testers, 2026-07-06 evening). All commands worked; overall reception
+  positive.
+- **Decisions (owner calls):**
+  - **Side-by-side card comparison** (tester request, e.g.
+    `/compare card1 card2`) — **parked as chunk 4.4 community input**,
+    not a new chunk yet. Build/no-build decided when the parity review
+    runs. Feasibility note for then: the `/alt` gallery already does
+    multi-embed replies, and Discord's shared-`url` embed trick renders
+    up to 4 images side by side.
+  - **"Bring back the full card text" preference** (one tester liked the
+    pre-4.8 text embed, while agreeing the new form "feels better in some
+    ways") — **logged only, no reversal** of the image-first call
+    (2026-07-06). One vote for a possible future opt-in text toggle.
+    Prerequisite if that ever happens: the dual-card `optionCardEffect`
+    data gap in [BUGS.md](BUGS.md) must be fixed first, or the toggle
+    ships incomplete text.
+  - **Heavier/italic font preference** — not actionable; Discord owns
+    embed typography, bots only get markdown. Recorded to close it out.
+  - **Keyword-descriptions worry** — tester feared effect-keyword
+    definitions were missing; `/keyword` covers this. Read as a
+    **discoverability gap**, noted as 4.4 input (candidate: `/help` or
+    richer command descriptions).
+- **Revisit if:** more soak/launch feedback echoes the text-embed
+  preference (strengthens the toggle case) or the compare request
+  (promotes it from 4.4 input to its own chunk).
+
+---
+
 ## 2026-07-07 — /release renamed /set; /release becomes the upcoming-releases forecast (chunk 4.9 planned)
 
 - **Decision (owner call, parity feedback):** the current set-lookup

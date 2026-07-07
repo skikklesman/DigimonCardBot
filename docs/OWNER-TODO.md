@@ -7,7 +7,7 @@
 
 ## Anytime (no deadline, browser is enough)
 
-- [ ] **Judge review of the keyword glossary** (`src/data/keywords.ts`,
+- [x] **Judge review of the keyword glossary** (`src/data/keywords.ts`,
       chunk 4.1): the owner is an **official Digimon TCG judge** — review
       all ~45 definitions for rules accuracy (they were compiled from card
       text + community sources, phrased as reminder text, numbers as "N"),

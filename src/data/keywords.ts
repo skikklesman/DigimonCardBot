@@ -71,6 +71,10 @@ export const KEYWORDS: Keyword[] = [
     name: "Progress",
     text: "While this Digimon is attacking, your opponent's effects don't affect it.",
   },
+  {
+    name: "Guard",
+    text: "When any of your other Digimon would leave the battle area by an opponent's effect, by deleting this Digimon, it doesn't leave.",
+  },
 
   // — attacking —
   {
@@ -79,7 +83,7 @@ export const KEYWORDS: Keyword[] = [
   },
   {
     name: "Blitz",
-    text: "This Digimon can attack when your opponent has 1 or more memory.",
+    text: "This Digimon can attack if your opponent has 1 or more memory.",
   },
   {
     name: "Piercing",
@@ -141,7 +145,7 @@ export const KEYWORDS: Keyword[] = [
   },
   {
     name: "Material Save N",
-    text: "When this Digimon would be deleted, you may place N cards listed in its DigiXros requirements from its digivolution cards under 1 of your Tamers.",
+    text: "When this Digimon is deleted, you may place N cards listed in its DigiXros requirements from its digivolution cards under 1 of your Tamers.",
     aliases: ["Material Save"],
   },
   {
@@ -156,7 +160,7 @@ export const KEYWORDS: Keyword[] = [
   },
   {
     name: "Blast DNA Digivolve",
-    text: "Two of your specified Digimon may DNA digivolve into this card without paying the cost.",
+    text: "One of your specified Digimon and a card from your hand may DNA digivolve into this card without paying the cost.",
   },
   {
     name: "DNA Digivolve",
@@ -192,8 +196,12 @@ export const KEYWORDS: Keyword[] = [
   },
   {
     name: "Overflow ⟨−N⟩",
-    text: "As this card moves from the battle area or from under a card to another area, you lose N memory. (This is the ACE mechanic's cost.)",
+    text: "As this card moves from the field or from under a card to another area, you lose N memory. (This is the ACE mechanic's cost.)",
     aliases: ["Overflow", "ACE"],
+  },
+  {
+    name: "Assembly",
+    text: "When you would play this card, by placing the specified cards from your trash under it, reduce the play cost by the specified value.",
   },
 
   // — Tamers & linking —
@@ -220,5 +228,21 @@ export const KEYWORDS: Keyword[] = [
   {
     name: "Delay",
     text: "Trash this card in your battle area to activate the effect below. You can't activate this effect the turn this card enters play.",
+  },
+
+  {
+    name: "Use Req",
+    text: "If you have the specified cards on the field, you may ignore the color requirements of this Option.",
+  },
+
+  {
+    name: "Arts Digivolve",
+    text: "When this Option is used, instead of trashing it after use, one of your cards on the field may digivolve into this DUAL card without paying the cost.",
+  },
+
+  // - Other -
+  {
+    name: "Training",
+    text: "By suspending this Digimon during the main phase, place the top card of your deck at the bottom of this Digimon's digivolution cards. This effect can also activate in the breeding area.",
   },
 ];

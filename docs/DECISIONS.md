@@ -10,6 +10,18 @@
 
 ---
 
+## 2026-07-06 — Owner reviewed the keywords.ts file
+
+- **Decision (owner call):** Owner (a level 1 Judge for the Digimon TCG) reviewed
+  the keywords file and added in the missing keywords/terms.
+- **Why:** It needed an accuracy pass, and a decision on whether or not to add in
+  the missing terms. Accurate wording on the keywords is critical to the bot's
+  usefulness as a rules reference for card keywords.
+- **Revisit if:** the rules are updated and new keywords added (or if a keyword ever
+  changes its wording. Rare, but it has happened at least once.)
+
+---
+
 ## 2026-07-06 — /page: Will Not Do (resolves open decision #3, closes chunk 4.3)
 
 - **Decision (owner call):** `/page` will **not** be built. The chunk is

@@ -146,6 +146,42 @@ export function releaseResponse(
   };
 }
 
+/** Upcoming-releases forecast (/release, chunk 4.9): every curated set
+ * dated today or later, soonest first — derived entirely from
+ * releases.ts, so a stale file shortens the list but never lies.
+ * Month-only announcements ("2026-08") stay listed through their whole
+ * month; a set releasing today still counts as upcoming. `now` is
+ * injected to keep the builder pure and snapshot-testable. */
+export function upcomingReleasesResponse(sets: ReleaseSet[], now: Date): APIInteractionResponse {
+  const today = now.toISOString().slice(0, 10);
+  const thisMonth = today.slice(0, 7);
+  const upcoming = sets
+    .filter((s) => (s.releasedEN.length === 7 ? s.releasedEN >= thisMonth : s.releasedEN >= today))
+    .sort((a, b) => a.releasedEN.localeCompare(b.releasedEN));
+
+  const lines = upcoming.map(
+    (s) => `• **${s.name}** (${s.code}) — ${formatReleaseDate(s.releasedEN)}`,
+  );
+  const description =
+    lines.length > 0
+      ? truncate(lines.join("\n"), 4096)
+      : "No upcoming sets in my release data right now — new Bandai announcements land here as they're added.";
+
+  return {
+    type: InteractionResponseType.ChannelMessageWithSource,
+    data: {
+      embeds: [
+        {
+          title: "Upcoming Releases",
+          description,
+          color: DEFAULT_COLOR,
+          footer: { text: "English release dates · YYYY-MM = announced month" },
+        },
+      ],
+    },
+  };
+}
+
 /** Discord allows at most 10 embeds per message — the /alt gallery cap. */
 const MAX_GALLERY_EMBEDS = 10;
 

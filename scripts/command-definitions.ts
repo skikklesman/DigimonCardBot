@@ -53,7 +53,7 @@ export const COMMAND_DEFINITIONS = [
     ],
   },
   {
-    name: "release",
+    name: "set",
     type: ApplicationCommandType.ChatInput,
     description: "Look up a Digimon TCG set's release info",
     options: [
@@ -65,5 +65,10 @@ export const COMMAND_DEFINITIONS = [
         autocomplete: true,
       },
     ],
+  },
+  {
+    name: "release",
+    type: ApplicationCommandType.ChatInput,
+    description: "See the upcoming Digimon TCG set releases",
   },
 ] satisfies RESTPutAPIApplicationGuildCommandsJSONBody;

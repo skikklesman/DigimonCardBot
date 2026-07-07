@@ -18,13 +18,26 @@
       formatting automatically. Note the review in DECISIONS.md when done —
       "judge-reviewed" is a quality stamp worth recording.
 
-- [ ] **Spot-check the /release dates** (`src/data/releases.ts`, chunk
-      4.2): ~71 sets with EN release dates, all pulled from official Bandai
-      product pages on 2026-07-06 — but a second pair of eyes on a handful
-      you know cold (BT-14? the special boosters?) is cheap insurance, same
-      as the keyword review. Conventions to know: earliest regional EN date
+- [ ] **Spot-check the /set dates** (`src/data/releases.ts`, chunk 4.2;
+      the command was renamed from /release in 4.9): ~71 sets with EN
+      release dates, all pulled from official Bandai product pages on
+      2026-07-06 — but a second pair of eyes on a handful you know cold
+      (BT-14? the special boosters?) is cheap insurance, same as the
+      keyword review. Conventions to know: earliest regional EN date
       wins (ST-11), `YYYY-MM` = announced month only. Note the review in
-      DECISIONS.md when done.
+      DECISIONS.md when done. The same data now also drives the
+      /release upcoming-forecast, so a wrong future date is doubly
+      visible.
+- [ ] **Watch for official EN listings of the announced 2026-12+ sets**
+      (chunk 4.9 finding): the old bot forecast BT-27 "Ignition of X",
+      ST-25/ST-26 (Digimon Alysion decks), EX-14, BT-28, and ST-27 —
+      but none have official EN product pages yet (checked
+      world.digimoncard.com + en.digimoncard.com, 2026-07-07; community
+      sources say December 2026 onward). Our dataset only takes
+      officially posted dates, so when Bandai publishes each listing,
+      add its one-liner to `src/data/releases.ts` and the /release
+      forecast picks it up automatically. You likely hear about these
+      announcements before any webpage does.
 
 - [ ] **Enable CI auto-deploys:** create a Cloudflare API token
       (dash.cloudflare.com → My Profile → API Tokens → template
@@ -52,6 +65,11 @@
 
 ## During the 3.6 soak (starts when the cron lands)
 
+- [ ] **Re-register commands for the 4.9 rename** (one `npm run register`
+      run): swaps `/release` → `/set` and adds the new no-argument
+      `/release` forecast in both soak guilds at once. Do it after the
+      4.9 deploy is live (already done if Claude deployed in-session);
+      then verify `/set bt-14` and a bare `/release` both answer.
 - [x] **Add the 2nd soak guild** _(done 2026-07-06 — installed,
       registered, verified)_ (chunk 3.6.1 — do this EARLY in the week
       so the extra traffic counts): ① authorize the app in guild 2 via the

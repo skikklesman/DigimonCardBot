@@ -33,14 +33,20 @@ describe("command definitions", () => {
     },
   );
 
-  it("defines /release with a required, autocompleting set option", () => {
-    const command = COMMAND_DEFINITIONS.find((c) => c.name === "release");
+  it("defines /set with a required, autocompleting set option", () => {
+    const command = COMMAND_DEFINITIONS.find((c) => c.name === "set");
     const option = command?.options?.find((o) => o.name === "set");
     expect(option).toMatchObject({
       type: ApplicationCommandOptionType.String,
       required: true,
       autocomplete: true,
     });
+  });
+
+  it("defines /release with no options (the forecast takes no input)", () => {
+    const command = COMMAND_DEFINITIONS.find((c) => c.name === "release");
+    expect(command).toBeDefined();
+    expect(command && "options" in command && command.options).toBeFalsy();
   });
 
   it("never combines autocomplete with static choices (Discord rejects it)", () => {

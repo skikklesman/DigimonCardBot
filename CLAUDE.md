@@ -31,24 +31,28 @@ minimal maintenance.
   (2026-07-05, Gate B): version 1 live, 8,425 rows / 4,295 cards, transferred
   from the first real local sync. It will NOT refresh until the cron trigger
   lands (chunk 3.6) — data staleness is expected and harmless until then.
-- **Phases 1–3 complete (code-wise) + chunk 4.1** (2026-07-05/06): sync
-  pipeline, router, repository, `/card` (with autocomplete), `/alt`
-  (gallery), `/keyword` (static glossary), alerting (proven by live
+- **Phases 1–3 complete + chunks 4.1/4.2/4.8/4.9 and 3.6.1**
+  (2026-07-05/07): sync pipeline, router, repository, `/card` (image-first
+  since 4.8, autocomplete), `/alt` (gallery), `/keyword` (static
+  glossary), `/set` (set lookup — born as `/release`, renamed in 4.9),
+  `/release` (upcoming-releases forecast, 4.9), alerting (proven by live
   drills), `POST /admin/resync` (bearer-auth, proven against production),
-  `GET /health`, post-deploy smoke in CI, weekly source-contract CI job
-  (Mondays 06:00 UTC). **Next chunk: 4.2 (`/release`).** 4.3 (`/page`) is
-  blocked on community input — and note the owner is an **official Digimon
-  TCG judge**: primary source for all rules/keyword content (see
-  OWNER-TODO's glossary-review item).
+  `GET /health` (503 when stale), post-deploy smoke in CI, weekly
+  source-contract CI job (Mondays 06:00 UTC). 4.3 (`/page`) closed as
+  Will Not Do; **next buildable chunks: 4.6 (`/card` restriction flag) →
+  4.7 (`/banlist`)**; 4.4 needs community input. The owner is an
+  **official Digimon TCG judge**: primary source for all rules/keyword
+  content (see OWNER-TODO's glossary-review item).
 - **Cron is LIVE**: `0 6 * * 2` (Tuesdays 06:00 UTC; DECISIONS 2026-07-06).
   **The 7-day soak runs 2026-07-06 → 2026-07-13**; Gate C also needs the
   two automated runs (expected Jul 7 + Jul 14). Owner duties in
   OWNER-TODO.md. Production D1: version 2, 8,425 rows, pipeline-loaded via
   the resync route.
-- **Commands `/card`, `/alt`, `/keyword` registered to the test guild**
-  (owner's `.dev.vars` has `DISCORD_APP_ID`, `DISCORD_BOT_TOKEN`,
-  `DISCORD_TEST_GUILD_ID`, `SYNC_ALERT_WEBHOOK`, `RESYNC_TOKEN`;
-  re-register with `npm run register`). Production secrets:
+- **Commands registered to the soak guilds** (`DISCORD_TEST_GUILD_ID` is a
+  comma-separated list since 3.6.1; owner's `.dev.vars` has
+  `DISCORD_APP_ID`, `DISCORD_BOT_TOKEN`, `DISCORD_TEST_GUILD_ID`,
+  `SYNC_ALERT_WEBHOOK`, `RESYNC_TOKEN`; re-register with
+  `npm run register` after any command-definition change). Production secrets:
   `DISCORD_PUBLIC_KEY`, `SYNC_ALERT_WEBHOOK`, `RESYNC_TOKEN`. Optional
   `CARD_SOURCE_URL` overrides the card source for staging/drills.
 - **Convention since 3.6:** relative imports carry explicit `.ts`

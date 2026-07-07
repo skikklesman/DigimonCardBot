@@ -8,6 +8,7 @@ import {
   disambiguationResponse,
   notFoundResponse,
   releaseResponse,
+  upcomingReleasesResponse,
 } from "./embeds.ts";
 import type { ReleaseSet } from "../data/releases.ts";
 
@@ -165,5 +166,58 @@ describe("releaseResponse", () => {
       }
     ).data;
     expect(data.embeds[0]?.fields.map((f) => f.name)).toEqual(["Product", "English release"]);
+  });
+});
+
+describe("upcomingReleasesResponse", () => {
+  const NOW = new Date("2026-07-07T12:00:00Z");
+  const sets: ReleaseSet[] = [
+    { code: "BT-25", name: "Dual Revolution", product: "Booster", releasedEN: "2026-05-22" },
+    { code: "LM-09", name: "Distancia Cero", product: "Limited Card Pack", releasedEN: "2026-11" },
+    { code: "BT-26", name: "Timeless Bonds", product: "Booster", releasedEN: "2026-09-04" },
+    { code: "LM-08", name: "Final Crest", product: "Limited Card Pack", releasedEN: "2026-08" },
+  ];
+
+  const description = (response: unknown): string =>
+    (response as { data: { embeds: [{ description: string }] } }).data.embeds[0].description;
+
+  it("lists only future sets, soonest first, mixing day and month precision", () => {
+    expect(upcomingReleasesResponse(sets, NOW)).toMatchSnapshot();
+  });
+
+  it("counts a set releasing today as upcoming", () => {
+    const today = {
+      code: "EX-99",
+      name: "Today Set",
+      product: "Booster",
+      releasedEN: "2026-07-07",
+    };
+    expect(description(upcomingReleasesResponse([today], NOW))).toContain("Today Set");
+  });
+
+  it("keeps a month-only announcement listed through its whole month", () => {
+    const thisMonth = {
+      code: "EX-98",
+      name: "This Month",
+      product: "Booster",
+      releasedEN: "2026-07",
+    };
+    expect(description(upcomingReleasesResponse([thisMonth], NOW))).toContain("This Month");
+  });
+
+  it("excludes released sets and yesterday's dates", () => {
+    const yesterday = {
+      code: "EX-97",
+      name: "Yesterday",
+      product: "Booster",
+      releasedEN: "2026-07-06",
+    };
+    const text = description(upcomingReleasesResponse([...sets, yesterday], NOW));
+    expect(text).not.toContain("Dual Revolution");
+    expect(text).not.toContain("Yesterday");
+  });
+
+  it("answers gracefully when nothing is upcoming", () => {
+    expect(upcomingReleasesResponse([], NOW)).toMatchSnapshot();
   });
 });

@@ -352,6 +352,40 @@ Chunks 4.1–4.3 are independent — parallelizable.
       _text_ rules reference, which raises the stakes on its accuracy
       (already judge-reviewed). Tests: update the `cardResponse`
       snapshots; disambiguation/not-found and `/alt` are untouched.
+- [x] **4.9 — `/release` parity split: rename to `/set`, `/release`
+      becomes the upcoming-releases forecast.** _(Landed 2026-07-07.
+      Verification finding: BT-26/LM-08/LM-09 dates re-confirmed on
+      official pages, but the old bot's December-onward horizon (BT-27
+      "Ignition of X", ST-25/ST-26 Alysion decks, EX-14, BT-28, ST-27)
+      has NO official EN product listings yet — community leaks only, so
+      per the 4.2 convention nothing was added; OWNER-TODO has the watch
+      item. Owner action pending: `npm run register` to swap the
+      commands in the soak guilds.)_ _(Owner parity feedback,
+      2026-07-07 — DECISIONS.md. Do before Gate D: renames are free
+      while the commands are guild-only, breaking after global launch.)_
+      **(a) Rename** the current set-lookup command `/release` → `/set` —
+      same option, handler, and autocomplete; name only. One
+      `npm run register` PUT swaps the command set in every soak guild
+      atomically. **(b) New `/release`** (no options, public): the old
+      bot's "Upcoming Releases" list — every `releases.ts` entry with
+      `releasedEN` today-or-later, ascending, one line each
+      (`Name (CODE): <formatted date>`; month-only entries render as
+      the month). Derived 100% from the existing curated dataset — NO
+      second hand-maintained list (the old bot's per-set flavor text
+      like "preorders open until…" was almost certainly manual and is
+      deliberately out of scope); a stale file degrades to a shorter
+      list, never wrong data. **In-chunk prereq:** refresh `releases.ts`
+      against current official announcements — the old bot lists
+      BT-27/ST-25/ST-26 (Dec 2026), EX-14 (Jan 2027), BT-28/ST-27
+      (Mar 2027) beyond our current horizon; verify each on Bandai
+      product pages before adding. Also sweep living docs for the
+      rename (CLAUDE.md command list, OWNER-TODO spot-check item);
+      historical DECISIONS entries stay as written. Tests:
+      command-definition tests updated for both names; forecast builder
+      is a pure function with injected `now` like `releaseResponse` —
+      snapshot a mixed day/month-precision list, the empty-forecast
+      reply, and pin the release-day boundary (a set releasing today
+      still counts as upcoming).
 
 **✅ Gate D criteria:** full command set live in the test guild; fuzz findings
 fixed. **Reached:** `pending`

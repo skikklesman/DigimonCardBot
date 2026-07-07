@@ -9,10 +9,8 @@ import {
   createKeywordAutocomplete,
   createKeywordCommand,
 } from "./interactions/commands/keyword.ts";
-import {
-  createReleaseAutocomplete,
-  createReleaseCommand,
-} from "./interactions/commands/release.ts";
+import { createSetAutocomplete, createSetCommand } from "./interactions/commands/set.ts";
+import { createReleaseCommand } from "./interactions/commands/release.ts";
 import { checkStaleSync, runSyncWithAlerts } from "./sync/run.ts";
 import { sendSyncAlert } from "./sync/alert.ts";
 import { handleResync } from "./admin.ts";
@@ -28,15 +26,18 @@ function buildRegistry(env: Env): HandlerRegistry {
       card: createCardCommand(repo),
       alt: createAltCommand(repo),
       keyword: createKeywordCommand(),
-      release: createReleaseCommand(repo),
+      set: createSetCommand(repo),
+      // /release is the no-argument upcoming-releases forecast (4.9).
+      release: createReleaseCommand(),
     },
     // /alt shares /card's autocomplete — same option, same suggestions.
-    // /keyword and /release autocomplete static in-memory lists (no D1).
+    // /keyword and /set autocomplete static in-memory lists (no D1);
+    // /release has no options, so no autocomplete entry.
     autocomplete: {
       card: cardAutocomplete,
       alt: cardAutocomplete,
       keyword: createKeywordAutocomplete(),
-      release: createReleaseAutocomplete(),
+      set: createSetAutocomplete(),
     },
   };
 }

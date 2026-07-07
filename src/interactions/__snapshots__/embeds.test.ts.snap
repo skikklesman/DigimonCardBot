@@ -205,3 +205,41 @@ exports[`releaseResponse > renders an upcoming set: future phrasing, no cards ye
   "type": 4,
 }
 `;
+
+exports[`upcomingReleasesResponse > answers gracefully when nothing is upcoming 1`] = `
+{
+  "data": {
+    "embeds": [
+      {
+        "color": 10070709,
+        "description": "No upcoming sets in my release data right now — new Bandai announcements land here as they're added.",
+        "footer": {
+          "text": "English release dates · YYYY-MM = announced month",
+        },
+        "title": "Upcoming Releases",
+      },
+    ],
+  },
+  "type": 4,
+}
+`;
+
+exports[`upcomingReleasesResponse > lists only future sets, soonest first, mixing day and month precision 1`] = `
+{
+  "data": {
+    "embeds": [
+      {
+        "color": 10070709,
+        "description": "• **Final Crest** (LM-08) — August 2026
+• **Timeless Bonds** (BT-26) — September 4, 2026
+• **Distancia Cero** (LM-09) — November 2026",
+        "footer": {
+          "text": "English release dates · YYYY-MM = announced month",
+        },
+        "title": "Upcoming Releases",
+      },
+    ],
+  },
+  "type": 4,
+}
+`;

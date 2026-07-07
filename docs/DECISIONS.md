@@ -10,6 +10,46 @@
 
 ---
 
+## 2026-07-07 — /release renamed /set; /release becomes the upcoming-releases forecast (chunk 4.9 planned)
+
+- **Decision (owner call, parity feedback):** the current set-lookup
+  command keeps its exact behavior but is renamed **`/set`** — the
+  clearer name for "look up info on a specific set." The **`/release`**
+  name is reassigned to match the old bot: a no-argument forward look
+  listing every known upcoming set with its release date (screenshot
+  evidence from the old bot, 2026-06-28: "Upcoming Releases" bullets
+  through March 2027).
+- **Why:** parity — to the community, `/release` means the forecast.
+  Our set lookup is a genuinely new addition worth keeping, so it moves
+  aside rather than out. The forecast **derives entirely from the
+  existing curated `releases.ts`** (filter `releasedEN` ≥ today, sort
+  ascending): no second dataset, no new maintenance burden beyond the
+  file's existing update cadence — explicitly required by the owner
+  ("nothing I have to manually babysit"). The old bot's per-set flavor
+  lines ("preorders open until…") were almost certainly hand-curated
+  and are deliberately out of scope. Staleness degrades safely: an
+  un-updated file makes the forecast shorter, never wrong.
+- **Timing:** must land before Gate D / global registration — a rename
+  is free while commands are guild-only and painful after launch.
+- **Revisit if:** the community misses the flavor text (then consider
+  sourcing preorder windows officially, still not hand-typed), or
+  Bandai's announcement pages ever expose a machine-readable upcoming
+  list worth syncing instead.
+- **Landed 2026-07-07 — verification findings:** BT-26 (Sep 4), LM-08
+  (Aug), LM-09 (Nov) re-confirmed against world.digimoncard.com. The
+  old bot's December-onward horizon — BT-27 "Ignition of X",
+  ST-25/ST-26 (Digimon Alysion starter decks), EX-14, BT-28, ST-27 —
+  has **no official EN product listings yet** (checked both official
+  product pages 2026-07-07; only community leak/preview coverage
+  exists). Held to the 4.2 convention: official dates only, so none
+  were added; OWNER-TODO carries the watch item, and each future
+  announcement is a one-line `releases.ts` edit that the forecast picks
+  up automatically. Month-only boundary rule: a `YYYY-MM` announcement
+  stays in the forecast through its whole month; a full date drops off
+  the day after release.
+
+---
+
 ## 2026-07-06 — /card goes image-first: title → image (chunk 4.8 planned)
 
 - **Decision (owner call, from real soak-week usage):** the `/card`

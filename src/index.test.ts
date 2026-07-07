@@ -195,13 +195,13 @@ describe("interaction endpoint", () => {
     });
   });
 
-  it("answers a signed /release interaction with the set embed (static data + live tally)", async () => {
+  it("answers a signed /set interaction with the set embed (static data + live tally)", async () => {
     const res = await SELF.fetch(
       ENDPOINT,
       await signedInteraction({
         type: 2,
         data: {
-          name: "release",
+          name: "set",
           options: [{ name: "set", type: 3, value: "BT-14" }],
         },
       }),
@@ -216,6 +216,18 @@ describe("interaction endpoint", () => {
       value: "Released November 17, 2023",
       inline: true,
     });
+  });
+
+  it("answers a signed /release interaction with the upcoming-releases forecast", async () => {
+    const res = await SELF.fetch(
+      ENDPOINT,
+      await signedInteraction({ type: 2, data: { name: "release" } }),
+    );
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as {
+      data: { embeds: [{ title: string; description: string }] };
+    };
+    expect(body.data.embeds[0].title).toBe("Upcoming Releases");
   });
 
   it("returns 404 for non-interaction routes", async () => {

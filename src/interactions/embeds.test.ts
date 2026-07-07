@@ -27,6 +27,7 @@ const goldramon: Card = {
   setName: "BOOSTER BLAST ACE [BT-14]",
   rarity: "R",
   imageUrl: "https://example.com/BT14-018.webp",
+  restriction: null,
 };
 
 const analogYouthP1: Card = {
@@ -44,6 +45,7 @@ const analogYouthP1: Card = {
   setName: "EX-01: Theme Booster Classic Collection",
   rarity: "R",
   imageUrl: "https://example.com/EX1-066_P1.webp",
+  restriction: null,
 };
 
 describe("cardResponse", () => {
@@ -53,6 +55,36 @@ describe("cardResponse", () => {
 
   it("tags the variant in an alt-art title", () => {
     expect(cardResponse(analogYouthP1)).toMatchSnapshot();
+  });
+
+  // Chunk 4.6: the restriction warning is the one fact the card image
+  // cannot show. Wording per owner call 2026-07-07 (DECISIONS.md).
+  const description = (response: unknown): string | undefined =>
+    (response as { data: { embeds: [{ description?: string }] } }).data.embeds[0].description;
+
+  it("flags a banned card in the description line", () => {
+    expect(cardResponse({ ...goldramon, restriction: "Banned" })).toMatchSnapshot();
+  });
+
+  it("flags a restricted card in the description line", () => {
+    expect(cardResponse({ ...goldramon, restriction: "Restricted to 1" })).toMatchSnapshot();
+  });
+
+  it("flags a choice-restricted card with the generic group wording", () => {
+    expect(cardResponse({ ...goldramon, restriction: "Choice Restriction" })).toMatchSnapshot();
+  });
+
+  it("shows nothing for unrestricted (null) and 'Not released' cards", () => {
+    expect(description(cardResponse(goldramon))).toBeUndefined();
+    expect(
+      description(cardResponse({ ...goldramon, restriction: "Not released" })),
+    ).toBeUndefined();
+  });
+
+  it("surfaces an unrecognized future restriction value raw rather than hiding it", () => {
+    expect(description(cardResponse({ ...goldramon, restriction: "Quantum Banned" }))).toBe(
+      "⚠️ **Quantum Banned**",
+    );
   });
 
   it("degrades to a title-only embed when image and set name are missing", () => {

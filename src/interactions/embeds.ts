@@ -43,15 +43,37 @@ function cardTitle(card: Card): string {
   return truncate(`${card.name} — ${card.cardId}${variant}`, MAX_TITLE);
 }
 
+/** Restriction warning wordings (chunk 4.6). Values are the upstream English
+ * status verbatim; wording owner-approved 2026-07-07. Choice restriction is
+ * deliberately generic — the upstream data carries no partner-card info, and
+ * a hand-maintained pair list was declined (owner call, DECISIONS.md). */
+const RESTRICTION_LINES: Record<string, string> = {
+  Banned: "⚠️ **Banned**",
+  "Restricted to 1": "⚠️ **Restricted to 1** — decks may include at most one copy",
+  "Choice Restriction":
+    "⚠️ **Choice restriction** — decks may include only one card from its restriction group",
+};
+
+/** 'Not released' (in English) shows nothing (owner call 2026-07-07); an
+ * unrecognized future value falls through raw — surfacing beats hiding. */
+function restrictionLine(restriction: string | null): string | null {
+  if (!restriction || restriction === "Not released") return null;
+  return RESTRICTION_LINES[restriction] ?? `⚠️ **${truncate(restriction, 100)}**`;
+}
+
 /** Image-first (chunk 4.8, owner call): the card image already prints
  * every stat and effect, so the embed carries only what the image
- * lacks — title, set name, and (once chunk 4.6 lands) a restriction
- * warning as the description line. */
+ * lacks — title, set name, and the 4.6 restriction warning as the
+ * description line. */
 export function cardResponse(card: Card): APIInteractionResponse {
   const embed: APIEmbed = {
     title: cardTitle(card),
     color: embedColor(card.color),
   };
+  const warning = restrictionLine(card.restriction);
+  if (warning) {
+    embed.description = warning;
+  }
   if (card.imageUrl) {
     embed.image = { url: card.imageUrl };
   }

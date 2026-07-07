@@ -10,6 +10,44 @@
 
 ---
 
+## 2026-07-07 — Restriction display: value survey, storage & wording (chunk 4.6)
+
+- **Value survey (full live dataset, 4,295 records, 2026-07-07):**
+  `restrictions.english` is present on every record with exactly five
+  values — `Unrestricted` (4,021), `Restricted to 1` (50),
+  `Not released` (216), `Banned` (3), and **`Choice Restriction` (5)** —
+  the last one not anticipated by the 4.6 scoping. All 8 banned/choice
+  cards cross-check exactly against the official Banned & Restricted page
+  (digimoncard.com/rule/restriction_card, fetched 2026-07-07): banned =
+  BT2-090, BT5-109, EX5-065; choice groups = EX2-007 ↔ EX7-064 and
+  BT20-037 ↔ BT17-035/EX8-037 ("may only include one of the pair").
+- **Storage:** nullable `restriction` TEXT column (migration 0002), upstream
+  English value verbatim, with **`Unrestricted` stored as NULL** (the ~94%
+  case) so "has a value" means "worth flagging". `Not released` **is
+  stored** (4.7's banlist query excludes it by name, per the roadmap) but
+  is display-filtered.
+- **Display (owner calls, 2026-07-07):**
+  - `Not released` shows **nothing** on `/card` — same as Unrestricted.
+  - `Choice Restriction` uses **generic wording** ("decks may include only
+    one card from its restriction group") — upstream carries no
+    partner-card info, and a hand-maintained pair map was declined.
+  - An **unrecognized future value renders raw** (`⚠️ **<value>**`) —
+    surfacing a new restriction type beats hiding it.
+- **Drift gate:** `restrictions` **promoted to a required field** in the
+  adapter contract. The flag is now load-bearing (`/card` warning, 4.7
+  banlist); if upstream dropped the field, a tolerant sync would silently
+  serve banned cards unflagged — the exact misinformation 4.6 exists to
+  fix. Abort loudly instead.
+- **Ops note:** production rows read NULL until the first post-migration
+  sync repopulates the column — a brief flagless window identical to the
+  pre-4.6 state, not a regression.
+- **Revisit if:** upstream adds new restriction values (the raw fallback
+  will show them; add wording then), regions diverge again (per-region
+  columns), or the choice groups grow enough that generic wording stops
+  being useful.
+
+---
+
 ## 2026-07-07 — Discord verification opens at 75 servers, not 100 (drift-fact check, scopes 5.3/5.5)
 
 - **Finding (re-verified 2026-07-07, part of the HANDOFF §16 / chunk 5.1

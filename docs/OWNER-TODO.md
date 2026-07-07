@@ -77,30 +77,28 @@
       **first-ever scheduled fire**. Go to dash.cloudflare.com → Workers
       & Pages → digimon-tcg-bot → Settings → Triggers → Cron Triggers
       (past events listed there; or Metrics filtered by trigger type) and
-      look for any event near Jul 7 06:00 UTC:
-      - **No event** → Cloudflare skipped it (likely the trigger
-        re-registration too close to fire time) — recovery already in
-        motion, see next item.
-      - **An event with an error** → the worker crashed before it could
-        even alert; that's our bug — bring the error text to the next
-        session.
-      Report findings next session; DECISIONS.md entry follows the
-      diagnosis. Related: the "external uptime ping" item above is the
-      permanent fix for this failure class (a dead cron can't report
-      itself) — today upgraded it from nice-to-have to pre-Gate-C.
+      look for any event near Jul 7 06:00 UTC. **No event** → Cloudflare
+      skipped it (likely the trigger re-registration too close to fire
+      time) — recovery already in motion, see next item. **An event with
+      an error** → the worker crashed before it could even alert; that's
+      our bug — bring the error text to the next session. Report findings
+      next session; DECISIONS.md entry follows the diagnosis. Related: the
+      "external uptime ping" item above is the permanent fix for this
+      failure class (a dead cron can't report itself) — today upgraded it
+      from nice-to-have to pre-Gate-C.
 - [ ] **Wed Jul 8, after ~06:05 UTC — verify the recovery cron fired**
       (owner call 2026-07-07: option 1, one-off recovery cron). A
       temporary second trigger `0 6 8 7 *` was deployed 2026-07-07
       16:17 UTC (~14h ahead of fire time, vs. the <2h that likely
       caused the Jul 7 skip). Check `GET /health`: success looks like
       `activeVersion: 3` and a `lastSuccessfulSync` of ~2026-07-08T06:00.
-      - **Fired** → Gate C's two automated runs become Jul 8 + Jul 14;
-        remove the temp trigger from wrangler.toml (delete the one-off
-        entry + its comment), redeploy, and confirm only `0 6 * * 2`
-        remains. Any session can do this on request.
-      - **Skipped again** → deeper problem than deploy timing (trigger
-        has never fired); escalate to a real investigation next session
-        before trusting the Jul 14 run.
+      **Fired** → Gate C's two automated runs become Jul 8 + Jul 14;
+      remove the temp trigger from wrangler.toml (delete the one-off
+      entry + its comment), redeploy, and confirm only `0 6 * * 2`
+      remains. Any session can do this on request. **Skipped again** →
+      deeper problem than deploy timing (trigger has never fired);
+      escalate to a real investigation next session before trusting the
+      Jul 14 run.
 - [x] **Re-register commands for the 4.9 rename** _(done 2026-07-07 —
       registered and verified in the soak guilds)_.
 - [x] **Add the 2nd soak guild** _(done 2026-07-06 — installed,
@@ -119,6 +117,12 @@
       (autocomplete picks, free text, an ID, a typo). This is Gate C
       criterion #4. Once guild 2 is live, spread some of the daily use
       there too.
+- [ ] **Spot-check the 4.6 restriction flag** (once, any soak day):
+      `/card BT2-090` (Matt Ishida) should show **⚠️ Banned** under the
+      title; `/card BT20-037` (Chaosmon: Valdur Arm) the choice-restriction
+      line; and any everyday card no warning line at all. Judge-eye the
+      wording while you're there — it's in `src/interactions/embeds.ts`
+      (`RESTRICTION_LINES`) if anything reads wrong.
 - [ ] **Glance at the alert channel daily** — silence is expected; anything
       that appears is soak findings.
 - [ ] **After the first two Tuesday crons** (expected Jul 7 + Jul 14),

@@ -23,6 +23,7 @@ function card(id: string, name: string, variant = "0"): Card {
     setName: "TEST",
     rarity: "R",
     imageUrl: null,
+    restriction: null,
   };
 }
 

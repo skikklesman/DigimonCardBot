@@ -40,6 +40,7 @@ export interface RawCard {
   dualEffect?: unknown;
   notes?: unknown;
   rarity?: unknown;
+  restrictions?: unknown;
   AAs?: unknown;
 }
 
@@ -65,6 +66,10 @@ export const EXPECTED_FIELDS = {
     "securityEffect",
     "notes",
     "rarity",
+    // Promoted to required in chunk 4.6: /card's banned/restricted warning
+    // depends on it, and a silently missing flag on a banned card is
+    // misinformation — if upstream drops the field, abort loudly instead.
+    "restrictions",
     "AAs",
   ],
   known: [
@@ -125,6 +130,22 @@ function firstInt(value: unknown): number | null {
 function setName(value: unknown): string | null {
   const t = text(value);
   return t ? (text(t.replace(/^▹\s*/, "")) ?? null) : null;
+}
+
+/**
+ * English restriction status from the per-region `restrictions` object.
+ * 'Unrestricted' → null (the ~94% case — survey 2026-07-07, DECISIONS.md),
+ * so everything downstream treats "has a value" as "worth flagging".
+ * Regions converged on one banned/restricted list as of BT-21 (owner/judge
+ * call, ROADMAP 4.7), so the English value is the whole truth.
+ */
+function restriction(value: unknown): string | null {
+  const english =
+    typeof value === "object" && value !== null && "english" in value
+      ? (value as { english?: unknown }).english
+      : null;
+  const t = text(english);
+  return t === "Unrestricted" ? null : t;
 }
 
 // Supplementary mechanic text folded into `effect`, in display order. Most
@@ -196,6 +217,7 @@ export function normalize(raw: RawCard): Card[] {
     setName: setName(raw.notes),
     rarity: text(raw.rarity),
     imageUrl: cardId ? `${IMAGE_BASE}/${cardId}.webp` : null,
+    restriction: restriction(raw.restrictions),
   };
 
   const cards = [base];

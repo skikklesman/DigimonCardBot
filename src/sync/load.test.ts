@@ -22,6 +22,7 @@ function card(id: string, variant = "0", overrides: Partial<Card> = {}): Card {
     setName: "TEST SET",
     rarity: "C",
     imageUrl: `https://example.com/${id}.webp`,
+    restriction: null,
     ...overrides,
   };
 }

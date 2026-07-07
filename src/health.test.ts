@@ -52,6 +52,7 @@ describe("GET /health", () => {
           setName: null,
           rarity: "C",
           imageUrl: null,
+          restriction: null,
         },
       ],
       { now: new Date("2026-07-06T09:00:00Z") },

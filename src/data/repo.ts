@@ -8,7 +8,7 @@ import { normalizeSearchName, type Card } from "./schema.ts";
 const LIVE = "version = (SELECT value FROM meta WHERE key = 'active_version')";
 
 const COLUMNS =
-  "card_id, variant, name, search_name, card_type, color, level, play_cost, dp, effect, inherited, set_name, rarity, image_url";
+  "card_id, variant, name, search_name, card_type, color, level, play_cost, dp, effect, inherited, set_name, rarity, image_url, restriction";
 
 interface CardRow {
   card_id: string;
@@ -25,6 +25,7 @@ interface CardRow {
   set_name: string | null;
   rarity: string | null;
   image_url: string | null;
+  restriction: string | null;
 }
 
 function toCard(row: CardRow): Card {
@@ -43,6 +44,7 @@ function toCard(row: CardRow): Card {
     setName: row.set_name,
     rarity: row.rarity,
     imageUrl: row.image_url,
+    restriction: row.restriction,
   };
 }
 

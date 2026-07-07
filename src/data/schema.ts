@@ -21,6 +21,10 @@ export interface Card {
   setName: string | null;
   rarity: string | null;
   imageUrl: string | null;
+  /** English banned/restricted status, upstream value verbatim ('Banned',
+   * 'Restricted to 1', 'Choice Restriction', 'Not released');
+   * null = Unrestricted (chunk 4.6). */
+  restriction: string | null;
 }
 
 /**

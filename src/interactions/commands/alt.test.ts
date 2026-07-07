@@ -22,6 +22,7 @@ function card(id: string, name: string, variant = "0"): Card {
     setName: variant === "0" ? "EX-01" : `ALT SET ${variant}`,
     rarity: "R",
     imageUrl: `https://example.com/${id}_${variant}.webp`,
+    restriction: null,
   };
 }
 

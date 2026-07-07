@@ -26,6 +26,7 @@ function card(id: string, name: string, variant = "0", overrides: Partial<Card> 
     setName: "TEST SET",
     rarity: "R",
     imageUrl: `https://example.com/${id}_${variant}.webp`,
+    restriction: null,
     ...overrides,
   };
 }
@@ -39,6 +40,7 @@ const SEED: Card[] = [
   card("EX1-066", "Analog Youth", "0", { cardType: "Tamer" }),
   card("EX1-066", "Analog Youth", "P1", { cardType: "Tamer" }),
   card("EX1-066", "Analog Youth", "P2", { cardType: "Tamer" }),
+  card("BT2-090", "Matt Ishida", "0", { restriction: "Banned" }),
 ];
 
 const repo = createRepo(env.DB);
@@ -72,6 +74,13 @@ describe("CardRepo", () => {
     it("returns null for unknown ids and unknown variants", async () => {
       await expect(repo.findPrinting("ZZZ-999")).resolves.toBeNull();
       await expect(repo.findPrinting("EX1-066", "P9")).resolves.toBeNull();
+    });
+
+    it("round-trips the restriction column (chunk 4.6)", async () => {
+      const banned = await repo.findPrinting("BT2-090");
+      expect(banned?.restriction).toBe("Banned");
+      const clean = await repo.findPrinting("EX1-066");
+      expect(clean?.restriction).toBeNull();
     });
   });
 

@@ -69,6 +69,7 @@ describe("interaction endpoint", () => {
       setName: null,
       rarity: "SR",
       imageUrl: `https://example.com/${cardId}.webp`,
+      restriction: null,
     });
     const seed = () =>
       loadNewVersion(env.DB, [
@@ -87,6 +88,7 @@ describe("interaction endpoint", () => {
           setName: "EX-01",
           rarity: "R",
           imageUrl: "https://example.com/EX1-066.webp",
+          restriction: null,
         },
         goldramon("BT14-018"),
         goldramon("EX3-035"),

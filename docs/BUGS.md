@@ -16,10 +16,10 @@ the history).
   ([src/sync/adapter/digimoncard-app.ts](../src/sync/adapter/digimoncard-app.ts),
   `EFFECT_SUPPLEMENTS`) folds `dualEffect`, `aceEffect`, `linkEffect`, etc.
   into `effect`, but never folds `optionCardEffect` (or
-  `optionCardColourRequirement`) — both are listed as *known* upstream fields
+  `optionCardColourRequirement`) — both are listed as _known_ upstream fields
   and then dropped. So the Option side of a dual card is absent from the
   stored `effect` in D1, not just from the old embed.
-- **Revisit when:** anything renders or searches card *text* again — a text
+- **Revisit when:** anything renders or searches card _text_ again — a text
   toggle on `/card`, effect-text search, or if 4.6/4.7 ever quote effect text.
   The fix is small (add `optionCardEffect` to the fold + adapter test with a
   dual-card fixture); data self-heals on the next weekly sync after deploy.

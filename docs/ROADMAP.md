@@ -298,7 +298,15 @@ Chunks 4.1–4.3 are independent — parallelizable.
       (malformed options, absurd lengths, weird unicode in names); D1 error
       handling (what does the user see if D1 errors mid-lookup? — must be a
       friendly message, not a Discord "application did not respond").
-- [ ] **4.6 — Banned/restricted display on `/card`.** _(Independent of
+- [x] **4.6 — Banned/restricted display on `/card`.** _(Landed 2026-07-07.
+      Value survey found a fifth upstream value beyond the scoped four:
+      `Choice Restriction` (5 cards, 2 groups) — all banned/choice cards
+      verified against the official page; DECISIONS.md has the survey +
+      display calls. Stored verbatim with `Unrestricted` → NULL;
+      `Not released` stored but shows nothing (owner call); unknown future
+      values render raw. `restrictions` promoted to a required drift-gate
+      field — the flag is load-bearing now. Migration 0002 applied local +
+      remote; deployed; production repopulated via resync.)_ _(Independent of
       4.4/4.5 — parallelizable; prefer landing it before 4.5 so the fuzz
       pass covers it.)_ The upstream `restrictions` field is in the
       adapter's known-fields contract but is dropped before the model, so

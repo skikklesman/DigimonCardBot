@@ -27,6 +27,7 @@ function card(overrides: Partial<Card> = {}): Card {
     setName: null,
     rarity: "C",
     imageUrl: null,
+    restriction: null,
     ...overrides,
   };
 }

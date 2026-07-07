@@ -22,6 +22,7 @@ function card(id: string, name: string): Card {
     setName: "BOOSTER BLAST ACE [BT-14]",
     rarity: "R",
     imageUrl: null,
+    restriction: null,
   };
 }
 

@@ -38,9 +38,11 @@ minimal maintenance.
   `/release` (upcoming-releases forecast, 4.9), alerting (proven by live
   drills), `POST /admin/resync` (bearer-auth, proven against production),
   `GET /health` (503 when stale), post-deploy smoke in CI, weekly
-  source-contract CI job (Mondays 06:00 UTC). 4.3 (`/page`) closed as
-  Will Not Do; **next buildable chunks: 4.6 (`/card` restriction flag) →
-  4.7 (`/banlist`)**; 4.4 needs community input. The owner is an
+  source-contract CI job (Mondays 06:00 UTC). Chunk 4.6 (2026-07-07):
+  `/card` shows a ⚠️ description line for banned/restricted/choice-
+  restricted cards (`restriction` column, migration 0002). 4.3 (`/page`)
+  closed as Will Not Do; **next buildable chunks: 4.7 (`/banlist`) →
+  4.5 (hardening/fuzz)**; 4.4 needs community input. The owner is an
   **official Digimon TCG judge**: primary source for all rules/keyword
   content (see OWNER-TODO's glossary-review item).
 - **Cron is LIVE**: `0 6 * * 2` (Tuesdays 06:00 UTC; DECISIONS 2026-07-06).

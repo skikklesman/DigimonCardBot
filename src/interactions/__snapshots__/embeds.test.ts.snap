@@ -41,6 +41,69 @@ exports[`altGalleryResponse > renders one image-first embed per printing 1`] = `
 }
 `;
 
+exports[`cardResponse > flags a banned card in the description line 1`] = `
+{
+  "data": {
+    "embeds": [
+      {
+        "color": 14697818,
+        "description": "⚠️ **Banned**",
+        "footer": {
+          "text": "BOOSTER BLAST ACE [BT-14]",
+        },
+        "image": {
+          "url": "https://example.com/BT14-018.webp",
+        },
+        "title": "Goldramon — BT14-018",
+      },
+    ],
+  },
+  "type": 4,
+}
+`;
+
+exports[`cardResponse > flags a choice-restricted card with the generic group wording 1`] = `
+{
+  "data": {
+    "embeds": [
+      {
+        "color": 14697818,
+        "description": "⚠️ **Choice restriction** — decks may include only one card from its restriction group",
+        "footer": {
+          "text": "BOOSTER BLAST ACE [BT-14]",
+        },
+        "image": {
+          "url": "https://example.com/BT14-018.webp",
+        },
+        "title": "Goldramon — BT14-018",
+      },
+    ],
+  },
+  "type": 4,
+}
+`;
+
+exports[`cardResponse > flags a restricted card in the description line 1`] = `
+{
+  "data": {
+    "embeds": [
+      {
+        "color": 14697818,
+        "description": "⚠️ **Restricted to 1** — decks may include at most one copy",
+        "footer": {
+          "text": "BOOSTER BLAST ACE [BT-14]",
+        },
+        "image": {
+          "url": "https://example.com/BT14-018.webp",
+        },
+        "title": "Goldramon — BT14-018",
+      },
+    ],
+  },
+  "type": 4,
+}
+`;
+
 exports[`cardResponse > renders image-first: title, accent color, image, set footer — no stat fields 1`] = `
 {
   "data": {

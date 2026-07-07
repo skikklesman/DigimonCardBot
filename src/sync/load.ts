@@ -20,6 +20,7 @@ const CARD_COLUMNS = [
   "set_name",
   "rarity",
   "image_url",
+  "restriction",
 ] as const;
 
 const UPDATE_COLUMNS = CARD_COLUMNS.filter(
@@ -27,7 +28,7 @@ const UPDATE_COLUMNS = CARD_COLUMNS.filter(
 );
 
 // D1 caps bound parameters per statement (100 at time of writing — verify
-// when tuning): 15 columns/row → 6 rows keeps a statement at 90 binds.
+// when tuning): 16 columns/row → 6 rows keeps a statement at 96 binds.
 const DEFAULT_ROWS_PER_STATEMENT = 6;
 // Statements grouped per db.batch() round trip. Each batch is atomic; the
 // load as a whole is not — which is fine, because nothing under a
@@ -95,6 +96,7 @@ function toRow(version: number, card: Card): unknown[] {
     card.setName,
     card.rarity,
     card.imageUrl,
+    card.restriction,
   ];
 }
 

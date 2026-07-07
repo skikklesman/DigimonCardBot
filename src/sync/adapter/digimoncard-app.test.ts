@@ -93,6 +93,37 @@ describe("normalize — effect folding", () => {
   });
 });
 
+describe("normalize — restriction mapping (chunk 4.6)", () => {
+  it("stores the English restriction verbatim (BT1-090 Restricted to 1)", () => {
+    const [base] = normalize(one("BT1-090"));
+    expect(base?.restriction).toBe("Restricted to 1");
+  });
+
+  it("maps the common 'Unrestricted' to null (EX1-066)", () => {
+    const [base] = normalize(one("EX1-066"));
+    expect(base?.restriction).toBeNull();
+  });
+
+  it("keeps 'Not released' as data — display filtering is the embed's job (P-226)", () => {
+    const [base] = normalize(one("P-226"));
+    expect(base?.restriction).toBe("Not released");
+  });
+
+  it("returns null for a missing or malformed restrictions object", () => {
+    const raw = { ...one("BT1-090") };
+    delete (raw as Record<string, unknown>).restrictions;
+    expect(normalize(raw)[0]?.restriction).toBeNull();
+    expect(normalize({ ...raw, restrictions: "Banned" })[0]?.restriction).toBeNull();
+    expect(normalize({ ...raw, restrictions: { english: 42 } })[0]?.restriction).toBeNull();
+  });
+
+  it("alt-art variants inherit the base card's restriction", () => {
+    const cards = normalize({ ...one("EX1-066"), restrictions: { english: "Banned" } });
+    expect(cards.length).toBeGreaterThan(1);
+    expect(cards.every((c) => c.restriction === "Banned")).toBe(true);
+  });
+});
+
 describe("normalize — alt-art variants", () => {
   it("expands EX1-066 into base + 5 unique variants (double P3 deduped)", () => {
     const cards = normalize(one("EX1-066"));

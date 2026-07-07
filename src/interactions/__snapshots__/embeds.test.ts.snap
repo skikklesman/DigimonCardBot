@@ -62,27 +62,6 @@ exports[`cardResponse > flags a banned card in the description line 1`] = `
 }
 `;
 
-exports[`cardResponse > flags a choice-restricted card with the generic group wording 1`] = `
-{
-  "data": {
-    "embeds": [
-      {
-        "color": 14697818,
-        "description": "⚠️ **Choice restriction** — decks may include only one card from its restriction group",
-        "footer": {
-          "text": "BOOSTER BLAST ACE [BT-14]",
-        },
-        "image": {
-          "url": "https://example.com/BT14-018.webp",
-        },
-        "title": "Goldramon — BT14-018",
-      },
-    ],
-  },
-  "type": 4,
-}
-`;
-
 exports[`cardResponse > flags a restricted card in the description line 1`] = `
 {
   "data": {
@@ -97,6 +76,27 @@ exports[`cardResponse > flags a restricted card in the description line 1`] = `
           "url": "https://example.com/BT14-018.webp",
         },
         "title": "Goldramon — BT14-018",
+      },
+    ],
+  },
+  "type": 4,
+}
+`;
+
+exports[`cardResponse > names the conflicting card ids for a mapped choice-restricted card 1`] = `
+{
+  "data": {
+    "embeds": [
+      {
+        "color": 14697818,
+        "description": "⚠️ **Choice restriction** — cannot be in a deck with BT17-035 or EX8-037",
+        "footer": {
+          "text": "BOOSTER BLAST ACE [BT-14]",
+        },
+        "image": {
+          "url": "https://example.com/BT14-018.webp",
+        },
+        "title": "Chaosmon: Valdur Arm — BT20-037",
       },
     ],
   },

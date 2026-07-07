@@ -119,10 +119,12 @@
       there too.
 - [ ] **Spot-check the 4.6 restriction flag** (once, any soak day):
       `/card BT2-090` (Matt Ishida) should show **⚠️ Banned** under the
-      title; `/card BT20-037` (Chaosmon: Valdur Arm) the choice-restriction
-      line; and any everyday card no warning line at all. Judge-eye the
-      wording while you're there — it's in `src/interactions/embeds.ts`
-      (`RESTRICTION_LINES`) if anything reads wrong.
+      title; `/card BT20-037` (Chaosmon: Valdur Arm) should say it
+      "cannot be in a deck with BT17-035 or EX8-037"; and any everyday
+      card no warning line at all. Judge-eye the wording while you're
+      there — it's in `src/interactions/embeds.ts` (`RESTRICTION_LINES`),
+      and the partner map is `src/data/restrictions.ts` if a pairing
+      reads wrong.
 - [ ] **Glance at the alert channel daily** — silence is expected; anything
       that appears is soak findings.
 - [ ] **After the first two Tuesday crons** (expected Jul 7 + Jul 14),

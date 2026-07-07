@@ -70,8 +70,28 @@ describe("cardResponse", () => {
     expect(cardResponse({ ...goldramon, restriction: "Restricted to 1" })).toMatchSnapshot();
   });
 
-  it("flags a choice-restricted card with the generic group wording", () => {
-    expect(cardResponse({ ...goldramon, restriction: "Choice Restriction" })).toMatchSnapshot();
+  it("names the conflicting card ids for a mapped choice-restricted card", () => {
+    expect(
+      cardResponse({
+        ...goldramon,
+        cardId: "BT20-037",
+        name: "Chaosmon: Valdur Arm",
+        restriction: "Choice Restriction",
+      }),
+    ).toMatchSnapshot();
+    expect(
+      description(
+        cardResponse({ ...goldramon, cardId: "EX2-007", restriction: "Choice Restriction" }),
+      ),
+    ).toBe("⚠️ **Choice restriction** — cannot be in a deck with EX7-064");
+  });
+
+  it("falls back to generic wording for a choice-restricted card the map doesn't know", () => {
+    // goldramon's BT14-018 is not in CHOICE_PARTNERS — a stale map must
+    // degrade to less info, never to a wrong pairing.
+    expect(description(cardResponse({ ...goldramon, restriction: "Choice Restriction" }))).toBe(
+      "⚠️ **Choice restriction** — decks may include only one card from its restriction group",
+    );
   });
 
   it("shows nothing for unrestricted (null) and 'Not released' cards", () => {

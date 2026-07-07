@@ -10,6 +10,7 @@ import {
 } from "discord-api-types/v10";
 import type { Card } from "../data/schema.ts";
 import type { ReleaseSet } from "../data/releases.ts";
+import { CHOICE_PARTNERS } from "../data/restrictions.ts";
 
 // Discord embed limits (title 256 / field value 1024). Long effects get cut
 // with an ellipsis — the full text is on the card image anyway.
@@ -44,20 +45,25 @@ function cardTitle(card: Card): string {
 }
 
 /** Restriction warning wordings (chunk 4.6). Values are the upstream English
- * status verbatim; wording owner-approved 2026-07-07. Choice restriction is
- * deliberately generic — the upstream data carries no partner-card info, and
- * a hand-maintained pair list was declined (owner call, DECISIONS.md). */
+ * status verbatim; wording owner-approved 2026-07-07. */
 const RESTRICTION_LINES: Record<string, string> = {
   Banned: "⚠️ **Banned**",
   "Restricted to 1": "⚠️ **Restricted to 1** — decks may include at most one copy",
-  "Choice Restriction":
-    "⚠️ **Choice restriction** — decks may include only one card from its restriction group",
 };
 
 /** 'Not released' (in English) shows nothing (owner call 2026-07-07); an
- * unrecognized future value falls through raw — surfacing beats hiding. */
-function restrictionLine(restriction: string | null): string | null {
+ * unrecognized future value falls through raw — surfacing beats hiding.
+ * Choice restriction names the conflicting card ids from the curated
+ * CHOICE_PARTNERS map (owner call amended 2026-07-07), falling back to
+ * generic wording for a card the map doesn't know yet. */
+function restrictionLine(restriction: string | null, cardId: string): string | null {
   if (!restriction || restriction === "Not released") return null;
+  if (restriction === "Choice Restriction") {
+    const partners = CHOICE_PARTNERS[cardId];
+    return partners
+      ? `⚠️ **Choice restriction** — cannot be in a deck with ${partners.join(" or ")}`
+      : "⚠️ **Choice restriction** — decks may include only one card from its restriction group";
+  }
   return RESTRICTION_LINES[restriction] ?? `⚠️ **${truncate(restriction, 100)}**`;
 }
 
@@ -70,7 +76,7 @@ export function cardResponse(card: Card): APIInteractionResponse {
     title: cardTitle(card),
     color: embedColor(card.color),
   };
-  const warning = restrictionLine(card.restriction);
+  const warning = restrictionLine(card.restriction, card.cardId);
   if (warning) {
     embed.description = warning;
   }

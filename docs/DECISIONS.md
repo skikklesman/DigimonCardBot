@@ -10,6 +10,31 @@
 
 ---
 
+## 2026-07-07 — Choice-restriction wording amended: name the partner ids (4.6 follow-up)
+
+- **Decision (owner, amending the same-day call below):** the `/card`
+  choice-restriction line names the conflicting card **ids** — e.g.
+  BT20-037 renders "⚠️ **Choice restriction** — cannot be in a deck with
+  BT17-035 or EX8-037". Informative but minimal: ids only, no names.
+- **How:** a tiny curated map, `src/data/restrictions.ts`
+  (`CHOICE_PARTNERS`, 5 entries), sourced from the official Banned &
+  Restricted page (verified 2026-07-07). The upstream feed still carries
+  no partner info, so this is hand-maintained like keywords.ts/releases.ts
+  — but a card missing from the map **falls back to the generic group
+  wording**, so a stale map degrades to less info, never a wrong pairing.
+- **Nuance the map encodes:** the relation is mutual but the groups are
+  NOT flat — BT17-035 and EX8-037 each conflict only with BT20-037, not
+  with each other (official ruling). Hence per-card partner lists, with
+  integrity tests pinning back-references and referential closure.
+- **Update path:** when a new choice restriction is announced, add its
+  cards to `CHOICE_PARTNERS` (the drift in card _status_ arrives via the
+  weekly sync automatically; only the partner mapping is manual).
+- **Revisit if:** choice restrictions become frequent enough that manual
+  upkeep lags — then push for partner data upstream or scrape the
+  official page in the source-contract job.
+
+---
+
 ## 2026-07-07 — Restriction display: value survey, storage & wording (chunk 4.6)
 
 - **Value survey (full live dataset, 4,295 records, 2026-07-07):**

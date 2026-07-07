@@ -10,6 +10,47 @@
 
 ---
 
+## 2026-07-06 — Restriction display becomes chunk 4.6 (official rule-page survey)
+
+- **Decision:** surveying Bandai's official rules hub
+  (https://en.digimoncard.com/rule/ — owner-suggested source) added one
+  chunk to the roadmap: **4.6 — banned/restricted display on `/card`**.
+  The upstream `restrictions` field (per-region object keyed
+  `english`/`japanese`/`chinese`/`korean`; values observed in the
+  fixture: `Unrestricted`, `Restricted to 1`, `Not released` — plus
+  `Banned` expected in the full dataset) is already in the adapter's
+  known-fields contract (`digimoncard-app.ts`) but is silently dropped
+  before the model, so `/card` shows banned cards with no flag.
+- **Why:** for tournament players, a lookup that hides a card's
+  banned/restricted status is worse than no lookup — it's
+  misinformation, not a gap. The carry-through is cheap (one nullable
+  column, one embed line), and the official Banned & Restricted
+  announcement page (`/rule/restriction_card`) is the verification
+  source for the feed's values.
+- **Also found on the rule page (noted, not planned):**
+  - **Comprehensive Rules PDF** (v4.1, 2026-06): §16 is the
+    authoritative keyword-effects reference — the primary cross-check
+    for any future glossary update (the 4.1 glossary predates this
+    find). It also settles why two "missing keywords" had no reminder
+    text anywhere: **Assembly (§7-3) and Arts Digivolve (§4-19) are
+    rules, not keyword effects.** Owner keeps a local copy
+    (`D:/Digimon/Rules/general_rule_41.pdf`).
+  - **19 official token-card PDFs**: tokens have no card numbers, so
+    they're presumably absent from the card feed and `/card` can't
+    serve them — a candidate future `/token` command if the community
+    asks.
+  - **Effective Rule Revisions (errata) page**: unverified whether the
+    card feed tracks errata'd text — same correctness class as the
+    banlist; check if evidence of drift ever appears.
+  - Official Glossary PDF (2023) — superseded by Comprehensive Rules
+    §16 for keyword purposes.
+- **Revisit if:** the feed's restriction values prove unreliable
+  against the official announcements (then flip the source of truth to
+  a small curated dataset, `releases.ts`-style), or the community wants
+  Japanese-format legality shown too.
+
+---
+
 ## 2026-07-06 — Owner reviewed the keywords.ts file
 
 - **Decision (owner call):** Owner (a level 1 Judge for the Digimon TCG) reviewed

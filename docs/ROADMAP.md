@@ -267,6 +267,27 @@ Chunks 4.1–4.3 are independent — parallelizable.
       (malformed options, absurd lengths, weird unicode in names); D1 error
       handling (what does the user see if D1 errors mid-lookup? — must be a
       friendly message, not a Discord "application did not respond").
+- [ ] **4.6 — Banned/restricted display on `/card`.** _(Independent of
+      4.4/4.5 — parallelizable; prefer landing it before 4.5 so the fuzz
+      pass covers it.)_ The upstream `restrictions` field is in the
+      adapter's known-fields contract but is dropped before the model, so
+      `/card` shows a banned card with no flag — misinformation, not a
+      gap (DECISIONS 2026-07-06). Upstream shape: per-region object
+      (`english`/`japanese`/`chinese`/`korean`) with values like
+      `Unrestricted`, `Restricted to 1`, `Banned`, `Not released`. Carry
+      the **English** value through the stack: migration 0002 (nullable
+      `restriction` column), adapter mapping, loader, repo reads, and a
+      warning line on the `/card` embed for any value other than
+      `Unrestricted` (exact placement/wording decided in-chunk; survey
+      the full dataset's distinct values first). Verify displayed values
+      against the official Banned & Restricted announcement
+      (en.digimoncard.com/rule/restriction_card). Tests: snapshot the
+      embed for banned / restricted / unrestricted / not-released cards;
+      adapter + loader coverage for the new field.
+- [ ] **4.7 — `/banlist`.** Add a command that will simply list out all of the
+      current banned and restricted cards (name and card ID), for easy reference.  
+      (Claude: fill out any info here that is important for your execution.  Also
+      ask the Owner first if you need any clarification, don't assume you know the answer.)
 
 **✅ Gate D criteria:** full command set live in the test guild; fuzz findings
 fixed. **Reached:** `pending`

@@ -3,9 +3,11 @@
 // a year with new sets, so a reviewed static file beats a scraper. "N"
 // stands in for the numeric value printed on the card.
 //
-// KNOWN OMISSIONS (add when official text is verified): Training, Guard,
-// Assembly, Arts Digivolve. A wrong rules text is worse than a missing one
-// — /card still shows any card's full printed text either way.
+// This glossary is the bot's ONLY text rules reference: /card is
+// image-first (chunk 4.8) and prints no effect text, so a wrong entry
+// here has nothing to fall back on. The dataset is judge-reviewed
+// (DECISIONS.md 2026-07-06); official cross-check source: Comprehensive
+// Rules §16 (en.digimoncard.com/rule/).
 
 export interface Keyword {
   /** Canonical display name, without the ＜＞ brackets. */

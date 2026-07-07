@@ -46,23 +46,24 @@ const analogYouthP1: Card = {
 };
 
 describe("cardResponse", () => {
-  it("renders a full Digimon card", () => {
+  it("renders image-first: title, accent color, image, set footer — no stat fields", () => {
     expect(cardResponse(goldramon)).toMatchSnapshot();
   });
 
-  it("renders an alt-art Tamer, skipping null stats and tagging the variant", () => {
+  it("tags the variant in an alt-art title", () => {
     expect(cardResponse(analogYouthP1)).toMatchSnapshot();
   });
 
-  it("truncates an over-limit effect at Discord's 1024-char field cap", () => {
-    const longEffect = "x".repeat(3000);
-    const response = cardResponse({ ...goldramon, effect: longEffect });
-    const fields = (
-      response as unknown as { data: { embeds: [{ fields: { name: string; value: string }[] }] } }
-    ).data.embeds[0].fields;
-    const effect = fields.find((f) => f.name === "Effect");
-    expect(effect?.value.length).toBe(1024);
-    expect(effect?.value.endsWith("…")).toBe(true);
+  it("degrades to a title-only embed when image and set name are missing", () => {
+    const bare = cardResponse({ ...goldramon, imageUrl: null, setName: null });
+    const embed = (
+      bare as unknown as {
+        data: { embeds: [{ title: string; image?: unknown; footer?: unknown }] };
+      }
+    ).data.embeds[0];
+    expect(embed.title).toBe("Goldramon — BT14-018");
+    expect(embed.image).toBeUndefined();
+    expect(embed.footer).toBeUndefined();
   });
 });
 

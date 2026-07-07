@@ -41,52 +41,12 @@ exports[`altGalleryResponse > renders one image-first embed per printing 1`] = `
 }
 `;
 
-exports[`cardResponse > renders a full Digimon card 1`] = `
+exports[`cardResponse > renders image-first: title, accent color, image, set footer — no stat fields 1`] = `
 {
   "data": {
     "embeds": [
       {
         "color": 14697818,
-        "fields": [
-          {
-            "inline": true,
-            "name": "Type",
-            "value": "Digimon",
-          },
-          {
-            "inline": true,
-            "name": "Color",
-            "value": "Red/Yellow",
-          },
-          {
-            "inline": true,
-            "name": "Level",
-            "value": "6",
-          },
-          {
-            "inline": true,
-            "name": "Play Cost",
-            "value": "12",
-          },
-          {
-            "inline": true,
-            "name": "DP",
-            "value": "12000",
-          },
-          {
-            "inline": true,
-            "name": "Rarity",
-            "value": "R",
-          },
-          {
-            "name": "Effect",
-            "value": "[On Play] [When Digivolving] Play 1 [Amon of Crimson Flame] Token.",
-          },
-          {
-            "name": "Inherited / Security",
-            "value": "＜Security A. +1＞",
-          },
-        ],
         "footer": {
           "text": "BOOSTER BLAST ACE [BT-14]",
         },
@@ -101,42 +61,12 @@ exports[`cardResponse > renders a full Digimon card 1`] = `
 }
 `;
 
-exports[`cardResponse > renders an alt-art Tamer, skipping null stats and tagging the variant 1`] = `
+exports[`cardResponse > tags the variant in an alt-art title 1`] = `
 {
   "data": {
     "embeds": [
       {
         "color": 15001579,
-        "fields": [
-          {
-            "inline": true,
-            "name": "Type",
-            "value": "Tamer",
-          },
-          {
-            "inline": true,
-            "name": "Color",
-            "value": "White",
-          },
-          {
-            "inline": true,
-            "name": "Play Cost",
-            "value": "2",
-          },
-          {
-            "inline": true,
-            "name": "Rarity",
-            "value": "R",
-          },
-          {
-            "name": "Effect",
-            "value": "[On Play] Reveal the top 3 cards of your deck.",
-          },
-          {
-            "name": "Inherited / Security",
-            "value": "[Security] Play this card without paying the cost.",
-          },
-        ],
         "footer": {
           "text": "EX-01: Theme Booster Classic Collection",
         },

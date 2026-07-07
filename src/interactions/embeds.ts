@@ -43,32 +43,15 @@ function cardTitle(card: Card): string {
   return truncate(`${card.name} — ${card.cardId}${variant}`, MAX_TITLE);
 }
 
+/** Image-first (chunk 4.8, owner call): the card image already prints
+ * every stat and effect, so the embed carries only what the image
+ * lacks — title, set name, and (once chunk 4.6 lands) a restriction
+ * warning as the description line. */
 export function cardResponse(card: Card): APIInteractionResponse {
-  const stats: Array<[label: string, value: string | null]> = [
-    ["Type", card.cardType],
-    ["Color", card.color],
-    ["Level", card.level === null ? null : String(card.level)],
-    ["Play Cost", card.playCost === null ? null : String(card.playCost)],
-    ["DP", card.dp === null ? null : String(card.dp)],
-    ["Rarity", card.rarity],
-  ];
-
   const embed: APIEmbed = {
     title: cardTitle(card),
     color: embedColor(card.color),
-    fields: stats
-      .filter((entry): entry is [string, string] => entry[1] !== null)
-      .map(([name, value]) => ({ name, value, inline: true })),
   };
-  if (card.effect) {
-    embed.fields?.push({ name: "Effect", value: truncate(card.effect, MAX_FIELD) });
-  }
-  if (card.inherited) {
-    embed.fields?.push({
-      name: "Inherited / Security",
-      value: truncate(card.inherited, MAX_FIELD),
-    });
-  }
   if (card.imageUrl) {
     embed.image = { url: card.imageUrl };
   }

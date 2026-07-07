@@ -302,9 +302,10 @@ Chunks 4.1–4.3 are independent — parallelizable.
       `Unrestricted`, `Restricted to 1`, `Banned`, `Not released`. Carry
       the **English** value through the stack: migration 0002 (nullable
       `restriction` column), adapter mapping, loader, repo reads, and a
-      warning line on the `/card` embed for any value other than
-      `Unrestricted` (exact placement/wording decided in-chunk; survey
-      the full dataset's distinct values first). Verify displayed values
+      warning on the `/card` embed for any value other than
+      `Unrestricted` — a ⚠️ **description line** directly under the title
+      (owner call 2026-07-06, see 4.8; survey the full dataset's
+      distinct values first). Verify displayed values
       against the official Banned & Restricted announcement
       (en.digimoncard.com/rule/restriction_card). Tests: snapshot the
       embed for banned / restricted / unrestricted / not-released cards;
@@ -328,6 +329,29 @@ Chunks 4.1–4.3 are independent — parallelizable.
       test against seeded D1 (banned + restricted + unrestricted +
       not-released + variant-dedupe cases); embed snapshot for a mixed
       list and for the empty-list reply.
+- [x] **4.8 — Minimal `/card` embed: title → image.** _(Landed
+      2026-07-06, same day as the feedback: `cardResponse` stripped to
+      title/color/image/footer, snapshots regenerated, keywords.ts
+      rationale updated. Needs a deploy to reach production.)_ _(Owner
+      feedback
+      from real soak-week usage, 2026-07-06 — DECISIONS.md. Independent
+      of the other Phase 4 chunks; do before or together with 4.6, which
+      builds on the new shape.)_ Every stat the embed currently prints
+      (Type/Color/Level/Play Cost/DP/Rarity fields, Effect,
+      Inherited/Security) is redundant — the card image carries all of
+      it. Strip `cardResponse` to: **title** (`Name — CARD-ID (variant)`)
+      → optional **⚠️ description line** (4.6's restriction warning —
+      the one fact NOT printed on the card) → **image** → **set-name
+      footer** (kept — also not printed on the card; owner call). Net
+      look matches `/alt`'s galleries. Safety note: every card passing
+      validation has an `imageUrl` (derived from its card id), so the
+      image-only body can't come up empty; the existing null guard
+      stays as belt-and-braces. Also update the stale rationale in
+      `src/data/keywords.ts` ("… `/card` still shows any card's full
+      printed text") — after this chunk the glossary is the bot's only
+      _text_ rules reference, which raises the stakes on its accuracy
+      (already judge-reviewed). Tests: update the `cardResponse`
+      snapshots; disambiguation/not-found and `/alt` are untouched.
 
 **✅ Gate D criteria:** full command set live in the test guild; fuzz findings
 fixed. **Reached:** `pending`

@@ -10,6 +10,33 @@
 
 ---
 
+## 2026-07-06 — /card goes image-first: title → image (chunk 4.8 planned)
+
+- **Decision (owner call, from real soak-week usage):** the `/card`
+  embed drops its stat fields (Type/Color/Level/Play Cost/DP/Rarity)
+  and the Effect / Inherited/Security text blocks. New shape: title →
+  optional ⚠️ restriction description line (4.6) → card image →
+  set-name footer.
+- **Why:** everything removed is printed on the card image itself — the
+  embed was saying it all twice, and the doubled post is visibly worse
+  in a live channel. What stays is exactly what the image does NOT
+  carry: the searchable title, the banned/restricted status (4.6's
+  warning becomes a description line under the title — owner call),
+  and the full set name (footer kept — owner call). The result matches
+  `/alt`'s image-first galleries, so the bot's look converges.
+- **Trade-offs accepted:** effect text stops being copyable/searchable
+  message text and unreadable-image situations (tiny screens, image
+  load failures) lose the fallback — the owner weighs channel clutter
+  as the bigger cost from actual use. Consequence: the keyword glossary
+  becomes the bot's only _text_ rules reference (the 4.1-era rationale
+  "`/card` still shows the full printed text" no longer holds —
+  keywords.ts comment updated in-chunk), which raises the stakes on
+  glossary accuracy; it is already judge-reviewed.
+- **Revisit if:** the community asks for the text back (then consider a
+  `verbose` option on `/card` rather than re-bloating the default).
+
+---
+
 ## 2026-07-06 — /banlist scope: English-only, public, D1-derived (chunk 4.7 planned)
 
 - **Decision (owner calls):** the planned `/banlist` (chunk 4.7) shows

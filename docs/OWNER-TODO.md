@@ -79,10 +79,8 @@
       (past events listed there; or Metrics filtered by trigger type) and
       look for any event near Jul 7 06:00 UTC:
       - **No event** → Cloudflare skipped it (likely the trigger
-        re-registration too close to fire time). Recovery decision
-        pending: a temporary one-off cron (proves the trigger works +
-        keeps two automated runs near the soak window) vs. waiting for
-        Jul 14 (slides Gate C's second run to Jul 21).
+        re-registration too close to fire time) — recovery already in
+        motion, see next item.
       - **An event with an error** → the worker crashed before it could
         even alert; that's our bug — bring the error text to the next
         session.
@@ -90,6 +88,19 @@
       diagnosis. Related: the "external uptime ping" item above is the
       permanent fix for this failure class (a dead cron can't report
       itself) — today upgraded it from nice-to-have to pre-Gate-C.
+- [ ] **Wed Jul 8, after ~06:05 UTC — verify the recovery cron fired**
+      (owner call 2026-07-07: option 1, one-off recovery cron). A
+      temporary second trigger `0 6 8 7 *` was deployed 2026-07-07
+      16:17 UTC (~14h ahead of fire time, vs. the <2h that likely
+      caused the Jul 7 skip). Check `GET /health`: success looks like
+      `activeVersion: 3` and a `lastSuccessfulSync` of ~2026-07-08T06:00.
+      - **Fired** → Gate C's two automated runs become Jul 8 + Jul 14;
+        remove the temp trigger from wrangler.toml (delete the one-off
+        entry + its comment), redeploy, and confirm only `0 6 * * 2`
+        remains. Any session can do this on request.
+      - **Skipped again** → deeper problem than deploy timing (trigger
+        has never fired); escalate to a real investigation next session
+        before trusting the Jul 14 run.
 - [x] **Re-register commands for the 4.9 rename** _(done 2026-07-07 —
       registered and verified in the soak guilds)_.
 - [x] **Add the 2nd soak guild** _(done 2026-07-06 — installed,

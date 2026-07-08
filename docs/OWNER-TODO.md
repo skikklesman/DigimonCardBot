@@ -81,9 +81,14 @@
 - [ ] **Wed Jul 8, after ~06:05 UTC — verify the recovery cron fired**
       (owner call 2026-07-07: option 1, one-off recovery cron). A
       temporary second trigger `0 6 8 7 *` was deployed 2026-07-07
-      16:17 UTC (~14h ahead of fire time, vs. the <2h that likely
-      caused the Jul 7 skip). Check `GET /health`: success looks like
-      `activeVersion: 3` and a `lastSuccessfulSync` of ~2026-07-08T06:00.
+      16:17 UTC. (The "<2h re-registration" skip theory was retired by
+      the cron-dialect diagnosis the same evening — Jul 7 was never
+      scheduled; DECISIONS.md 2026-07-07. Later deploys re-registered
+      the same triggers; that's harmless.) Check `GET /health`: success
+      looks like **`activeVersion: 4`** and a `lastSuccessfulSync` of
+      ~2026-07-08T06:00. (v3 is already consumed — the 4.6 session's
+      post-migration resync at 18:53 UTC Jul 7 bumped v2→v3, per the
+      4.6 roadmap note. Traced and confirmed 2026-07-08.)
       **Fired** → Gate C's two automated runs become Jul 8 + Jul 13 (the
       weekly trigger fires **Mondays** — cron-dialect diagnosis,
       DECISIONS.md 2026-07-07); remove the temp trigger from

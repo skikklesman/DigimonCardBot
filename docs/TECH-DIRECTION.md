@@ -75,7 +75,20 @@ conflict resolution performed on the deployable branch.
 master** (step 6) — that's when wording, behavior, and docs get the
 owner's eyes. Branch commits (step 2) don't each need a check-in.
 
-## 3. The pre-merge gate (existing rhythm, now written down)
+## 3. Line endings are LF everywhere — `.gitattributes` enforces it
+
+**Practice:** the repo-root `.gitattributes` (`* text=auto eol=lf`) makes
+every checkout produce LF, on Windows too. Don't fight it with
+`core.autocrlf` overrides, and don't hand-write CRLF files.
+
+**Pitfall prevented:** the first lap of the branch workflow (2026-07-08)
+ended with 16 "modified" files nobody had touched — Windows' default
+`autocrlf` conversion rewrote the working tree to CRLF during the
+checkout/merge dance, and prettier (and CI, which checks out LF on
+Linux) failed the format check on phantom diffs. With checkout pinned to
+LF, the working tree always matches what prettier and CI expect.
+
+## 4. The pre-merge gate (existing rhythm, now written down)
 
 Before any merge to master, all of the following — no exceptions:
 

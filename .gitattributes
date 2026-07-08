@@ -1,0 +1,6 @@
+# Store LF, check out LF — on every platform, Windows included.
+# Prettier and CI both demand LF; without this, Windows' autocrlf
+# rewrote files to CRLF on every branch switch/merge, causing phantom
+# "modified" files and false format-check failures on untouched code
+# (TECH-DIRECTION.md §4, established 2026-07-08).
+* text=auto eol=lf

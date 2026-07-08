@@ -81,9 +81,13 @@ minimal maintenance.
    work.** Check chunks off as they land.
 3. **[docs/TECH-DESIGN.md](docs/TECH-DESIGN.md)** — repo layout, module
    boundaries, conventions, and implementation-level guardrails.
-4. **[docs/TESTING.md](docs/TESTING.md)** — test plan; every roadmap chunk
+4. **[docs/TECH-DIRECTION.md](docs/TECH-DIRECTION.md)** — working
+   agreements: **read before starting a chunk and before any commit.**
+   Branch-per-chunk workflow (never develop on master), commit-message
+   files, the pre-merge gate.
+5. **[docs/TESTING.md](docs/TESTING.md)** — test plan; every roadmap chunk
    ships with its tests, no exceptions.
-5. **[docs/DECISIONS.md](docs/DECISIONS.md)** — decision log + open questions.
+6. **[docs/DECISIONS.md](docs/DECISIONS.md)** — decision log + open questions.
    Append when you make a non-trivial choice; check it before re-debating one.
 
 ## Hard rules (summary — full list in HANDOFF §15 and TECH-DESIGN §5)
@@ -98,6 +102,9 @@ minimal maintenance.
 
 ## Workflow expectations
 
+- **Branch per chunk, squash-merge to master, commit via message file** —
+  the full cycle is TECH-DIRECTION.md (2026-07-07). Never develop on
+  master; owner reviews before the squash-merge.
 - Update ROADMAP checkboxes and gate dates in the same commit as the work.
 - Tests land with the chunk (see TESTING.md for which layer).
 - Facts marked "verify at build time" (HANDOFF §16) really do drift — check

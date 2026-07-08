@@ -111,6 +111,14 @@
       (autocomplete picks, free text, an ID, a typo). This is Gate C
       criterion #4. Once guild 2 is live, spread some of the daily use
       there too.
+- [ ] **After the 4.7 deploy — `npm run register`, then spot-check
+      `/banlist`** (once): the new command needs one registration run to
+      appear in the soak guilds. Expect three sections — **Banned** (3:
+      BT2-090, BT5-109, EX5-065), **Restricted to 1** (50), **Choice
+      restriction** (5, each line naming its related cards) — matching the
+      official page linked in the embed title. Judge-eye the section
+      wording while you're there; it lives in `BANLIST_SECTIONS` in
+      `src/interactions/embeds.ts`.
 - [ ] **Spot-check the 4.6 restriction flag** (once, any soak day):
       `/card BT2-090` (Matt Ishida) should show **⚠️ Banned** under the
       title; `/card BT20-037` (Chaosmon: Valdur Arm) should say it

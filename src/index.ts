@@ -11,6 +11,7 @@ import {
 } from "./interactions/commands/keyword.ts";
 import { createSetAutocomplete, createSetCommand } from "./interactions/commands/set.ts";
 import { createReleaseCommand } from "./interactions/commands/release.ts";
+import { createBanlistCommand } from "./interactions/commands/banlist.ts";
 import { checkStaleSync, runSyncWithAlerts } from "./sync/run.ts";
 import { sendSyncAlert } from "./sync/alert.ts";
 import { handleResync } from "./admin.ts";
@@ -29,10 +30,11 @@ function buildRegistry(env: Env): HandlerRegistry {
       set: createSetCommand(repo),
       // /release is the no-argument upcoming-releases forecast (4.9).
       release: createReleaseCommand(),
+      banlist: createBanlistCommand(repo),
     },
     // /alt shares /card's autocomplete — same option, same suggestions.
     // /keyword and /set autocomplete static in-memory lists (no D1);
-    // /release has no options, so no autocomplete entry.
+    // /release and /banlist have no options, so no autocomplete entries.
     autocomplete: {
       card: cardAutocomplete,
       alt: cardAutocomplete,

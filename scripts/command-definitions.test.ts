@@ -43,8 +43,8 @@ describe("command definitions", () => {
     });
   });
 
-  it("defines /release with no options (the forecast takes no input)", () => {
-    const command = COMMAND_DEFINITIONS.find((c) => c.name === "release");
+  it.each(["release", "banlist"])("defines /%s with no options (takes no input)", (name) => {
+    const command = COMMAND_DEFINITIONS.find((c) => c.name === name);
     expect(command).toBeDefined();
     expect(command && "options" in command && command.options).toBeFalsy();
   });

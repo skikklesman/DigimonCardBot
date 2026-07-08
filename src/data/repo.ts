@@ -61,6 +61,12 @@ export interface CardRepo {
   searchByName(query: string, limit?: number): Promise<Card[]>;
   /** Every printing of a card (base + alt-arts), for /alt. */
   listPrintings(cardId: string): Promise<Card[]>;
+  /** Every card carrying a deck-building restriction, for /banlist: base
+   * printings only (alt-arts deduped by construction), sorted by card id.
+   * `Unrestricted` is stored as NULL (chunk 4.6) and `Not released` is a
+   * release status rather than a play restriction — everything else
+   * lists, so an unknown future status surfaces instead of hiding. */
+  listRestricted(): Promise<Card[]>;
   /** Live tallies for /release: printings whose set_name contains any of
    * the given substrings (case-insensitive), and the distinct cards among
    * them. Matchers come from the curated static dataset, never from user
@@ -120,6 +126,21 @@ export function createRepo(db: D1Database): CardRepo {
       const { results } = await db
         .prepare(`SELECT ${COLUMNS} FROM cards WHERE ${LIVE} AND card_id = ? ORDER BY variant`)
         .bind(cardId)
+        .all<CardRow>();
+      return results.map(toCard);
+    },
+
+    async listRestricted() {
+      // restriction has no index, so this scans the active version — fine
+      // here for the same reason as countSetCards below: /banlist is a
+      // low-volume command invocation with no autocomplete.
+      const { results } = await db
+        .prepare(
+          `SELECT ${COLUMNS} FROM cards
+           WHERE ${LIVE} AND variant = '0'
+             AND restriction IS NOT NULL AND restriction != 'Not released'
+           ORDER BY card_id`,
+        )
         .all<CardRow>();
       return results.map(toCard);
     },

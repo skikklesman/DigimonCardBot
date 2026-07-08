@@ -40,9 +40,12 @@ minimal maintenance.
   `GET /health` (503 when stale), post-deploy smoke in CI, weekly
   source-contract CI job (Mondays 06:00 UTC). Chunk 4.6 (2026-07-07):
   `/card` shows a ⚠️ description line for banned/restricted/choice-
-  restricted cards (`restriction` column, migration 0002). 4.3 (`/page`)
-  closed as Will Not Do; **next buildable chunks: 4.7 (`/banlist`) →
-  4.5 (hardening/fuzz)**; 4.4 needs community input. The owner is an
+  restricted cards (`restriction` column, migration 0002). Chunk 4.7
+  (2026-07-07): `/banlist` — the full banned/restricted list, grouped
+  Banned / Restricted to 1 / Choice restriction (related cards named).
+  4.3 (`/page`) closed as Will Not Do; **next buildable chunks: 4.6.1
+  (/card choice line names the related cards, owner call) → 4.5
+  (hardening/fuzz)**; 4.4 needs community input. The owner is an
   **official Digimon TCG judge**: primary source for all rules/keyword
   content (see OWNER-TODO's glossary-review item).
 - **Cron is LIVE**: `0 6 * * 2` — which on Cloudflare means **Mondays**

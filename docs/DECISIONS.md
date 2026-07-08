@@ -10,6 +10,46 @@
 
 ---
 
+## 2026-07-07 — /banlist: choice cards get their own section, related cards named (chunk 4.7)
+
+- **Decision (owner, wording reviewed pre-commit):** `/banlist` groups
+  into three sections — Banned, Restricted to 1, and **Choice
+  restriction** (a status the 4.7 spec predates; discovered in 4.6's
+  value survey). The choice section's subtitle, owner-worded: "decks
+  with this card cannot include the related cards"; each line names its
+  related cards as "Name (ID)" — e.g. "Chaosmon: Valdur Arm — with
+  Taomon (BT17-035) or Sakuyamon (X Antibody) (EX8-037)".
+- **Post-review calls (owner, same day):** stacked parens stay as-is for
+  names that contain parens ("Sakuyamon (X Antibody) (EX8-037)"); and
+  `/card`'s choice line should match this format too — that reverses
+  the 4.6 "ids only, no names" call and is chunked as **4.6.1** rather
+  than folded in here (`/card`'s pure embed builder needs the handler
+  to resolve names first).
+- **How the names resolve:** related-card **ids** come from the curated
+  `CHOICE_PARTNERS` map; their **names** come from the fetched list
+  itself — choice restriction is mutual, so every partner appears in
+  the same query result, and no hand-maintained name map exists to go
+  stale. Degrade ladder: partner id missing from the list → bare id;
+  card missing from the map → bare name+id line under the
+  still-explanatory subtitle — less info, never wrong info, same
+  property as `/card`'s 4.6 fallback.
+- **Also (implementation calls):** an unknown future status is **not**
+  filtered out by an allowlist — the query excludes only
+  `Unrestricted` (NULL) and `Not released`, so anything new lists in its
+  own raw-headed section after the known three (surface-don't-hide,
+  matching 4.6). The embed title links the official page; footer names
+  it in plain text.
+- **Volume check (production D1, read-only, 2026-07-07):** 3 banned +
+  50 restricted + 5 choice ≈ 1.8k chars — half the 4096-char description
+  cap. The guard for a much larger future list is whole-line truncation
+  with an "official page has the rest" pointer, snapshot-tested.
+- **Revisit if:** the list ever approaches the cap in practice
+  (pagination or field-per-section layouts are the escape hatches), or
+  a fourth restriction status ships wording-worthy enough to promote
+  from the raw fallback into `BANLIST_SECTIONS`.
+
+---
+
 ## 2026-07-07 — Jul 7 cron miss diagnosed: Cloudflare reads `2` as Monday; schedule kept (3.6 soak)
 
 - **Diagnosis (owner's dashboard check, the OWNER-TODO "TONIGHT" item):**
@@ -26,7 +66,7 @@
   the recorded intent moves to match the deployment rather than the
   reverse. No worker redeploy; comments/docs updated instead.
 - **Consequence, separately accepted (owner):** the source-contract CI
-  job (GitHub cron `0 6 * * 1` — GitHub *is* Unix dialect, so that one
+  job (GitHub cron `0 6 * * 1` — GitHub _is_ Unix dialect, so that one
   really is Monday) now runs the **same hour** as the sync, so the
   "contract check warns a day early" stagger is gone. Accepted because
   the stagger was convenience, not safety: a failed sync alerts through
@@ -38,7 +78,7 @@
   Jul 6→13 soak window and a day earlier than the old Jul 14
   expectation).
 - **Lesson (HANDOFF §16 "verify at build time" class):** cron
-  day-of-week *numbers* are dialect-specific. Any future schedule edit
+  day-of-week _numbers_ are dialect-specific. Any future schedule edit
   should spell the day by **name** (`MON`, `TUE`) — names mean the same
   thing in every dialect.
 - **Revisit if:** the same-hour CI overlap ever masks a drift warning in

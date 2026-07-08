@@ -71,4 +71,9 @@ export const COMMAND_DEFINITIONS = [
     type: ApplicationCommandType.ChatInput,
     description: "See the upcoming Digimon TCG set releases",
   },
+  {
+    name: "banlist",
+    type: ApplicationCommandType.ChatInput,
+    description: "List the currently banned and restricted Digimon TCG cards",
+  },
 ] satisfies RESTPutAPIApplicationGuildCommandsJSONBody;

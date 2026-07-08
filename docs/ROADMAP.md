@@ -339,7 +339,31 @@ Chunks 4.1–4.3 are independent — parallelizable.
       there). Store null for "Unrestricted" so the embed's
       only-when-present logic stays a simple truthy check — decide
       in-chunk after the value survey._
-- [ ] **4.7 — `/banlist`.** _(Depends on 4.6 — needs the `restriction`
+- [ ] **4.6.1 — `/card` choice line names the related cards.** _(Owner
+      call 2026-07-07, made reviewing 4.7 — reverses the 4.6 ids-only
+      call.)_ The `/card` choice-restriction line should read like
+      `/banlist`'s: "cannot be in a deck with Taomon (BT17-035) or
+      Sakuyamon (X Antibody) (EX8-037)" — `Name (ID)`, stacked parens
+      kept for names that contain parens. Names resolve at command time
+      by repo lookups of the `CHOICE_PARTNERS` ids (the `/card` handler
+      owns the repo; `cardResponse` stays a pure builder — pass resolved
+      labels in). Degrade ladder unchanged from 4.6: lookup miss → bare
+      id; unmapped card → generic wording. Tests: embed snapshots +
+      handler coverage for the lookup path. Small chunk — land before
+      4.5 so the fuzz pass covers it.
+- [x] **4.7 — `/banlist`.** _(Landed 2026-07-07. Spec amendment, owner
+      call: a third **Choice restriction** section — the status 4.6
+      discovered after this chunk was scoped — with each line naming its
+      related cards as `Name (ID)`: ids from the curated
+      `CHOICE_PARTNERS` map, names resolved from the fetched list itself
+      (bare line + explanatory section subtitle for an unmapped card).
+      An unknown future status lists in its own raw-headed section,
+      consistent with
+      `/card`'s surface-don't-hide call. Volume verified against
+      production D1: 3 banned + 50 restricted + 5 choice ≈ 1.8k chars —
+      one embed with room; whole-line truncation + official-page pointer
+      guards a larger future list. Owner: `npm run register` after the
+      deploy.)_ _(Depends on 4.6 — needs the `restriction`
       column.)_ List all currently banned and restricted cards (name +
       card ID) for easy reference. No options; **public** reply (owner
       call, 2026-07-06). One D1 query over the active version:

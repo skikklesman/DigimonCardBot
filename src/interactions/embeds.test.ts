@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import type { Card } from "../data/schema.ts";
 import {
   altGalleryResponse,
+  banlistResponse,
   cardResponse,
   disambiguationResponse,
   notFoundResponse,
@@ -117,6 +118,100 @@ describe("cardResponse", () => {
     expect(embed.title).toBe("Goldramon — BT14-018");
     expect(embed.image).toBeUndefined();
     expect(embed.footer).toBeUndefined();
+  });
+});
+
+describe("banlistResponse", () => {
+  // Chunk 4.7. A restricted(-ish) card, minimal fields — /banlist only
+  // reads name, cardId, and restriction.
+  const restricted = (cardId: string, name: string, restriction: string): Card => ({
+    ...goldramon,
+    cardId,
+    name,
+    restriction,
+  });
+
+  const description = (response: unknown): string =>
+    (response as { data: { embeds: [{ description: string }] } }).data.embeds[0].description;
+
+  it("groups the list into Banned / Restricted / Choice sections, related cards named", () => {
+    // Repo order: sorted by card id; sections re-group across it. The
+    // choice cards are the real five (production names, 2026-07-07), so
+    // this snapshot shows partner ids resolving to `Name (ID)` from the
+    // list itself.
+    expect(
+      banlistResponse([
+        restricted("BT17-035", "Taomon", "Choice Restriction"),
+        restricted("BT2-089", "Argomon", "Restricted to 1"),
+        restricted("BT2-090", "Matt Ishida", "Banned"),
+        restricted("BT20-037", "Chaosmon: Valdur Arm", "Choice Restriction"),
+        restricted("EX2-007", "Mother D-Reaper", "Choice Restriction"),
+        restricted("EX7-064", "Shoto Kazama", "Choice Restriction"),
+        restricted("EX8-037", "Sakuyamon (X Antibody)", "Choice Restriction"),
+      ]),
+    ).toMatchSnapshot();
+  });
+
+  it("degrades a partner id missing from the list to the bare id", () => {
+    // BT20-037's partners (BT17-035, EX8-037) are absent here — the line
+    // must still render, ids unresolved rather than wrong.
+    const text = description(
+      banlistResponse([restricted("BT20-037", "Chaosmon: Valdur Arm", "Choice Restriction")]),
+    );
+    expect(text).toContain("• **Chaosmon: Valdur Arm** `BT20-037` — with BT17-035 or EX8-037");
+  });
+
+  it("is public and titled with the official-page link", () => {
+    const response = banlistResponse([
+      restricted("BT2-090", "Matt Ishida", "Banned"),
+    ]) as unknown as {
+      data: { embeds: [{ title: string; url: string }]; flags?: number };
+    };
+    expect(response.data.flags).toBeUndefined();
+    expect(response.data.embeds[0].title).toBe("Banned & Restricted Cards");
+    expect(response.data.embeds[0].url).toContain("en.digimoncard.com/rule/restriction_card");
+  });
+
+  it("omits empty sections", () => {
+    const text = description(banlistResponse([restricted("BT2-090", "Matt Ishida", "Banned")]));
+    expect(text).toContain("**Banned**");
+    expect(text).not.toContain("Restricted to 1");
+    expect(text).not.toContain("Choice restriction");
+  });
+
+  it("degrades a choice card the partner map doesn't know to a bare line", () => {
+    const text = description(
+      banlistResponse([restricted("ZZ9-001", "Unmapped Choice", "Choice Restriction")]),
+    );
+    expect(text).toContain("• **Unmapped Choice** `ZZ9-001`");
+    expect(text).not.toContain("— with");
+    // The section subtitle still explains the rule generically.
+    expect(text).toContain("cannot include the related cards");
+  });
+
+  it("surfaces an unknown future status as its own raw section", () => {
+    expect(
+      banlistResponse([restricted("BT9-099", "Quantum Digimon", "Quantum Banned")]),
+    ).toMatchSnapshot();
+  });
+
+  it("answers gracefully when nothing is restricted", () => {
+    expect(banlistResponse([])).toMatchSnapshot();
+  });
+
+  it("truncates whole lines under the 4096 cap with a pointer to the official page", () => {
+    const many = Array.from({ length: 200 }, (_, i) =>
+      restricted(`XX${i}-001`, `Very Long Card Name Number ${i} With Padding`, "Restricted to 1"),
+    );
+    const text = description(banlistResponse(many));
+    expect(text.length).toBeLessThanOrEqual(4096);
+    expect(text).toContain("…list truncated");
+    // Never cut mid-line: every card line present is complete.
+    const lastCardLine = text
+      .split("\n")
+      .filter((l) => l.startsWith("•"))
+      .pop();
+    expect(lastCardLine).toMatch(/`XX\d+-001`$/);
   });
 });
 

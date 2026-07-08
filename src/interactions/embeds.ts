@@ -210,6 +210,95 @@ export function upcomingReleasesResponse(sets: ReleaseSet[], now: Date): APIInte
   };
 }
 
+/** The official Banned & Restricted page — /banlist's title link and the
+ * build-time verification source (ROADMAP 4.7). */
+const OFFICIAL_RESTRICTION_URL = "https://en.digimoncard.com/rule/restriction_card/";
+
+/** /banlist section order and headings. Known statuses get owner-approved
+ * wording (2026-07-07); any unknown future status becomes its own
+ * raw-headed section after these — surfacing beats hiding, as on /card. */
+const BANLIST_SECTIONS: ReadonlyArray<{ status: string; heading: string }> = [
+  { status: "Banned", heading: "**Banned**" },
+  { status: "Restricted to 1", heading: "**Restricted to 1** — at most one copy per deck" },
+  {
+    status: "Choice Restriction",
+    heading: "**Choice restriction** — decks with this card cannot include the related cards",
+  },
+];
+
+/** `• **Name** \`ID\``; choice-restricted lines name their related cards
+ * as `Name (ID)` (owner wording 2026-07-07). Partner ids come from the
+ * curated map; names resolve from the fetched list itself — choice
+ * restriction is mutual, so partners appear in the same list. Degrades
+ * to the bare id for a partner the list doesn't cover, and to a bare
+ * line for a card the map doesn't know yet. */
+function banlistLine(card: Card, nameById: ReadonlyMap<string, string>): string {
+  const partners =
+    card.restriction === "Choice Restriction" ? CHOICE_PARTNERS[card.cardId] : undefined;
+  const related = partners?.map((id) => {
+    const name = nameById.get(id);
+    return name ? `${name} (${id})` : id;
+  });
+  const suffix = related ? ` — with ${related.join(" or ")}` : "";
+  return `• **${card.name}** \`${card.cardId}\`${suffix}`;
+}
+
+/** The complete banned/restricted list (/banlist, chunk 4.7): one public
+ * embed, grouped by status, title linking the official announcement.
+ * Cards arrive from the repo already sorted by card id. */
+export function banlistResponse(cards: Card[]): APIInteractionResponse {
+  const nameById = new Map(cards.map((c) => [c.cardId, c.name] as const));
+  const byStatus = new Map<string, Card[]>();
+  for (const card of cards) {
+    const status = card.restriction ?? "";
+    byStatus.set(status, [...(byStatus.get(status) ?? []), card]);
+  }
+
+  const known = BANLIST_SECTIONS.map((s) => s.status);
+  const sections = [
+    ...BANLIST_SECTIONS,
+    ...[...byStatus.keys()]
+      .filter((status) => !known.includes(status))
+      .sort()
+      .map((status) => ({ status, heading: `**${truncate(status, 100)}**` })),
+  ];
+
+  const lines: string[] = [];
+  for (const { status, heading } of sections) {
+    const group = byStatus.get(status);
+    if (!group || group.length === 0) continue;
+    if (lines.length > 0) lines.push("");
+    lines.push(heading, ...group.map((card) => banlistLine(card, nameById)));
+  }
+
+  let description = "No cards are currently banned or restricted.";
+  if (lines.length > 0) {
+    description = lines.join("\n");
+    if (description.length > 4096) {
+      // Cut whole lines, never mid-card: the current list fits with room
+      // to spare, so this only guards a much larger future list.
+      const note = "\n…list truncated — the linked official page has the rest.";
+      while (lines.length > 0 && lines.join("\n").length + note.length > 4096) lines.pop();
+      description = lines.join("\n") + note;
+    }
+  }
+
+  return {
+    type: InteractionResponseType.ChannelMessageWithSource,
+    data: {
+      embeds: [
+        {
+          title: "Banned & Restricted Cards",
+          url: OFFICIAL_RESTRICTION_URL,
+          description,
+          color: DEFAULT_COLOR,
+          footer: { text: "Official list: en.digimoncard.com/rule/restriction_card" },
+        },
+      ],
+    },
+  };
+}
+
 /** Discord allows at most 10 embeds per message — the /alt gallery cap. */
 const MAX_GALLERY_EMBEDS = 10;
 

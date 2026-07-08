@@ -139,10 +139,10 @@ turns out to run both ways. TODO: note the judge-review outcome here.
 
 ## TODO: Gate C — the soak and the two crons
 
-_Soak 2026-07-06 → 07-13. Automated runs expected Jul 8 (one-off recovery)
-+ Jul 13 (first weekly Monday fire — see the 3.6 epilogue). Record what
-the soak surfaced (ideally: nothing), the /health timestamps, and the
-Gate C verdict._
+_Soak 2026-07-06 → 07-13. Automated runs expected Jul 8 (one-off
+recovery) and Jul 13 (first weekly Monday fire — see the 3.6 epilogue).
+Record what the soak surfaced (ideally: nothing), the /health timestamps,
+and the Gate C verdict._
 
 ## TODO: scoreboard & reflections
 

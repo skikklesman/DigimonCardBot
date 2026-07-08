@@ -92,6 +92,14 @@ describe("interaction endpoint", () => {
         },
         goldramon("BT14-018"),
         goldramon("EX3-035"),
+        // One banned card so the /banlist read path has something to list.
+        {
+          ...goldramon("BT2-090"),
+          name: "Matt Ishida",
+          searchName: normalizeSearchName("Matt Ishida"),
+          cardType: "Tamer",
+          restriction: "Banned",
+        },
       ]);
 
     afterAll(async () => {
@@ -177,6 +185,21 @@ describe("interaction endpoint", () => {
       expect(body.data.flags).toBe(64);
       expect(body.data.content).toContain("BT14-018");
       expect(body.data.content).toContain("EX3-035");
+    });
+
+    it("answers a signed /banlist interaction with the grouped public list", async () => {
+      await seed();
+      const res = await SELF.fetch(
+        ENDPOINT,
+        await signedInteraction({ type: 2, data: { name: "banlist" } }),
+      );
+      expect(res.status).toBe(200);
+      const body = (await res.json()) as {
+        data: { embeds: [{ title: string; description: string }]; flags?: number };
+      };
+      expect(body.data.embeds[0].title).toBe("Banned & Restricted Cards");
+      expect(body.data.embeds[0].description).toContain("**Matt Ishida** `BT2-090`");
+      expect(body.data.flags).toBeUndefined();
     });
 
     it("answers a signed /card miss with the ephemeral not-found message", async () => {

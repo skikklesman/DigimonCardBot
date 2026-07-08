@@ -41,6 +41,75 @@ exports[`altGalleryResponse > renders one image-first embed per printing 1`] = `
 }
 `;
 
+exports[`banlistResponse > answers gracefully when nothing is restricted 1`] = `
+{
+  "data": {
+    "embeds": [
+      {
+        "color": 10070709,
+        "description": "No cards are currently banned or restricted.",
+        "footer": {
+          "text": "Official list: en.digimoncard.com/rule/restriction_card",
+        },
+        "title": "Banned & Restricted Cards",
+        "url": "https://en.digimoncard.com/rule/restriction_card/",
+      },
+    ],
+  },
+  "type": 4,
+}
+`;
+
+exports[`banlistResponse > groups the list into Banned / Restricted / Choice sections, related cards named 1`] = `
+{
+  "data": {
+    "embeds": [
+      {
+        "color": 10070709,
+        "description": "**Banned**
+• **Matt Ishida** \`BT2-090\`
+
+**Restricted to 1** — at most one copy per deck
+• **Argomon** \`BT2-089\`
+
+**Choice restriction** — decks with this card cannot include the related cards
+• **Taomon** \`BT17-035\` — with Chaosmon: Valdur Arm (BT20-037)
+• **Chaosmon: Valdur Arm** \`BT20-037\` — with Taomon (BT17-035) or Sakuyamon (X Antibody) (EX8-037)
+• **Mother D-Reaper** \`EX2-007\` — with Shoto Kazama (EX7-064)
+• **Shoto Kazama** \`EX7-064\` — with Mother D-Reaper (EX2-007)
+• **Sakuyamon (X Antibody)** \`EX8-037\` — with Chaosmon: Valdur Arm (BT20-037)",
+        "footer": {
+          "text": "Official list: en.digimoncard.com/rule/restriction_card",
+        },
+        "title": "Banned & Restricted Cards",
+        "url": "https://en.digimoncard.com/rule/restriction_card/",
+      },
+    ],
+  },
+  "type": 4,
+}
+`;
+
+exports[`banlistResponse > surfaces an unknown future status as its own raw section 1`] = `
+{
+  "data": {
+    "embeds": [
+      {
+        "color": 10070709,
+        "description": "**Quantum Banned**
+• **Quantum Digimon** \`BT9-099\`",
+        "footer": {
+          "text": "Official list: en.digimoncard.com/rule/restriction_card",
+        },
+        "title": "Banned & Restricted Cards",
+        "url": "https://en.digimoncard.com/rule/restriction_card/",
+      },
+    ],
+  },
+  "type": 4,
+}
+`;
+
 exports[`cardResponse > flags a banned card in the description line 1`] = `
 {
   "data": {

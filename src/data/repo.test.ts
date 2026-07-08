@@ -41,6 +41,12 @@ const SEED: Card[] = [
   card("EX1-066", "Analog Youth", "P1", { cardType: "Tamer" }),
   card("EX1-066", "Analog Youth", "P2", { cardType: "Tamer" }),
   card("BT2-090", "Matt Ishida", "0", { restriction: "Banned" }),
+  // The /banlist cases (chunk 4.7): a banned alt-art (variant dedupe), a
+  // restricted card, a choice-restricted card, and a not-released card.
+  card("BT2-090", "Matt Ishida", "P1", { restriction: "Banned" }),
+  card("BT2-089", "Argomon", "0", { restriction: "Restricted to 1" }),
+  card("BT20-037", "Chaosmon: Valdur Arm", "0", { restriction: "Choice Restriction" }),
+  card("BT27-001", "Unreleased Digimon", "0", { restriction: "Not released" }),
 ];
 
 const repo = createRepo(env.DB);
@@ -159,6 +165,40 @@ describe("CardRepo", () => {
 
     it("returns [] for an unknown card", async () => {
       await expect(repo.listPrintings("ZZZ-999")).resolves.toEqual([]);
+    });
+  });
+
+  describe("listRestricted (/banlist)", () => {
+    it("returns every restricted base printing, sorted by card id", async () => {
+      const listed = await repo.listRestricted();
+      expect(listed.map((c) => c.cardId)).toEqual(["BT2-089", "BT2-090", "BT20-037"]);
+      expect(listed.map((c) => c.restriction)).toEqual([
+        "Restricted to 1",
+        "Banned",
+        "Choice Restriction",
+      ]);
+    });
+
+    it("dedupes alt-art variants to the base printing", async () => {
+      // BT2-090 is seeded banned twice (base + P1) — it must list once.
+      const listed = await repo.listRestricted();
+      expect(listed.filter((c) => c.cardId === "BT2-090")).toHaveLength(1);
+      expect(listed.every((c) => c.variant === "0")).toBe(true);
+    });
+
+    it("excludes unrestricted (NULL) and 'Not released' cards", async () => {
+      const ids = (await repo.listRestricted()).map((c) => c.cardId);
+      expect(ids).not.toContain("BT1-010"); // unrestricted
+      expect(ids).not.toContain("BT27-001"); // not released
+    });
+
+    it("only reads the active version", async () => {
+      await env.DB.prepare(
+        `INSERT INTO cards (version, card_id, variant, name, search_name, restriction)
+         VALUES (99, 'ZZ9-002', '0', 'Staged Ban', 'staged ban', 'Banned')`,
+      ).run();
+      const ids = (await repo.listRestricted()).map((c) => c.cardId);
+      expect(ids).not.toContain("ZZ9-002");
     });
   });
 

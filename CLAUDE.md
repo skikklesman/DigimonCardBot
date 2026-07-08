@@ -43,8 +43,9 @@ minimal maintenance.
   restricted cards (`restriction` column, migration 0002). Chunk 4.7
   (2026-07-07): `/banlist` — the full banned/restricted list, grouped
   Banned / Restricted to 1 / Choice restriction (related cards named).
-  4.3 (`/page`) closed as Will Not Do; **next buildable chunks: 4.6.1
-  (/card choice line names the related cards, owner call) → 4.5
+  Chunk 4.6.1 (2026-07-08): `/card`'s choice line names the related
+  cards — handler-resolved, same `Name (ID)` format as /banlist.
+  4.3 (`/page`) closed as Will Not Do; **next buildable chunk: 4.5
   (hardening/fuzz)**; 4.4 needs community input. The owner is an
   **official Digimon TCG judge**: primary source for all rules/keyword
   content (see OWNER-TODO's glossary-review item).

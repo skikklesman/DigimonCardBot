@@ -100,6 +100,26 @@ describe("interaction endpoint", () => {
           cardType: "Tamer",
           restriction: "Banned",
         },
+        // A real choice-restriction group so /card's related-card name
+        // resolution (4.6.1) is exercised through the full stack.
+        {
+          ...goldramon("BT20-037"),
+          name: "Chaosmon: Valdur Arm",
+          searchName: normalizeSearchName("Chaosmon: Valdur Arm"),
+          restriction: "Choice Restriction",
+        },
+        {
+          ...goldramon("BT17-035"),
+          name: "Taomon",
+          searchName: normalizeSearchName("Taomon"),
+          restriction: "Choice Restriction",
+        },
+        {
+          ...goldramon("EX8-037"),
+          name: "Sakuyamon (X Antibody)",
+          searchName: normalizeSearchName("Sakuyamon (X Antibody)"),
+          restriction: "Choice Restriction",
+        },
       ]);
 
     afterAll(async () => {
@@ -185,6 +205,24 @@ describe("interaction endpoint", () => {
       expect(body.data.flags).toBe(64);
       expect(body.data.content).toContain("BT14-018");
       expect(body.data.content).toContain("EX3-035");
+    });
+
+    it("answers a signed /card for a choice-restricted card with related cards named (4.6.1)", async () => {
+      await seed();
+      const res = await SELF.fetch(
+        ENDPOINT,
+        await signedInteraction({
+          type: 2,
+          data: {
+            name: "card",
+            options: [{ name: "card-name", type: 3, value: "BT20-037" }],
+          },
+        }),
+      );
+      const body = (await res.json()) as { data: { embeds: [{ description: string }] } };
+      expect(body.data.embeds[0].description).toBe(
+        "⚠️ **Choice restriction** — cannot be in a deck with Taomon (BT17-035) or Sakuyamon (X Antibody) (EX8-037)",
+      );
     });
 
     it("answers a signed /banlist interaction with the grouped public list", async () => {

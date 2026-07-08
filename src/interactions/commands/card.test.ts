@@ -7,7 +7,7 @@ import type { CardRepo } from "../../data/repo.ts";
 import { normalizeSearchName } from "../../data/schema.ts";
 import { createCardCommand } from "./card.ts";
 
-function card(id: string, name: string, variant = "0"): Card {
+function card(id: string, name: string, variant = "0", overrides: Partial<Card> = {}): Card {
   return {
     cardId: id,
     variant,
@@ -24,6 +24,7 @@ function card(id: string, name: string, variant = "0"): Card {
     rarity: "R",
     imageUrl: null,
     restriction: null,
+    ...overrides,
   };
 }
 
@@ -34,6 +35,11 @@ const CARDS = [
   card("BT16-014", "Goldramon (X Antibody)"),
   card("BT19-078", "ADR-01 Jeri"),
   card("BT1-010", "Agumon"),
+  // A real choice-restriction group (4.6.1): the handler resolves the
+  // partners' names for the warning line.
+  card("BT20-037", "Chaosmon: Valdur Arm", "0", { restriction: "Choice Restriction" }),
+  card("BT17-035", "Taomon", "0", { restriction: "Choice Restriction" }),
+  card("EX8-037", "Sakuyamon (X Antibody)", "0", { restriction: "Choice Restriction" }),
 ];
 
 // In-memory CardRepo with the same semantics as the D1 one.
@@ -112,5 +118,41 @@ describe("/card resolution ladder", () => {
 
   it("guards against a missing option (synthetic payloads only)", async () => {
     expect(content(await invoke())).toContain("provide a card name");
+  });
+});
+
+describe("/card choice-restriction line (chunk 4.6.1)", () => {
+  const description = (response: APIInteractionResponse): string | undefined =>
+    (response as unknown as { data: { embeds: [{ description?: string }] } }).data.embeds[0]
+      .description;
+
+  it("names the related cards, resolved via the repo", async () => {
+    expect(description(await invoke("BT20-037"))).toBe(
+      "⚠️ **Choice restriction** — cannot be in a deck with Taomon (BT17-035) or Sakuyamon (X Antibody) (EX8-037)",
+    );
+    expect(description(await invoke("EX8-037"))).toBe(
+      "⚠️ **Choice restriction** — cannot be in a deck with Chaosmon: Valdur Arm (BT20-037)",
+    );
+  });
+
+  it("degrades a partner the repo can't find to its bare id", async () => {
+    // EX2-007's partner EX7-064 isn't in this fixture — the line renders
+    // with the unresolved id rather than failing or lying.
+    const withUnknownPartner = createCardCommand({
+      ...repo,
+      findPrinting: (id) =>
+        Promise.resolve(
+          id === "EX2-007"
+            ? card("EX2-007", "Mother D-Reaper", "0", { restriction: "Choice Restriction" })
+            : null,
+        ),
+    });
+    const response = await withUnknownPartner({
+      type: 2,
+      data: { name: "card", options: [{ name: "card-name", type: 3, value: "EX2-007" }] },
+    } as never);
+    expect(description(response)).toBe(
+      "⚠️ **Choice restriction** — cannot be in a deck with EX7-064",
+    );
   });
 });

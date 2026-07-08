@@ -71,20 +71,45 @@ describe("cardResponse", () => {
     expect(cardResponse({ ...goldramon, restriction: "Restricted to 1" })).toMatchSnapshot();
   });
 
-  it("names the conflicting card ids for a mapped choice-restricted card", () => {
+  it("names the related cards for a mapped choice-restricted card (4.6.1)", () => {
+    // The handler resolves partner names and passes them in; the builder
+    // renders `Name (ID)`, matching /banlist's format.
     expect(
-      cardResponse({
-        ...goldramon,
-        cardId: "BT20-037",
-        name: "Chaosmon: Valdur Arm",
-        restriction: "Choice Restriction",
-      }),
+      cardResponse(
+        {
+          ...goldramon,
+          cardId: "BT20-037",
+          name: "Chaosmon: Valdur Arm",
+          restriction: "Choice Restriction",
+        },
+        new Map([
+          ["BT17-035", "Taomon"],
+          ["EX8-037", "Sakuyamon (X Antibody)"],
+        ]),
+      ),
     ).toMatchSnapshot();
+  });
+
+  it("degrades an unresolved related card to its bare id", () => {
+    // No name map at all (or a partner missing from it) → ids still show.
     expect(
       description(
         cardResponse({ ...goldramon, cardId: "EX2-007", restriction: "Choice Restriction" }),
       ),
     ).toBe("⚠️ **Choice restriction** — cannot be in a deck with EX7-064");
+    expect(
+      description(
+        cardResponse(
+          {
+            ...goldramon,
+            cardId: "BT20-037",
+            name: "Chaosmon: Valdur Arm",
+            restriction: "Choice Restriction",
+          },
+          new Map([["BT17-035", "Taomon"]]), // EX8-037 unresolved
+        ),
+      ),
+    ).toBe("⚠️ **Choice restriction** — cannot be in a deck with Taomon (BT17-035) or EX8-037");
   });
 
   it("falls back to generic wording for a choice-restricted card the map doesn't know", () => {

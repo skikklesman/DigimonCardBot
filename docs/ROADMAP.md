@@ -339,7 +339,13 @@ Chunks 4.1–4.3 are independent — parallelizable.
       there). Store null for "Unrestricted" so the embed's
       only-when-present logic stays a simple truthy check — decide
       in-chunk after the value survey._
-- [ ] **4.6.1 — `/card` choice line names the related cards.** _(Owner
+- [x] **4.6.1 — `/card` choice line names the related cards.** _(Landed
+      2026-07-08, as pre-scoped: the handler resolves partner names via
+      `findPrinting` — at most two extra indexed lookups, only on the ~5
+      choice cards — and passes an id→name map into the still-pure
+      `cardResponse`. Tests: embed snapshot + degrade assertions, handler
+      lookup coverage incl. a missing-partner fixture, and a signed
+      end-to-end /card BT20-037 through workerd + seeded D1.)_ _(Owner
       call 2026-07-07, made reviewing 4.7 — reverses the 4.6 ids-only
       call.)_ The `/card` choice-restriction line should read like
       `/banlist`'s: "cannot be in a deck with Taomon (BT17-035) or

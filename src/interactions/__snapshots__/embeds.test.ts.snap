@@ -152,13 +152,13 @@ exports[`cardResponse > flags a restricted card in the description line 1`] = `
 }
 `;
 
-exports[`cardResponse > names the conflicting card ids for a mapped choice-restricted card 1`] = `
+exports[`cardResponse > names the related cards for a mapped choice-restricted card (4.6.1) 1`] = `
 {
   "data": {
     "embeds": [
       {
         "color": 14697818,
-        "description": "⚠️ **Choice restriction** — cannot be in a deck with BT17-035 or EX8-037",
+        "description": "⚠️ **Choice restriction** — cannot be in a deck with Taomon (BT17-035) or Sakuyamon (X Antibody) (EX8-037)",
         "footer": {
           "text": "BOOSTER BLAST ACE [BT-14]",
         },

@@ -53,16 +53,27 @@ const RESTRICTION_LINES: Record<string, string> = {
 
 /** 'Not released' (in English) shows nothing (owner call 2026-07-07); an
  * unrecognized future value falls through raw — surfacing beats hiding.
- * Choice restriction names the conflicting card ids from the curated
- * CHOICE_PARTNERS map (owner call amended 2026-07-07), falling back to
- * generic wording for a card the map doesn't know yet. */
-function restrictionLine(restriction: string | null, cardId: string): string | null {
+ * Choice restriction names the related cards from the curated
+ * CHOICE_PARTNERS map as `Name (ID)` (chunk 4.6.1, owner call — matches
+ * /banlist), using the caller-resolved name map; a name the map lacks
+ * degrades to the bare id, and a card CHOICE_PARTNERS doesn't know yet
+ * falls back to generic wording. */
+function restrictionLine(
+  restriction: string | null,
+  cardId: string,
+  relatedCardNames?: ReadonlyMap<string, string>,
+): string | null {
   if (!restriction || restriction === "Not released") return null;
   if (restriction === "Choice Restriction") {
     const partners = CHOICE_PARTNERS[cardId];
-    return partners
-      ? `⚠️ **Choice restriction** — cannot be in a deck with ${partners.join(" or ")}`
-      : "⚠️ **Choice restriction** — decks may include only one card from its restriction group";
+    if (!partners) {
+      return "⚠️ **Choice restriction** — decks may include only one card from its restriction group";
+    }
+    const related = partners.map((id) => {
+      const name = relatedCardNames?.get(id);
+      return name ? `${name} (${id})` : id;
+    });
+    return `⚠️ **Choice restriction** — cannot be in a deck with ${related.join(" or ")}`;
   }
   return RESTRICTION_LINES[restriction] ?? `⚠️ **${truncate(restriction, 100)}**`;
 }
@@ -70,13 +81,18 @@ function restrictionLine(restriction: string | null, cardId: string): string | n
 /** Image-first (chunk 4.8, owner call): the card image already prints
  * every stat and effect, so the embed carries only what the image
  * lacks — title, set name, and the 4.6 restriction warning as the
- * description line. */
-export function cardResponse(card: Card): APIInteractionResponse {
+ * description line. `relatedCardNames` (4.6.1) is the handler-resolved
+ * id→name map for choice-restriction partners — passed in so this
+ * builder stays a pure function with no repo access. */
+export function cardResponse(
+  card: Card,
+  relatedCardNames?: ReadonlyMap<string, string>,
+): APIInteractionResponse {
   const embed: APIEmbed = {
     title: cardTitle(card),
     color: embedColor(card.color),
   };
-  const warning = restrictionLine(card.restriction, card.cardId);
+  const warning = restrictionLine(card.restriction, card.cardId, relatedCardNames);
   if (warning) {
     embed.description = warning;
   }

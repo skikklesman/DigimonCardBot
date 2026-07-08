@@ -1,7 +1,8 @@
 // Weekly source-contract check (TESTING.md §5): fetch the REAL upstream,
 // run it through the adapter + validation gates, WRITE NOTHING. Scheduled
-// in CI a day before the sync cron — converts "the Tuesday sync failed"
-// into "we knew Monday that upstream drifted".
+// in CI Mondays 06:00 UTC — same hour as the sync cron since the
+// cron-dialect finding (DECISIONS.md 2026-07-07): an independent probe of
+// upstream, no longer a day-early warning.
 //
 // Run: `npm run source-contract` (Node ≥22.18). Exits non-zero on any gate
 // failure; posts to the alert webhook when SYNC_ALERT_WEBHOOK is set (in

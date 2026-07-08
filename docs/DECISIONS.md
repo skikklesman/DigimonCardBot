@@ -10,6 +10,44 @@
 
 ---
 
+## 2026-07-07 — Jul 7 cron miss diagnosed: Cloudflare reads `2` as Monday; schedule kept (3.6 soak)
+
+- **Diagnosis (owner's dashboard check, the OWNER-TODO "TONIGHT" item):**
+  the weekly trigger `0 6 * * 2` was never going to fire Tuesday Jul 7.
+  Cloudflare's cron dialect numbers days-of-week from **1 = Sunday**
+  (Quartz-style), not Unix cron's 0 = Sunday — the dashboard shows
+  "Next: **Mon**, 13 Jul 2026" for that expression, so our `2` means
+  **Monday** there. Nothing was skipped and nothing crashed; the
+  "trigger re-registered <2h before fire time" theory is retired. The
+  only Monday slot so far (Jul 6 06:00) predated the trigger landing, so
+  the schedule simply hasn't had a fire yet.
+- **Decision (owner):** keep the deployed schedule as-is — the weekly
+  sync is **Mondays 06:00 UTC**. This amends the 2026-07-06 entry below:
+  the recorded intent moves to match the deployment rather than the
+  reverse. No worker redeploy; comments/docs updated instead.
+- **Consequence, separately accepted (owner):** the source-contract CI
+  job (GitHub cron `0 6 * * 1` — GitHub *is* Unix dialect, so that one
+  really is Monday) now runs the **same hour** as the sync, so the
+  "contract check warns a day early" stagger is gone. Accepted because
+  the stagger was convenience, not safety: a failed sync alerts through
+  its own webhook and can never corrupt data (validation gates + version
+  pointer flip).
+- **Gate C re-dating:** the two automated runs become **Jul 8** (the
+  one-off recovery trigger, unaffected — day-of-month syntax has no
+  dialect quirk) + **Jul 13** (first weekly Monday fire, inside the
+  Jul 6→13 soak window and a day earlier than the old Jul 14
+  expectation).
+- **Lesson (HANDOFF §16 "verify at build time" class):** cron
+  day-of-week *numbers* are dialect-specific. Any future schedule edit
+  should spell the day by **name** (`MON`, `TUE`) — names mean the same
+  thing in every dialect.
+- **Revisit if:** the same-hour CI overlap ever masks a drift warning in
+  practice, or Monday 06:00 collides with upstream's own update rhythm —
+  the ready fix is the one-line Sunday shift of the CI cron that was
+  declined this round.
+
+---
+
 ## 2026-07-07 — Choice-restriction wording amended: name the partner ids (4.6 follow-up)
 
 - **Decision (owner, amending the same-day call below):** the `/card`
@@ -392,6 +430,11 @@
 ---
 
 ## 2026-07-06 — Sync cron on Tuesdays; source-contract check owns Mondays (chunk 3.6)
+
+> _Amended 2026-07-07 (cron-dialect entry above): Cloudflare reads `2` as
+> Monday, so the schedule this entry chose never actually deployed as
+> Tuesdays. The owner kept the de-facto Mondays; the stagger rationale
+> below no longer holds._
 
 - **Decision:** Production sync cron is `0 6 * * 2` (Tuesdays 06:00 UTC),
   not the HANDOFF sketch's illustrative Monday. The TESTING.md §5 weekly

@@ -101,6 +101,18 @@ source-contract CI job own Mondays, one day ahead of the sync, exactly the
 "we knew a day early" promise from the test plan. That job, incidentally,
 existed in TESTING.md but in no roadmap chunk; 3.6 adopted the orphan.
 
+_Epilogue, July 7: the calendar trick had a twist. Cloudflare numbers cron
+weekdays from 1 = Sunday — Quartz's convention, not Unix's — so
+`0 6 * * 2` meant **Mondays** all along, and "Tuesday's" first fire was
+quietly booked for July 13. No skip, no crash: July 7 was never on the
+calendar. Diagnosed from a single dashboard line ("Next: Mon, 13 Jul"),
+bridged with a one-off recovery trigger for July 8, and then simply kept —
+Mondays it is, runs July 8 and 13, one day earlier than the trick aimed
+for. The day-early stagger died in the same stroke (the contract check and
+the sync now share Monday 06:00), traded for a lesson worth more: in a
+cron expression, a weekday number is a negotiation between dialects.
+Spell the day out._
+
 Wiring the contract check to reuse the real adapter forced explicit `.ts`
 extensions on every relative import (Node's loader demands them; the
 bundler didn't) — and that conversion exposed a stowaway: a literal NUL
@@ -125,10 +137,11 @@ reviewer it could possibly have, and this project's apprenticeship —
 which had run one direction, Workers-knowledge flowing owner-ward —
 turns out to run both ways. TODO: note the judge-review outcome here.
 
-## TODO: Gate C — the soak and the two Tuesdays
+## TODO: Gate C — the soak and the two crons
 
-_Soak 2026-07-06 → 07-13. Automated runs expected Jul 7 + Jul 14. Record
-what the soak surfaced (ideally: nothing), the /health timestamps, and the
+_Soak 2026-07-06 → 07-13. Automated runs expected Jul 8 (one-off recovery)
++ Jul 13 (first weekly Monday fire — see the 3.6 epilogue). Record what
+the soak surfaced (ideally: nothing), the /health timestamps, and the
 Gate C verdict._
 
 ## TODO: scoreboard & reflections

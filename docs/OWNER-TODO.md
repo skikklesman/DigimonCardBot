@@ -57,9 +57,11 @@
       AND a silently dead cron trigger — the one failure the webhook alerts
       can't report, because they run inside the cron itself (TESTING.md §7,
       DECISIONS.md 2026-07-06). Five browser-minutes. _Upgraded again
-      2026-07-07: the Jul 7 cron miss (see the soak section) is exactly
-      this failure class happening for real — do this before Gate C, not
-      before launch._
+      2026-07-07: the Jul 7 cron miss (diagnosed same day as a
+      cron-dialect quirk — see the soak section) is exactly this failure
+      class happening for real: a cron that silently isn't scheduled when
+      you think it is, and only a staleness probe notices — do this
+      before Gate C, not before launch._
 - [ ] **Optional — alert webhook in GitHub:** add `SYNC_ALERT_WEBHOOK` as a
       repo Actions secret (same URL as the Worker secret) so the Monday
       source-contract job pings your alert channel on failure instead of
@@ -67,38 +69,30 @@
 
 ## During the 3.6 soak (starts when the cron lands)
 
-- [ ] **TONIGHT (2026-07-07) — check the dashboard for the missed cron**:
-      the Jul 7 06:00 UTC sync cron **did not run** (confirmed 14:11 UTC:
-      D1 still v2, `lastSuccessfulSync` still Jul 6 12:39, zero worker
-      invocations in the 06:00 hour per Cloudflare analytics, nothing in
-      the alert channel). The schedule IS attached (`0 6 * * 2`), but its
-      `modified_on` is 04:18 UTC — the 4.9 deploy re-registered the
-      triggers less than 2h before fire time, and this was the cron's
-      **first-ever scheduled fire**. Go to dash.cloudflare.com → Workers
-      & Pages → digimon-tcg-bot → Settings → Triggers → Cron Triggers
-      (past events listed there; or Metrics filtered by trigger type) and
-      look for any event near Jul 7 06:00 UTC. **No event** → Cloudflare
-      skipped it (likely the trigger re-registration too close to fire
-      time) — recovery already in motion, see next item. **An event with
-      an error** → the worker crashed before it could even alert; that's
-      our bug — bring the error text to the next session. Report findings
-      next session; DECISIONS.md entry follows the diagnosis. Related: the
-      "external uptime ping" item above is the permanent fix for this
-      failure class (a dead cron can't report itself) — today upgraded it
-      from nice-to-have to pre-Gate-C.
+- [x] **Check the dashboard for the missed Jul 7 cron** _(done
+      2026-07-07 — mystery solved, and it's neither a skip nor a crash:
+      the dashboard shows "Next: **Mon**, 13 Jul" for `0 6 * * 2`,
+      revealing that **Cloudflare numbers cron weekdays from 1 = Sunday**,
+      so our `2` means Monday, not Unix cron's Tuesday. The Jul 7 fire
+      was never scheduled; the "re-registered <2h before fire time"
+      theory is retired. Owner call: keep the de-facto Monday schedule —
+      no redeploy, docs/comments updated instead; DECISIONS.md
+      2026-07-07.)_
 - [ ] **Wed Jul 8, after ~06:05 UTC — verify the recovery cron fired**
       (owner call 2026-07-07: option 1, one-off recovery cron). A
       temporary second trigger `0 6 8 7 *` was deployed 2026-07-07
       16:17 UTC (~14h ahead of fire time, vs. the <2h that likely
       caused the Jul 7 skip). Check `GET /health`: success looks like
       `activeVersion: 3` and a `lastSuccessfulSync` of ~2026-07-08T06:00.
-      **Fired** → Gate C's two automated runs become Jul 8 + Jul 14;
-      remove the temp trigger from wrangler.toml (delete the one-off
-      entry + its comment), redeploy, and confirm only `0 6 * * 2`
-      remains. Any session can do this on request. **Skipped again** →
-      deeper problem than deploy timing (trigger has never fired);
-      escalate to a real investigation next session before trusting the
-      Jul 14 run.
+      **Fired** → Gate C's two automated runs become Jul 8 + Jul 13 (the
+      weekly trigger fires **Mondays** — cron-dialect diagnosis,
+      DECISIONS.md 2026-07-07); remove the temp trigger from
+      wrangler.toml (delete the one-off entry + its comment), redeploy,
+      and confirm only `0 6 * * 2` (Mondays) remains. Any session can do
+      this on request. **Skipped again** → a trigger that misses a
+      dead-center scheduled fire is a real Cloudflare problem (the
+      dialect quirk explains Jul 7, not a Jul 8 miss); escalate to a
+      real investigation next session before trusting the Jul 13 run.
 - [x] **Re-register commands for the 4.9 rename** _(done 2026-07-07 —
       registered and verified in the soak guilds)_.
 - [x] **Add the 2nd soak guild** _(done 2026-07-06 — installed,
@@ -127,10 +121,10 @@
       reads wrong.
 - [ ] **Glance at the alert channel daily** — silence is expected; anything
       that appears is soak findings.
-- [ ] **After the first two Tuesday crons** (expected Jul 7 + Jul 14),
-      confirm two ✅ automated syncs happened (`/health` timestamp
-      refreshes, or the Cloudflare dashboard cron log) — Gate C
-      criterion #2.
+- [ ] **After the first two automated crons** (expected Jul 8 one-off +
+      Jul 13, the first weekly Monday fire), confirm two ✅ automated
+      syncs happened (`/health` timestamp refreshes, or the Cloudflare
+      dashboard cron log) — Gate C criterion #2.
 
 ## Launch-phase (Phase 5 — before the old bot dies 2026-07-31)
 

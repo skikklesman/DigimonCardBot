@@ -11,11 +11,13 @@ binding = "DB"
 database_name = "cards"
 database_id = "004a6c30-4560-4990-9b41-2bf7805bb94e"
 
-# Weekly sync (HANDOFF §3). Tuesdays — not the sketch's Monday — so the
-# CI source-contract check (Mondays 06:00 UTC) fires a day AHEAD of the
-# sync (TESTING.md §5); rationale in DECISIONS.md 2026-07-06.
+# Weekly sync (HANDOFF §3). CRON DIALECT WARNING: Cloudflare numbers
+# days-of-week from 1 = Sunday, so `2` here means MONDAY 06:00 UTC — not
+# Unix cron's Tuesday. Discovered when the expected Jul 7 fire never
+# existed; owner kept the de-facto Monday schedule (DECISIONS.md
+# 2026-07-07). Spell days by NAME (MON, TUE) in any future edit.
 # TEMPORARY second entry: one-off recovery run Wed 2026-07-08 06:00 UTC —
-# the Jul 7 weekly fire was skipped (OWNER-TODO, soak section). REMOVE
-# after it fires.
+# the mis-read weekly schedule has no fire before Jul 13 (OWNER-TODO,
+# soak section). REMOVE after it fires.
 [triggers]
-crons = ["0 6 * * 2", "0 6 8 7 *"] # Tuesdays 06:00 UTC + one-off Jul 8
+crons = ["0 6 * * 2", "0 6 8 7 *"] # Mondays 06:00 UTC + one-off Jul 8

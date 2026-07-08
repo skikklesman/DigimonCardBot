@@ -217,10 +217,14 @@ the test guild. **Reached:** 2026-07-05
       interactions
       against the _live_ endpoint: PING, `/card` by ID, autocomplete query. Runs in
       CI after every deploy. (Details: [TESTING.md](TESTING.md).)
-- [x] **3.6 — Cron live + soak.** _(Cron enabled 2026-07-06: Tuesdays 06:00
-      UTC — see DECISIONS.md for the day choice; expected automated runs Jul 7 + Jul 14. Also closed a plan gap: the TESTING.md §5 weekly
-      source-contract CI job now exists — Mondays 06:00 UTC, one day ahead of
-      the sync; verified green against the real upstream. **Soak runs
+- [x] **3.6 — Cron live + soak.** _(Cron enabled 2026-07-06: intended
+      Tuesdays 06:00 UTC — see DECISIONS.md for the day choice; expected automated runs Jul 7 + Jul 14. **Corrected 2026-07-07:** Cloudflare
+      reads `0 6 * * 2` as Mondays (weekdays number from 1 = Sunday), so
+      Jul 7 never fired; owner kept the de-facto Monday schedule, runs
+      re-dated Jul 8 (one-off recovery) + Jul 13 — DECISIONS.md
+      2026-07-07. Also closed a plan gap: the TESTING.md §5 weekly
+      source-contract CI job now exists — Mondays 06:00 UTC, now the same
+      hour as the sync; verified green against the real upstream. **Soak runs
       2026-07-06 → 2026-07-13**; owner duties in OWNER-TODO.md. Repo-wide
       change: relative imports carry explicit `.ts` extensions so scripts,
       deploys, and tests share one resolution style.)_ Enable the production

@@ -97,8 +97,8 @@ export default {
     return json(await route(interaction, buildRegistry(env)));
   },
 
-  // Sync path (HANDOFF §3). Runs on the production cron (Tuesdays 06:00 UTC,
-  // wrangler.toml); also triggerable locally via `wrangler dev
+  // Sync path (HANDOFF §3). Runs on the production cron (Mondays 06:00 UTC —
+  // see the dialect warning in wrangler.toml); also triggerable locally via `wrangler dev
   // --test-scheduled`. Failures and warnings announce themselves to the alert
   // webhook (HANDOFF §8 Defense 5); the rethrow additionally marks the
   // invocation failed in Cloudflare's metrics.

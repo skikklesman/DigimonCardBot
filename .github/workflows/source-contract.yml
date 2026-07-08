@@ -1,6 +1,7 @@
-# Weekly source-contract check (TESTING.md §5): Mondays 06:00 UTC — one day
-# BEFORE the Tuesday sync cron in wrangler.toml, so upstream drift is known
-# before the sync trips over it. Writes nothing anywhere.
+# Weekly source-contract check (TESTING.md §5): Mondays 06:00 UTC — same
+# hour as the sync cron since the cron-dialect finding (DECISIONS.md
+# 2026-07-07; the day-early stagger was consciously dropped). Note GitHub
+# cron IS Unix dialect: `1` below really is Monday. Writes nothing anywhere.
 name: Source contract
 
 on:

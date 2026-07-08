@@ -45,11 +45,15 @@ minimal maintenance.
   4.5 (hardening/fuzz)**; 4.4 needs community input. The owner is an
   **official Digimon TCG judge**: primary source for all rules/keyword
   content (see OWNER-TODO's glossary-review item).
-- **Cron is LIVE**: `0 6 * * 2` (Tuesdays 06:00 UTC; DECISIONS 2026-07-06).
-  **The 7-day soak runs 2026-07-06 → 2026-07-13**; Gate C also needs the
-  two automated runs (expected Jul 7 + Jul 14). Owner duties in
-  OWNER-TODO.md. Production D1: version 2, 8,425 rows, pipeline-loaded via
-  the resync route.
+- **Cron is LIVE**: `0 6 * * 2` — which on Cloudflare means **Mondays**
+  06:00 UTC (their cron numbers weekdays from 1 = Sunday; diagnosed and
+  deliberately kept 2026-07-07, DECISIONS — spell days by NAME in any
+  future cron edit). A temporary one-off recovery trigger `0 6 8 7 *`
+  fires Wed Jul 8 and is removed after. **The 7-day soak runs 2026-07-06
+  → 2026-07-13**; Gate C also needs the two automated runs (expected
+  Jul 8 one-off + Jul 13 weekly). Owner duties in OWNER-TODO.md.
+  Production D1: version 2, 8,425 rows, pipeline-loaded via the resync
+  route.
 - **Commands registered to the soak guilds** (`DISCORD_TEST_GUILD_ID` is a
   comma-separated list since 3.6.1; owner's `.dev.vars` has
   `DISCORD_APP_ID`, `DISCORD_BOT_TOKEN`, `DISCORD_TEST_GUILD_ID`,

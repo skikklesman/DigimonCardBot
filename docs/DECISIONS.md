@@ -10,6 +10,71 @@
 
 ---
 
+## 2026-07-09 — Request-path errors alert the owner; catastrophic faults also 500 (chunk 4.5)
+
+- **Context.** The hardening chunk asked "what does a user see if D1 errors
+  mid-lookup?" The answer was already good — the router is total, so a
+  throwing handler degrades to a friendly ephemeral (command) or an empty
+  choice list (autocomplete). But the error only reached a `console.error`
+  nobody watches, and the worker's entry point had **no top-level catch**: a
+  throw in `verifyDiscordSignature` / `buildRegistry` / JSON serialization
+  returned a bare HTTP 500 with no alert.
+- **Owner call.** "I would rather err on the side of knowing the error than
+  covering it over." So a caught request-path error must **reach the owner**,
+  not die in a log line. Two tiers:
+  - **Handled errors** (D1 hiccup, a bug in a handler — caught by the router):
+    the user still gets the friendly response, AND a rate-limited ping fires
+    to `SYNC_ALERT_WEBHOOK`. The router gained an optional `onError`
+    reporter (default no-op, so `route()` stays pure for unit tests); the
+    worker wires it to `reportRequestError` via `ctx.waitUntil` so alerting
+    never adds latency to the response.
+  - **Catastrophic faults** (the worker's new top-level catch — should be
+    unreachable, since `route()` is total): alert **and** return **HTTP 500**,
+    so Cloudflare's error metrics catch them too. Trade-off accepted: the rare
+    user hitting this sees "application did not respond." Rationale: the
+    deep, should-never-happen failures get the loudest possible signal.
+- **Rate-limiting is in-isolate, best-effort.** A module-level `Map` keyed on
+  the error context (e.g. `command /card`) suppresses repeats for 5 minutes,
+  so a systemic break (a bad deploy failing every `/card`) pings a couple of
+  times, not thousands. It is imperfect across Cloudflare's many isolates —
+  but a hot isolate serves a burst of requests, so the flood collapses where
+  it actually forms, at ~$0, with no new dependency or stored state. Chosen
+  over a D1-backed counter (a write on the error path is exactly the wrong
+  time to touch the database) and over Durable Objects (out of scope, adds a
+  binding). **Revisit** only if alert-spam is observed in practice — a coarse
+  KV or D1 dedup is the upgrade path.
+- **Shared alerter, relocated to keep the boundary honest.** The webhook
+  poster (formerly `sync/alert.ts`'s `sendSyncAlert`) now lives at
+  `src/alert.ts` as `sendAlert`, because BOTH paths use it and
+  `interactions/` may not import `sync/` (TECH-DESIGN §3 rule 1). Same
+  best-effort-never-throws contract; the request-path reporter adds the dedup
+  and the `🔴 request-path error [context]:` framing.
+
+### Code-review refinements (same day, folded into the chunk before merge)
+
+A high-effort review of the branch surfaced real gaps; the substantive ones
+were fixed in place:
+
+- **The `.trim()` guard was only on `/card`.** `/keyword` and `/set` still
+  had the unguarded extractor. Fixed at the right altitude: one shared
+  `interactions/options.ts#stringOption` all String-option commands use, so
+  the hole can't reopen per-command.
+- **The fuzz suite fuzzed a hand-built subset** of the registry — which is
+  why it missed the above. `buildRegistry` is now exported and
+  repo-parameterized; the fuzz suite drives the REAL command set, so a new
+  command is fuzzed the moment it's wired.
+- **The top-level catch now wraps verify + parse + route**, not just
+  route+serialize — so an (impossible) `verifyDiscordSignature` throw alerts
+  rather than returning a silent bare 500. The 401/400 stay as `return`s
+  inside the try.
+- **Component alerts dedup on the bounded `namespace`, not the per-card
+  `custom_id`** — otherwise a D1 outage during "Show effect text" clicks
+  would fire one alert per card id and grow the limiter Map unboundedly (the
+  full id still goes to the log).
+- **A failed alert delivery rolls back the dedup stamp** (`sendAlert` returns
+  a success boolean), so a transient webhook blip doesn't silence a surface
+  for the full window — the next error retries.
+
 ## 2026-07-08 — Card images move to a CDN + a coverage audit (chunk 4.11)
 
 - **Symptom (owner, soak testing):** `/card` sometimes returns an embed with

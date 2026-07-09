@@ -1,11 +1,14 @@
 // Integration tests for the interaction endpoint: the full HTTP surface as
 // Discord sees it, running inside workerd via SELF — signature check,
 // routing, and (since 2.3) the /card read path against seeded local D1.
-import { env, SELF } from "cloudflare:test";
-import { afterAll, describe, expect, it } from "vitest";
+import { createExecutionContext, env, SELF, waitOnExecutionContext } from "cloudflare:test";
+import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
 import { signedInteraction, signedRawBody } from "../test/helpers/discord-sign.ts";
+import worker, { type Env } from "./index.ts";
 import { loadNewVersion } from "./sync/load.ts";
 import { normalizeSearchName } from "./data/schema.ts";
+import { resetAlertLimiter } from "./interactions/error-alert.ts";
+import { stubOutboundFetch } from "../test/helpers/webhook-stub.ts";
 
 const ENDPOINT = "https://example.com/interactions";
 
@@ -332,5 +335,80 @@ describe("interaction endpoint", () => {
   it("returns 404 for GET on the interactions path", async () => {
     const res = await SELF.fetch(ENDPOINT);
     expect(res.status).toBe(404);
+  });
+});
+
+// Chunk 4.5 — a request-path error must reach the owner, not just log-and-die.
+// These drive worker.fetch directly (not SELF) so a broken D1 can be injected
+// via env, and stub global fetch to capture the alert the worker sends through
+// ctx.waitUntil. The main worker shares this isolate, so the stub applies.
+describe("request-path error visibility (chunk 4.5)", () => {
+  const WEBHOOK = "https://hooks.test/alert";
+
+  /** A D1 binding whose every query rejects — a mid-lookup outage. */
+  function throwingDb(): D1Database {
+    const stmt = {
+      bind: () => stmt,
+      first: () => Promise.reject(new Error("D1 is down")),
+      all: () => Promise.reject(new Error("D1 is down")),
+      run: () => Promise.reject(new Error("D1 is down")),
+    };
+    return { prepare: () => stmt } as unknown as D1Database;
+  }
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    resetAlertLimiter();
+  });
+
+  it("a D1 failure mid-lookup: friendly 200 to the user AND an alert to the owner", async () => {
+    const alerts = stubOutboundFetch(WEBHOOK);
+    const brokenEnv: Env = {
+      ...(env as unknown as Env),
+      DB: throwingDb(),
+      SYNC_ALERT_WEBHOOK: WEBHOOK,
+    };
+    const init = await signedInteraction({
+      type: 2,
+      data: { name: "card", options: [{ name: "card-name", type: 3, value: "goldramon" }] },
+    });
+    const ctx = createExecutionContext();
+
+    const res = await worker.fetch(new Request(ENDPOINT, init), brokenEnv, ctx);
+    await waitOnExecutionContext(ctx); // flush the ctx.waitUntil alert
+
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { type: number; data: { content: string; flags: number } };
+    expect(body.type).toBe(4); // friendly ephemeral, never "did not respond"
+    expect(body.data.flags).toBe(64);
+    expect(body.data.content).toContain("Something went wrong");
+    expect(alerts).toHaveLength(1);
+    expect(alerts[0]).toContain("command /card");
+    expect(alerts[0]).toContain("D1 is down");
+  });
+
+  it("a catastrophic internal fault: 500 AND an alert (owner call — loudest signal)", async () => {
+    // route() is total by design, so the outer catch only fires on an
+    // unexpected fault. Simulate one where it realistically could occur: the
+    // DB binding itself throws on access, so buildRegistry(env) faults before
+    // routing. Owner's choice: alert AND return 500 (Cloudflare metrics catch
+    // it too), even though this rare path shows the user "did not respond".
+    const alerts = stubOutboundFetch(WEBHOOK);
+    const brokenEnv: Env = { ...(env as unknown as Env), SYNC_ALERT_WEBHOOK: WEBHOOK };
+    Object.defineProperty(brokenEnv, "DB", {
+      get() {
+        throw new Error("binding access faulted");
+      },
+    });
+    const init = await signedInteraction({ type: 1 }); // valid signed PING
+    const ctx = createExecutionContext();
+
+    const res = await worker.fetch(new Request(ENDPOINT, init), brokenEnv, ctx);
+    await waitOnExecutionContext(ctx);
+
+    expect(res.status).toBe(500);
+    expect(alerts).toHaveLength(1);
+    expect(alerts[0]).toContain("worker fetch");
+    expect(alerts[0]).toContain("binding access faulted");
   });
 });

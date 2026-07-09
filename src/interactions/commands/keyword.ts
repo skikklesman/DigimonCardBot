@@ -5,7 +5,6 @@ import {
   ApplicationCommandOptionType,
   InteractionResponseType,
   MessageFlags,
-  type APIApplicationCommandInteractionDataStringOption,
   type APIChatInputApplicationCommandInteraction,
   type APIInteractionResponse,
 } from "discord-api-types/v10";
@@ -13,6 +12,7 @@ import { KEYWORDS, type Keyword } from "../../data/keywords.ts";
 import { normalizeSearchName } from "../../data/schema.ts";
 import type { AutocompleteHandler, CommandHandler } from "../router.ts";
 import { keywordResponse } from "../embeds.ts";
+import { stringOption } from "../options.ts";
 
 export const TERM_OPTION = "term";
 
@@ -39,11 +39,8 @@ function prefixMatches(normalized: string): Keyword[] {
 
 export function createKeywordCommand(): CommandHandler {
   return (interaction): Promise<APIInteractionResponse> => {
-    const option = (interaction as APIChatInputApplicationCommandInteraction).data.options?.find(
-      (o): o is APIApplicationCommandInteractionDataStringOption =>
-        o.name === TERM_OPTION && o.type === ApplicationCommandOptionType.String,
-    );
-    const typed = option?.value.trim() ?? "";
+    const typed =
+      stringOption(interaction as APIChatInputApplicationCommandInteraction, TERM_OPTION) ?? "";
     const normalized = normalizeSearchName(typed);
     if (!normalized) {
       return Promise.resolve(ephemeral("Please provide a keyword, like `Blocker` or `Raid`."));

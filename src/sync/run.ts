@@ -5,7 +5,7 @@
 import { EXPECTED_FIELDS, fetchCards, normalize } from "./adapter/digimoncard-app.ts";
 import { checkSchemaDrift, checkShrink, validateCards } from "./validate.ts";
 import { getLiveCardCount, loadNewVersion } from "./load.ts";
-import { sendSyncAlert } from "./alert.ts";
+import { sendAlert } from "../alert.ts";
 
 export interface SyncSummary {
   version: number;
@@ -77,7 +77,7 @@ export async function runSyncWithAlerts(
     const summary = await runSync(db, options);
     console.log(`sync complete: ${JSON.stringify(summary)}`);
     if (summary.warnings.length > 0) {
-      await sendSyncAlert(
+      await sendAlert(
         options.webhookUrl,
         `⚠️ card sync v${summary.version} succeeded with warnings:\n• ${summary.warnings.join("\n• ")}`,
         alertOptions,
@@ -87,7 +87,7 @@ export async function runSyncWithAlerts(
   } catch (error) {
     const message = String(error);
     console.error(`sync failed: ${message}`);
-    await sendSyncAlert(options.webhookUrl, `❌ card sync FAILED: ${message}`, alertOptions);
+    await sendAlert(options.webhookUrl, `❌ card sync FAILED: ${message}`, alertOptions);
     return { ok: false, error: message };
   }
 }

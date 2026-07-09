@@ -1,10 +1,8 @@
 // The /card command (HANDOFF §6.3): resolve the card-name value via the
 // shared ladder, render hit / disambiguation / not-found.
 import {
-  ApplicationCommandOptionType,
   InteractionResponseType,
   MessageFlags,
-  type APIApplicationCommandInteractionDataStringOption,
   type APIChatInputApplicationCommandInteraction,
   type APIInteractionResponse,
 } from "discord-api-types/v10";
@@ -12,6 +10,7 @@ import type { Card } from "../../data/schema.ts";
 import type { CardRepo } from "../../data/repo.ts";
 import { CHOICE_PARTNERS } from "../../data/restrictions.ts";
 import type { CommandHandler, ComponentHandler } from "../router.ts";
+import { stringOption } from "../options.ts";
 import {
   CARD_EFFECT_ID,
   cardEffectResponse,
@@ -26,12 +25,7 @@ export const CARD_NAME_OPTION = "card-name";
 export function cardNameValue(
   interaction: APIChatInputApplicationCommandInteraction,
 ): string | null {
-  const option = interaction.data.options?.find(
-    (o): o is APIApplicationCommandInteractionDataStringOption =>
-      o.name === CARD_NAME_OPTION && o.type === ApplicationCommandOptionType.String,
-  );
-  const value = option?.value.trim() ?? "";
-  return value === "" ? null : value;
+  return stringOption(interaction, CARD_NAME_OPTION);
 }
 
 /** Discord enforces required options; this only guards synthetic payloads. */

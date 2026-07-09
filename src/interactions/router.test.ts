@@ -148,6 +148,54 @@ describe("route — message components (type 3)", () => {
   });
 });
 
+describe("route — error reporting (chunk 4.5)", () => {
+  const boom = () => Promise.reject(new Error("D1 exploded"));
+
+  it("reports a throwing command handler with its context, then still degrades friendly", async () => {
+    const reported: Array<[string, unknown]> = [];
+    const registry: HandlerRegistry = { ...empty, commands: { card: boom } };
+    const content = expectEphemeral(
+      await route(command("card"), registry, (ctx, err) => reported.push([ctx, err])),
+    );
+    expect(content).toContain("Something went wrong");
+    expect(reported).toHaveLength(1);
+    expect(reported[0]![0]).toBe("command /card");
+    expect(String(reported[0]![1])).toContain("D1 exploded");
+  });
+
+  it("reports a throwing autocomplete handler, still degrading to an empty list", async () => {
+    const reported: string[] = [];
+    const registry: HandlerRegistry = { ...empty, autocomplete: { card: boom } };
+    const res = await route(autocomplete("card"), registry, (ctx) => reported.push(ctx));
+    expect((res as { data: { choices: unknown[] } }).data.choices).toEqual([]);
+    expect(reported).toEqual(["autocomplete /card"]);
+  });
+
+  it("reports a throwing component on the bounded namespace, not the per-card custom_id", async () => {
+    // The dedup key must be the namespace so a D1 outage while users click
+    // across many cards can't fire one alert per card id (finding #2).
+    const reported: string[] = [];
+    const registry: HandlerRegistry = { ...empty, components: { card: boom } };
+    await route(component("card:effect:BT1-001"), registry, (ctx) => reported.push(ctx));
+    await route(component("card:effect:EX5-002"), registry, (ctx) => reported.push(ctx));
+    expect(reported).toEqual(["component card", "component card"]);
+  });
+
+  it("does not report when nothing throws", async () => {
+    const reported: string[] = [];
+    const reply: APIInteractionResponse = {
+      type: InteractionResponseType.ChannelMessageWithSource,
+      data: { content: "ok" },
+    };
+    const registry: HandlerRegistry = {
+      ...empty,
+      commands: { card: () => Promise.resolve(reply) },
+    };
+    await route(command("card"), registry, (ctx) => reported.push(ctx));
+    expect(reported).toEqual([]);
+  });
+});
+
 describe("route — everything else", () => {
   it.each([
     ["modal submit (type 5)", { type: 5 }],

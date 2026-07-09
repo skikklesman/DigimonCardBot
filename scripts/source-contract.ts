@@ -10,7 +10,7 @@
 // the signal).
 import { EXPECTED_FIELDS, fetchCards, normalize } from "../src/sync/adapter/digimoncard-app.ts";
 import { checkSchemaDrift, validateCards } from "../src/sync/validate.ts";
-import { sendSyncAlert } from "../src/sync/alert.ts";
+import { sendAlert } from "../src/alert.ts";
 
 /** No D1 here (we write nothing), so the shrink guard's live-count
  * comparison is approximated by a hard floor well under the ~8.4k real
@@ -49,14 +49,14 @@ for (const problem of problems) console.error(`  ✗ ${problem}`);
 
 const webhook = process.env.SYNC_ALERT_WEBHOOK;
 if (problems.length > 0) {
-  await sendSyncAlert(
+  await sendAlert(
     webhook,
     `🔶 source-contract check FAILED (tomorrow's sync will abort):\n• ${problems.join("\n• ")}`,
   );
   process.exit(1);
 }
 if (warnings.length > 0) {
-  await sendSyncAlert(
+  await sendAlert(
     webhook,
     `⚠️ source-contract check passed with warnings:\n• ${warnings.join("\n• ")}`,
   );

@@ -55,6 +55,20 @@ Target: all pure logic. These are the bulk of the suite and must stay fast
   unique codes, well-formed ISO dates, labels inside Discord's cap, LIKE-safe
   matchers; resolution + in-memory autocomplete; every autocomplete value it
   hands out must resolve.
+- **Input fuzzing** (chunk 4.5) — a shared hostile corpus
+  (`test/fixtures/fuzz-inputs.ts`: malformed payloads + nasty card-name
+  strings — absurd length, mixed-script unicode, combining marks, RTL,
+  surrogates, LIKE/SQL metacharacters) drives two suites: a router-level
+  fuzz pass wiring the real handlers to a fake repo (every input resolves to
+  a valid response, never throws), and the `normalizeSearchName`
+  **index-range invariant** (output stays in `[a-z0-9 space]`, all below
+  `{`, so the repo's range query can't be de-indexed by hostile input).
+- **Request-path error alerting** (chunk 4.5) — the rate-limiter dedup window
+  and `reportRequestError`'s best-effort delivery (`error-alert.test.ts`,
+  fake fetch); the router's `onError` reporter is called with the right
+  context on a throwing handler (`router.test.ts`). The end-to-end proof —
+  a D1 failure yields BOTH a friendly response AND a webhook alert, and a
+  catastrophic fault yields 500 + alert — lives in the integration layer (§3).
 
 Conventions: tests live beside source as `*.test.ts`; no network access in unit
 tests, ever; fixtures in `test/fixtures/`.

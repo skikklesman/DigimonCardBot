@@ -9,6 +9,7 @@ import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vites
 import fixture from "../test/fixtures/digimoncard-app-cards.json";
 import worker, { type Env } from "./index.ts";
 import { getActiveVersion } from "./sync/load.ts";
+import { stubOutboundFetch } from "../test/helpers/webhook-stub.ts";
 
 const WEBHOOK = "https://hooks.test/alert";
 const SOURCE = "https://source.test/cards.json";
@@ -21,21 +22,11 @@ async function resetDb(): Promise<void> {
   ]);
 }
 
-/** Global-fetch stub: serves `body` at SOURCE, captures posts to WEBHOOK. */
-function stubOutboundFetch(body: unknown): string[] {
-  const alerts: string[] = [];
-  vi.stubGlobal("fetch", (async (url: unknown, init?: RequestInit) => {
-    if (String(url) === WEBHOOK) {
-      alerts.push((JSON.parse(String(init?.body)) as { content: string }).content);
-      return new Response(null, { status: 204 });
-    }
-    if (String(url) === SOURCE) {
-      return new Response(JSON.stringify(body), { status: 200 });
-    }
-    throw new Error(`unexpected outbound fetch in test: ${String(url)}`);
-  }) as typeof fetch);
-  return alerts;
-}
+/** Serve `body` at SOURCE and capture WEBHOOK posts via the shared stub. */
+const stubSync = (body: unknown): string[] =>
+  stubOutboundFetch(WEBHOOK, {
+    [SOURCE]: () => new Response(JSON.stringify(body), { status: 200 }),
+  });
 
 /** Feed whose renamed id field aborts at the drift gate — one fetch, no retries. */
 const driftFeed = (fixture as Record<string, unknown>[]).map(({ id, ...rest }) => ({
@@ -57,14 +48,14 @@ describe("scheduled() — the cron wiring", () => {
   afterAll(resetDb);
 
   it("happy path: syncs, flips the pointer, and stays quiet", async () => {
-    const alerts = stubOutboundFetch(fixture);
+    const alerts = stubSync(fixture);
     await runCron();
     await expect(getActiveVersion(env.DB)).resolves.toBe(1);
     expect(alerts).toEqual([]);
   });
 
   it("a failed sync posts the ❌ alert AND rejects, so Cloudflare marks the invocation failed", async () => {
-    const alerts = stubOutboundFetch(driftFeed);
+    const alerts = stubSync(driftFeed);
     await expect(runCron()).rejects.toThrow(/schema drift/);
     expect(alerts).toHaveLength(1);
     expect(alerts[0]).toContain("❌");
@@ -75,7 +66,7 @@ describe("scheduled() — the cron wiring", () => {
     await env.DB.prepare(
       "INSERT INTO meta (key, value) VALUES ('last_successful_sync', '2020-01-01T00:00:00.000Z')",
     ).run();
-    const alerts = stubOutboundFetch(fixture);
+    const alerts = stubSync(fixture);
     await runCron();
     expect(alerts).toHaveLength(1);
     expect(alerts[0]).toContain("⚠️");
@@ -87,7 +78,7 @@ describe("scheduled() — the cron wiring", () => {
     await env.DB.prepare(
       "INSERT INTO meta (key, value) VALUES ('last_successful_sync', '2020-01-01T00:00:00.000Z')",
     ).run();
-    const alerts = stubOutboundFetch(driftFeed);
+    const alerts = stubSync(driftFeed);
     await expect(runCron()).rejects.toThrow(/schema drift/);
     expect(alerts).toHaveLength(2);
     expect(alerts[0]).toContain("STALE");

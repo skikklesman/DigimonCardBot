@@ -42,6 +42,13 @@ export interface HandlerRegistry {
   components: Readonly<Record<string, ComponentHandler>>;
 }
 
+/** Notified of a caught handler error before the router returns its friendly
+ * fallback — `context` names the surface ("command /card"). Synchronous and
+ * fire-and-forget by contract: the router never awaits it and it must never
+ * throw (the entry point routes it through ctx.waitUntil). Defaults to a
+ * no-op, keeping route() pure for unit tests (chunk 4.5). */
+export type ErrorReporter = (context: string, error: unknown) => void;
+
 /** Discord caps autocomplete responses at 25 choices; enforce centrally. */
 const MAX_CHOICES = 25;
 
@@ -70,6 +77,7 @@ function choices(list: APIApplicationCommandOptionChoice[]): APIInteractionRespo
 export async function route(
   interaction: unknown,
   registry: HandlerRegistry,
+  onError: ErrorReporter = () => {},
 ): Promise<APIInteractionResponse> {
   const type =
     typeof interaction === "object" && interaction !== null && "type" in interaction
@@ -87,7 +95,9 @@ export async function route(
     try {
       return await handler(command);
     } catch (error) {
-      console.error(`command /${command.data.name} failed: ${String(error)}`);
+      const context = `command /${command.data.name}`;
+      onError(context, error);
+      console.error(`${context} failed: ${String(error)}`);
       return HANDLER_ERROR;
     }
   }
@@ -100,8 +110,12 @@ export async function route(
       return choices(await handler(query));
     } catch (error) {
       // Empty list, not an error: autocomplete cannot be deferred and has
-      // no user-visible error channel (HANDOFF §6.4).
-      console.error(`autocomplete /${query.data.name} failed: ${String(error)}`);
+      // no user-visible error channel (HANDOFF §6.4). Still report it — a
+      // silently-empty autocomplete is exactly the kind of failure that
+      // otherwise hides (chunk 4.5).
+      const context = `autocomplete /${query.data.name}`;
+      onError(context, error);
+      console.error(`${context} failed: ${String(error)}`);
       return choices([]);
     }
   }
@@ -121,7 +135,14 @@ export async function route(
     try {
       return await handler(component);
     } catch (error) {
-      console.error(`component ${component.data.custom_id} failed: ${String(error)}`);
+      // Dedup the alert on the bounded NAMESPACE, not the full custom_id: the
+      // id carries a per-card token (`card:effect:BT1-001`), so keying the
+      // rate-limiter on it would fire one alert per card and grow the limiter
+      // Map unboundedly during exactly the outage it exists to tame (chunk 4.5
+      // finding #2). The full id still goes to the log for debuggability.
+      const context = `component ${namespace}`;
+      onError(context, error);
+      console.error(`${context} (${component.data.custom_id}) failed: ${String(error)}`);
       return HANDLER_ERROR;
     }
   }

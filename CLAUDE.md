@@ -52,8 +52,17 @@ minimal maintenance.
   card image for coverage gaps. **Production resync done** (2026-07-08,
   OWNER-TODO checked off) — the stored `image_url` values now point at
   jsDelivr.
-  4.3 (`/page`) closed as Will Not Do; **next buildable chunk: 4.5
-  (hardening/fuzz)**; 4.4 needs community input. The owner is an
+  Chunk 4.5 (2026-07-09): hardening pass — input fuzz corpus
+  (`test/fixtures/fuzz-inputs.ts`) over the router + the
+  `normalizeSearchName` index-range invariant, and **request-path error
+  alerting**: caught handler errors now ping `SYNC_ALERT_WEBHOOK`
+  (rate-limited, in-isolate) as well as degrading friendly, and the worker
+  gained a top-level catch that alerts AND returns 500 for catastrophic
+  faults (owner call — "err on the side of knowing the error"; DECISIONS
+  2026-07-09).
+  4.3 (`/page`) closed as Will Not Do; **4.5 landed — the only remaining
+  Phase 4 chunk is 4.4 (command-set parity review), which needs community
+  input, so nothing else is buildable solo before Gate D.** The owner is an
   **official Digimon TCG judge**: primary source for all rules/keyword
   content (see OWNER-TODO's glossary-review item).
 - **Cron is LIVE**: `0 6 * * 2` — which on Cloudflare means **Mondays**

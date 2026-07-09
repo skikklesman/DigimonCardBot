@@ -7,7 +7,6 @@ import {
   ApplicationCommandOptionType,
   InteractionResponseType,
   MessageFlags,
-  type APIApplicationCommandInteractionDataStringOption,
   type APIChatInputApplicationCommandInteraction,
   type APIInteractionResponse,
 } from "discord-api-types/v10";
@@ -16,6 +15,7 @@ import { normalizeSearchName } from "../../data/schema.ts";
 import type { CardRepo } from "../../data/repo.ts";
 import type { AutocompleteHandler, CommandHandler } from "../router.ts";
 import { releaseResponse } from "../embeds.ts";
+import { stringOption } from "../options.ts";
 
 export const SET_OPTION = "set";
 
@@ -40,11 +40,8 @@ function prefixMatches(normalized: string): ReleaseSet[] {
 
 export function createSetCommand(repo: CardRepo): CommandHandler {
   return async (interaction): Promise<APIInteractionResponse> => {
-    const option = (interaction as APIChatInputApplicationCommandInteraction).data.options?.find(
-      (o): o is APIApplicationCommandInteractionDataStringOption =>
-        o.name === SET_OPTION && o.type === ApplicationCommandOptionType.String,
-    );
-    const typed = option?.value.trim() ?? "";
+    const typed =
+      stringOption(interaction as APIChatInputApplicationCommandInteraction, SET_OPTION) ?? "";
     const normalized = normalizeSearchName(typed);
     if (!normalized) {
       return ephemeral("Please name a set, like `BT-14` or `Beginning Observer`.");

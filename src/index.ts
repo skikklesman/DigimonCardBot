@@ -1,7 +1,8 @@
 // Worker entry point. Stays thin: verify → route → respond (TECH-DESIGN §3.5).
 import { verifyDiscordSignature } from "./interactions/verify.ts";
-import { route, type HandlerRegistry } from "./interactions/router.ts";
-import { createRepo } from "./data/repo.ts";
+import { route, type ErrorReporter, type HandlerRegistry } from "./interactions/router.ts";
+import { reportRequestError } from "./interactions/error-alert.ts";
+import { createRepo, type CardRepo } from "./data/repo.ts";
 import { createCardCommand, createCardEffectComponent } from "./interactions/commands/card.ts";
 import { createAltCommand } from "./interactions/commands/alt.ts";
 import { createCardAutocomplete } from "./interactions/autocomplete.ts";
@@ -13,14 +14,15 @@ import { createSetAutocomplete, createSetCommand } from "./interactions/commands
 import { createReleaseCommand } from "./interactions/commands/release.ts";
 import { createBanlistCommand } from "./interactions/commands/banlist.ts";
 import { checkStaleSync, runSyncWithAlerts } from "./sync/run.ts";
-import { sendSyncAlert } from "./sync/alert.ts";
+import { sendAlert } from "./alert.ts";
 import { handleResync } from "./admin.ts";
 import { handleHealth } from "./health.ts";
 
 // Handlers close over the repo, so the registry is built per request (the
-// D1 binding arrives with env).
-function buildRegistry(env: Env): HandlerRegistry {
-  const repo = createRepo(env.DB);
+// D1 binding arrives with env). Exported and repo-parameterized so the fuzz
+// suite (chunk 4.5) drives the REAL command set, not a hand-built subset —
+// a new command is fuzzed automatically the moment it's wired here.
+export function buildRegistry(repo: CardRepo): HandlerRegistry {
   const cardAutocomplete = createCardAutocomplete(repo);
   return {
     commands: {
@@ -69,7 +71,7 @@ function json(payload: unknown, init?: ResponseInit): Response {
 }
 
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
     if (request.method === "GET" && url.pathname === "/health") {
       return handleHealth(env.DB);
@@ -81,27 +83,51 @@ export default {
       return new Response("Not found", { status: 404 });
     }
 
-    // The signature covers the exact raw bytes — read the body as text and
-    // verify BEFORE parsing anything (HANDOFF §6.1).
-    const rawBody = await request.text();
-    const verified = await verifyDiscordSignature(
-      env.DISCORD_PUBLIC_KEY,
-      request.headers.get("X-Signature-Ed25519"),
-      request.headers.get("X-Signature-Timestamp"),
-      rawBody,
-    );
-    if (!verified) {
-      return new Response("invalid request signature", { status: 401 });
-    }
+    // A caught handler error (D1 hiccup, a bug in a handler) still returns a
+    // friendly response to the user — but it must reach the owner, not die in
+    // a log line. The router calls this before its fallback; waitUntil keeps
+    // the alert off the response's critical path (chunk 4.5).
+    const onError: ErrorReporter = (context, error) =>
+      ctx.waitUntil(reportRequestError(env.SYNC_ALERT_WEBHOOK, context, error));
 
-    let interaction: unknown;
+    // The whole interaction path — verify, parse, route — sits under one catch
+    // so NOTHING unexpected escapes as a silent bare 500 (chunk 4.5). The 401
+    // (bad signature) and 400 (malformed body) are deliberate `return`s inside
+    // it, so they keep their status codes; only an unexpected throw reaches the
+    // catch below.
     try {
-      interaction = JSON.parse(rawBody);
-    } catch {
-      return new Response("malformed body", { status: 400 });
-    }
+      // The signature covers the exact raw bytes — read + verify BEFORE
+      // parsing anything (HANDOFF §6.1).
+      const rawBody = await request.text();
+      const verified = await verifyDiscordSignature(
+        env.DISCORD_PUBLIC_KEY,
+        request.headers.get("X-Signature-Ed25519"),
+        request.headers.get("X-Signature-Timestamp"),
+        rawBody,
+      );
+      if (!verified) {
+        return new Response("invalid request signature", { status: 401 });
+      }
 
-    return json(await route(interaction, buildRegistry(env)));
+      let interaction: unknown;
+      try {
+        interaction = JSON.parse(rawBody);
+      } catch {
+        return new Response("malformed body", { status: 400 });
+      }
+
+      return json(await route(interaction, buildRegistry(createRepo(env.DB)), onError));
+    } catch (error) {
+      // route() is total by design and verify.ts never throws, so reaching
+      // here means an unexpected internal fault — a broken binding, a body
+      // read error, a serialization bug. Alert AND return 500 so Cloudflare's
+      // error metrics catch it too — the deep, should-never-happen failures get
+      // the loudest signal, even though the rare user hitting one sees
+      // "application did not respond" (owner call 2026-07-09, DECISIONS.md).
+      ctx.waitUntil(reportRequestError(env.SYNC_ALERT_WEBHOOK, "worker fetch", error));
+      console.error(`fetch handler faulted: ${String(error)}`);
+      return new Response("internal error", { status: 500 });
+    }
   },
 
   // Sync path (HANDOFF §3). Runs on the production cron (Mondays 06:00 UTC —
@@ -114,7 +140,7 @@ export default {
     // margin, say so even if (especially if) this run is about to fail too.
     const stale = await checkStaleSync(env.DB);
     if (stale) {
-      await sendSyncAlert(env.SYNC_ALERT_WEBHOOK, `⚠️ ${stale}`);
+      await sendAlert(env.SYNC_ALERT_WEBHOOK, `⚠️ ${stale}`);
     }
     const outcome = await runSyncWithAlerts(env.DB, {
       webhookUrl: env.SYNC_ALERT_WEBHOOK,

@@ -298,10 +298,30 @@ Chunks 4.1–4.3 are independent — parallelizable.
       this cheap); a discoverability gap around `/keyword` (tester didn't
       know effect definitions existed — consider `/help` or richer command
       descriptions)._
-- [ ] **4.5 — Hardening pass.** Input fuzzing on interaction payloads
-      (malformed options, absurd lengths, weird unicode in names); D1 error
-      handling (what does the user see if D1 errors mid-lookup? — must be a
-      friendly message, not a Discord "application did not respond").
+- [x] **4.5 — Hardening pass.** _(Landed 2026-07-09. Two halves: input
+      fuzzing + error visibility. Finding: the router was already total, so
+      the gap was the worker entry — a throw in verify/buildRegistry/
+      serialization returned a raw 500. Owner call 2026-07-09: caught errors
+      must REACH the owner, not die in a log line. So the router now reports
+      caught handler errors (D1 hiccup etc.) to a NEW request-path alerter —
+      friendly response to the user + rate-limited ping to
+      `SYNC_ALERT_WEBHOOK` via `ctx.waitUntil`; the worker's new top-level
+      catch alerts AND returns 500 for the should-never-happen faults so
+      Cloudflare metrics catch them too. Rate-limiting is in-isolate,
+      best-effort — DECISIONS.md. Fuzz corpus in
+      `test/fixtures/fuzz-inputs.ts`, shared by a router-level fuzz suite and
+      the normalizeSearchName index-range invariant test. Review-hardened
+      before merge (DECISIONS 2026-07-09 "Code-review refinements"): a shared
+      `interactions/options.ts#stringOption` guard for ALL String-option
+      commands (not just /card); the fuzz suite drives the real exported
+      `buildRegistry`, so every command is fuzzed; the catch widened to wrap
+      verify+parse; component alerts dedup on the namespace; a failed alert
+      rolls back the dedup window; the shared alerter moved to `src/alert.ts`
+      (`sendAlert`) so interactions/ no longer imports sync/.)_ Input fuzzing on
+      interaction payloads (malformed options, absurd lengths, weird unicode
+      in names); D1 error handling (what does the user see if D1 errors
+      mid-lookup? — must be a friendly message, not a Discord "application
+      did not respond").
 - [x] **4.6 — Banned/restricted display on `/card`.** _(Landed 2026-07-07.
       Value survey found a fifth upstream value beyond the scoped four:
       `Choice Restriction` (5 cards, 2 groups) — all banned/choice cards

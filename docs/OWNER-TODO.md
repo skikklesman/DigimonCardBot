@@ -7,7 +7,7 @@
 
 ## Anytime (no deadline, browser is enough)
 
-- [ ] **Resync production so card images use the CDN** (chunk 4.11): the
+- [x] **Resync production so card images use the CDN** **Done 7/8 by Claude Opus** (chunk 4.11): the
       image host moved from `raw.githubusercontent.com` (429-rate-limited →
       intermittent blank `/card` images) to jsDelivr. The image URL is
       **materialized into D1**, not computed at read time, so the fix only
@@ -50,7 +50,7 @@
       forecast picks it up automatically. You likely hear about these
       announcements before any webpage does.
 
-- [ ] **Enable CI auto-deploys:** create a Cloudflare API token
+- [x] **Enable CI auto-deploys:** **Done 7/9 by Owner** create a Cloudflare API token
       (dash.cloudflare.com → My Profile → API Tokens → template
       _"Edit Cloudflare Workers"_) and add it to the GitHub repo as the
       `CLOUDFLARE_API_TOKEN` Actions secret (repo → Settings → Secrets and
@@ -73,7 +73,7 @@
       class happening for real: a cron that silently isn't scheduled when
       you think it is, and only a staleness probe notices — do this
       before Gate C, not before launch._
-- [ ] **Optional — alert webhook in GitHub:** add `SYNC_ALERT_WEBHOOK` as a
+- [x] **Optional — alert webhook in GitHub:** **Done 7/9 by Owner** add `SYNC_ALERT_WEBHOOK` as a
       repo Actions secret (same URL as the Worker secret) so the Monday
       source-contract job pings your alert channel on failure instead of
       relying on GitHub's failure email.
@@ -89,7 +89,7 @@
       theory is retired. Owner call: keep the de-facto Monday schedule —
       no redeploy, docs/comments updated instead; DECISIONS.md
       2026-07-07.)_
-- [ ] **Wed Jul 8, after ~06:05 UTC — verify the recovery cron fired**
+- [x] **Wed Jul 8, after ~06:05 UTC — verify the recovery cron fired** **Done 7/8 by Owner**
       (owner call 2026-07-07: option 1, one-off recovery cron). A
       temporary second trigger `0 6 8 7 *` was deployed 2026-07-07
       16:17 UTC. (The "<2h re-registration" skip theory was retired by
@@ -127,15 +127,15 @@
       (autocomplete picks, free text, an ID, a typo). This is Gate C
       criterion #4. Once guild 2 is live, spread some of the daily use
       there too.
-- [ ] **After the 4.7 deploy — `npm run register`, then spot-check
-      `/banlist`** (once): the new command needs one registration run to
+- [x] **After the 4.7 deploy — `npm run register`, then spot-check
+      `/banlist`** **Done 7/8 by Owner** (once): the new command needs one registration run to
       appear in the soak guilds. Expect three sections — **Banned** (3:
       BT2-090, BT5-109, EX5-065), **Restricted to 1** (50), **Choice
       restriction** (5, each line naming its related cards) — matching the
       official page linked in the embed title. Judge-eye the section
       wording while you're there; it lives in `BANLIST_SECTIONS` in
       `src/interactions/embeds.ts`.
-- [ ] **Spot-check the 4.6 restriction flag** (once, any soak day):
+- [x] **Spot-check the 4.6 restriction flag** **Done 7/8 by Owner** (once, any soak day):
       `/card BT2-090` (Matt Ishida) should show **⚠️ Banned** under the
       title; `/card BT20-037` (Chaosmon: Valdur Arm) should say it
       "cannot be in a deck with Taomon (BT17-035) or Sakuyamon

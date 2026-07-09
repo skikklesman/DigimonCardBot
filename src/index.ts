@@ -2,7 +2,7 @@
 import { verifyDiscordSignature } from "./interactions/verify.ts";
 import { route, type HandlerRegistry } from "./interactions/router.ts";
 import { createRepo } from "./data/repo.ts";
-import { createCardCommand } from "./interactions/commands/card.ts";
+import { createCardCommand, createCardEffectComponent } from "./interactions/commands/card.ts";
 import { createAltCommand } from "./interactions/commands/alt.ts";
 import { createCardAutocomplete } from "./interactions/autocomplete.ts";
 import {
@@ -40,6 +40,11 @@ function buildRegistry(env: Env): HandlerRegistry {
       alt: cardAutocomplete,
       keyword: createKeywordAutocomplete(),
       set: createSetAutocomplete(),
+    },
+    // Message components, keyed by custom_id namespace (4.10). `card` owns the
+    // /card "Show effect text" button (custom_id `card:effect:<id>`).
+    components: {
+      card: createCardEffectComponent(repo),
     },
   };
 }

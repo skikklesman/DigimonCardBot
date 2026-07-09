@@ -3,10 +3,13 @@
 // not-found and disambiguation are ephemeral so a mistyped name doesn't
 // spam the channel.
 import {
+  ButtonStyle,
+  ComponentType,
   InteractionResponseType,
   MessageFlags,
   type APIEmbed,
   type APIInteractionResponse,
+  type APIInteractionResponseCallbackData,
 } from "discord-api-types/v10";
 import type { Card } from "../data/schema.ts";
 import type { ReleaseSet } from "../data/releases.ts";
@@ -78,12 +81,27 @@ function restrictionLine(
   return RESTRICTION_LINES[restriction] ?? `⚠️ **${truncate(restriction, 100)}**`;
 }
 
+/** custom_id `namespace:action` for the /card effect-reveal button (chunk
+ * 4.10). The router dispatches on the namespace (`card`); the handler parses
+ * the card id from the trailing segment. Exported so the handler parses the
+ * exact string this builder emits — one source of truth, no magic-string
+ * drift. */
+export const CARD_EFFECT_ID = "card:effect";
+
+/** True when a card has any text worth revealing behind the button. */
+function hasEffectText(card: Card): boolean {
+  return Boolean(card.effect || card.inherited);
+}
+
 /** Image-first (chunk 4.8, owner call): the card image already prints
  * every stat and effect, so the embed carries only what the image
  * lacks — title, set name, and the 4.6 restriction warning as the
  * description line. `relatedCardNames` (4.6.1) is the handler-resolved
  * id→name map for choice-restriction partners — passed in so this
- * builder stays a pure function with no repo access. */
+ * builder stays a pure function with no repo access. Chunk 4.10: when the
+ * card has effect/inherited text, a single "Show effect text" button lets a
+ * viewer pull that text up as an ephemeral reply (built by
+ * cardEffectResponse) without cluttering the public, image-first message. */
 export function cardResponse(
   card: Card,
   relatedCardNames?: ReadonlyMap<string, string>,
@@ -103,9 +121,64 @@ export function cardResponse(
     embed.footer = { text: truncate(card.setName, MAX_FIELD) };
   }
 
+  const data: APIInteractionResponseCallbackData = { embeds: [embed] };
+  if (hasEffectText(card)) {
+    data.components = [
+      {
+        type: ComponentType.ActionRow,
+        components: [
+          {
+            type: ComponentType.Button,
+            style: ButtonStyle.Secondary,
+            label: "Show effect text",
+            custom_id: `${CARD_EFFECT_ID}:${card.cardId}`,
+          },
+        ],
+      },
+    ];
+  }
+
   return {
     type: InteractionResponseType.ChannelMessageWithSource,
-    data: { embeds: [embed] },
+    data,
+  };
+}
+
+/** The effect-reveal itself (chunk 4.10): an ephemeral embed carrying the
+ * Effect and Inherited/Security text that the image-first /card message omits
+ * (removed from the public embed in 4.8). Ephemeral so only the clicker sees
+ * it — the public message stays clean and nobody else's channel view changes.
+ * A card with neither field shouldn't reach here (the button is gated on
+ * hasEffectText), but degrade to a plain note rather than an empty embed. */
+export function cardEffectResponse(card: Card): APIInteractionResponse {
+  if (!hasEffectText(card)) {
+    return {
+      type: InteractionResponseType.ChannelMessageWithSource,
+      data: {
+        content: `**${cardTitle(card)}** has no effect text.`,
+        flags: MessageFlags.Ephemeral,
+      },
+    };
+  }
+  const fields: NonNullable<APIEmbed["fields"]> = [];
+  if (card.effect) {
+    fields.push({ name: "Effect", value: truncate(card.effect, MAX_FIELD) });
+  }
+  if (card.inherited) {
+    fields.push({ name: "Inherited / Security", value: truncate(card.inherited, MAX_FIELD) });
+  }
+  return {
+    type: InteractionResponseType.ChannelMessageWithSource,
+    data: {
+      embeds: [
+        {
+          title: cardTitle(card),
+          color: embedColor(card.color),
+          fields,
+        },
+      ],
+      flags: MessageFlags.Ephemeral,
+    },
   };
 }
 

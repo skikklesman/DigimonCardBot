@@ -11,8 +11,14 @@ import {
 import type { Card } from "../../data/schema.ts";
 import type { CardRepo } from "../../data/repo.ts";
 import { CHOICE_PARTNERS } from "../../data/restrictions.ts";
-import type { CommandHandler } from "../router.ts";
-import { cardResponse, disambiguationResponse, notFoundResponse } from "../embeds.ts";
+import type { CommandHandler, ComponentHandler } from "../router.ts";
+import {
+  CARD_EFFECT_ID,
+  cardEffectResponse,
+  cardResponse,
+  disambiguationResponse,
+  notFoundResponse,
+} from "../embeds.ts";
 import { resolveCardValue } from "./resolve.ts";
 
 export const CARD_NAME_OPTION = "card-name";
@@ -63,5 +69,37 @@ export function createCardCommand(repo: CardRepo): CommandHandler {
       case "miss":
         return notFoundResponse(value);
     }
+  };
+}
+
+/** Ephemeral response for a card whose effect text can't be shown — the button
+ * carried a card id no longer in the live data (resynced away) or malformed. */
+const EFFECT_UNAVAILABLE: APIInteractionResponse = {
+  type: InteractionResponseType.ChannelMessageWithSource,
+  data: {
+    content: "I can't find that card's effect anymore — try `/card` again.",
+    flags: MessageFlags.Ephemeral,
+  },
+};
+
+/** The "Show effect text" button (chunk 4.10). custom_id is
+ * `card:effect:<cardId>` (built by cardResponse); the card id is the third
+ * `:`-segment. The router dispatches the whole `card` namespace here, so this
+ * verifies the `effect` action before slicing — a different `card:` action
+ * (none today, but the namespace is shared) is not this handler's to answer.
+ * Re-queries the live repo so the button keeps working on old messages — a
+ * card that's since left the data just yields the ephemeral note. Effect text
+ * is identical across a card's printings, so the base printing lookup is
+ * enough (no variant carried in the id). */
+export function createCardEffectComponent(repo: CardRepo): ComponentHandler {
+  const prefix = `${CARD_EFFECT_ID}:`;
+  return async (interaction): Promise<APIInteractionResponse> => {
+    const { custom_id } = interaction.data;
+    if (!custom_id.startsWith(prefix)) return EFFECT_UNAVAILABLE;
+    const cardId = custom_id.slice(prefix.length);
+    if (!cardId) return EFFECT_UNAVAILABLE;
+    const card = await repo.findPrinting(cardId);
+    if (!card) return EFFECT_UNAVAILABLE;
+    return cardEffectResponse(card);
   };
 }

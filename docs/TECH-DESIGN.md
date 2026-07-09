@@ -44,7 +44,7 @@ Dependency policy: **every runtime dependency needs a written justification in
 │   ├── index.ts            # Worker entry: exports fetch + scheduled. Thin.
 │   ├── interactions/
 │   │   ├── verify.ts       # Ed25519 verification (pure, no I/O)
-│   │   ├── router.ts       # Branch on interaction type & command name
+│   │   ├── router.ts       # Branch on interaction type; dispatch commands & autocomplete by name, components by custom_id namespace
 │   │   ├── commands/       # One file per slash command (card.ts, alt.ts, …)
 │   │   ├── autocomplete.ts # Autocomplete branch
 │   │   └── embeds.ts       # Pure embed/response builders
@@ -71,11 +71,11 @@ Dependency policy: **every runtime dependency needs a written justification in
 
 ### 2.1 HTTP surface (all on the one Worker `fetch`)
 
-| Method & path        | Auth                         | Purpose                           |
-| -------------------- | ---------------------------- | --------------------------------- |
-| `POST /interactions` | Ed25519 signature (Discord)  | All slash commands + autocomplete |
-| `GET /health`        | none (read-only, no secrets) | Smoke tests + uptime pings        |
-| `POST /admin/resync` | Bearer `RESYNC_TOKEN`        | Manual sync trigger (HANDOFF §8)  |
+| Method & path        | Auth                         | Purpose                                                |
+| -------------------- | ---------------------------- | ------------------------------------------------------ |
+| `POST /interactions` | Ed25519 signature (Discord)  | All slash commands + autocomplete + message components |
+| `GET /health`        | none (read-only, no secrets) | Smoke tests + uptime pings                             |
+| `POST /admin/resync` | Bearer `RESYNC_TOKEN`        | Manual sync trigger (HANDOFF §8)                       |
 
 Anything else → 404. A missing `RESYNC_TOKEN` makes `/admin/resync` 404 too, so
 it can't be probed for existence.
@@ -104,7 +104,11 @@ it can't be probed for existence.
 - **Errors the user can see:** any thrown error in a command handler is caught
   at the router and turned into a friendly ephemeral "something went wrong"
   response. A user must never see Discord's "application did not respond" due
-  to an unhandled throw.
+  to an unhandled throw. **Message-component handlers** (chunk 4.10) are total
+  the same way — keyed in the registry by their `custom_id` namespace
+  (`namespace:action:arg`) and re-querying the live repo from the id in the
+  `custom_id`, so a stale button degrades to a graceful ephemeral note, never a
+  throw.
 - **Errors we need to see:** sync-path errors go to the alert webhook with
   enough context to diagnose from the Discord message alone (stage, counts,
   upstream status code).

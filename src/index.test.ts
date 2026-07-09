@@ -152,6 +152,37 @@ describe("interaction endpoint", () => {
       expect(body.data.embeds[0].image.url).toBe("https://example.com/EX1-066.webp");
     });
 
+    it("answers a signed 'Show effect text' button click with the ephemeral effect embed (4.10)", async () => {
+      await seed();
+      const res = await SELF.fetch(
+        ENDPOINT,
+        // A message-component (type 3) interaction as Discord posts it on a
+        // button click — the handler reads only data.custom_id.
+        await signedInteraction({
+          type: 3,
+          data: { custom_id: "card:effect:EX1-066", component_type: 2 },
+        }),
+      );
+      expect(res.status).toBe(200);
+      const body = (await res.json()) as {
+        type: number;
+        data: {
+          flags: number;
+          embeds: [{ title: string; fields: Array<{ name: string; value: string }> }];
+        };
+      };
+      expect(body.type).toBe(4); // CHANNEL_MESSAGE_WITH_SOURCE
+      expect(body.data.flags).toBe(64); // ephemeral — only the clicker sees it
+      expect(body.data.embeds[0].title).toBe("Analog Youth — EX1-066");
+      expect(body.data.embeds[0].fields.map((f) => f.name)).toEqual([
+        "Effect",
+        "Inherited / Security",
+      ]);
+      expect(body.data.embeds[0].fields.map((f) => f.value).join("\n")).toContain(
+        "Reveal the top 3 cards",
+      );
+    });
+
     it("answers a signed autocomplete interaction with prefix-matched choices", async () => {
       await seed();
       const res = await SELF.fetch(

@@ -54,9 +54,13 @@ describe("normalize — base card mapping", () => {
     const [base] = normalize(one("BT1-095"));
     expect(base?.cardType).toBe("Option");
     expect(base?.effect).toBeTruthy();
+    // A standalone Option stores its text in `effect`, not the option* fields
+    // — so the dual-card [Option] label must NOT appear on it.
+    expect(base?.effect).not.toContain("[Option]");
   });
 
-  it("passes dual-typed cards through untouched (BT25-043 Digimon/Option)", () => {
+  it("maps a dual-typed card's type and Digimon-side effect (BT25-043 Digimon/Option)", () => {
+    // The Option-side fold is covered in the effect-folding suite below.
     const [base] = normalize(one("BT25-043"));
     expect(base?.cardType).toBe("Digimon/Option");
     expect(base?.effect).toContain("[Arts Digivolve]");
@@ -80,6 +84,24 @@ describe("normalize — effect folding", () => {
     expect(base?.effect).toContain("[Link]"); // linkRequirement, self-labeled
     expect(base?.effect).toContain("[Link DP] +2000 DP");
     expect(base?.effect).toContain("[Link Effect]");
+  });
+
+  it("folds the Option side of a dual card — colour requirement then effect, labeled (BUGS.md fix)", () => {
+    // BT25-043 (Digimon/Option) carries a real optionCardColourRequirement
+    // ("Yellow") and optionCardEffect upstream — pre-fix both were dropped,
+    // so the Option side vanished from `effect`.
+    const [base] = normalize(one("BT25-043"));
+    expect(base?.effect).toContain("[Arts Digivolve]"); // Digimon-side effect
+    expect(base?.effect).toContain("[Option Requirement] Yellow");
+    expect(base?.effect).toContain("[Option] ＜Use Req. ([Glowing Dawn] trait)＞");
+    expect(base?.effect).toContain("[Main] 1 of your opponent's Digimon gets -8000 DP");
+  });
+
+  it("adds no Option lines when upstream has none ('-' sentinel)", () => {
+    // A non-dual card's option fields are "-" → no stray labels injected.
+    const [base] = normalize(one("BT14-018"));
+    expect(base?.effect).not.toContain("[Option]");
+    expect(base?.effect).not.toContain("[Option Requirement]");
   });
 
   it("composes inherited from digivolveEffect (AD1-009)", () => {

@@ -1,11 +1,14 @@
 // Embed builder snapshot tests (TESTING.md §2): pure functions, so the
 // snapshots ARE the response contract — review diffs like API changes.
 import { describe, expect, it } from "vitest";
+import { MessageFlags } from "discord-api-types/v10";
 import type { Card } from "../data/schema.ts";
 import {
   altGalleryResponse,
   banlistResponse,
+  cardEffectResponse,
   cardResponse,
+  CARD_EFFECT_ID,
   disambiguationResponse,
   notFoundResponse,
   releaseResponse,
@@ -143,6 +146,63 @@ describe("cardResponse", () => {
     expect(embed.title).toBe("Goldramon — BT14-018");
     expect(embed.image).toBeUndefined();
     expect(embed.footer).toBeUndefined();
+  });
+
+  // Chunk 4.10: the effect text stays off the public image-first embed, but a
+  // single button lets a viewer pull it up ephemerally.
+  const components = (response: unknown) =>
+    (
+      response as {
+        data: { components?: [{ components: [{ custom_id: string; label: string }] }] };
+      }
+    ).data.components;
+
+  it("attaches a 'Show effect text' button when the card has effect/inherited text", () => {
+    const button = components(cardResponse(goldramon))?.[0].components[0];
+    expect(button?.label).toBe("Show effect text");
+    expect(button?.custom_id).toBe(`${CARD_EFFECT_ID}:BT14-018`);
+  });
+
+  it("omits components entirely when the card has neither effect nor inherited", () => {
+    expect(
+      components(cardResponse({ ...goldramon, effect: null, inherited: null })),
+    ).toBeUndefined();
+  });
+});
+
+describe("cardEffectResponse", () => {
+  type F = { name: string; value: string };
+  const flags = (response: unknown): number | undefined =>
+    (response as { data: { flags?: number } }).data.flags;
+  const fields = (response: unknown) =>
+    (response as { data: { embeds: [{ fields: [F, ...F[]] }] } }).data.embeds[0].fields;
+
+  it("is ephemeral and carries the Effect and Inherited/Security fields", () => {
+    const response = cardEffectResponse(goldramon);
+    expect(flags(response)).toBe(MessageFlags.Ephemeral);
+    expect(fields(response).map((f) => f.name)).toEqual(["Effect", "Inherited / Security"]);
+    expect(fields(response)[0].value).toContain("Amon of Crimson Flame");
+  });
+
+  it("includes only the fields the card actually has", () => {
+    expect(
+      fields(cardEffectResponse({ ...goldramon, inherited: null })).map((f) => f.name),
+    ).toEqual(["Effect"]);
+    expect(fields(cardEffectResponse({ ...goldramon, effect: null })).map((f) => f.name)).toEqual([
+      "Inherited / Security",
+    ]);
+  });
+
+  it("truncates an over-limit effect to Discord's 1024 field cap", () => {
+    const long = cardEffectResponse({ ...goldramon, effect: "x".repeat(2000) });
+    expect(fields(long)[0].value.length).toBeLessThanOrEqual(1024);
+    expect(fields(long)[0].value.endsWith("…")).toBe(true);
+  });
+
+  it("degrades to an ephemeral note, not an empty embed, when there's no text", () => {
+    const response = cardEffectResponse({ ...goldramon, effect: null, inherited: null });
+    expect(flags(response)).toBe(MessageFlags.Ephemeral);
+    expect((response as { data: { content?: string } }).data.content).toContain("no effect text");
   });
 });
 

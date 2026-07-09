@@ -9,10 +9,11 @@ import {
 } from "discord-api-types/v10";
 import { route, type HandlerRegistry } from "./router.ts";
 
-const empty: HandlerRegistry = { commands: {}, autocomplete: {} };
+const empty: HandlerRegistry = { commands: {}, autocomplete: {}, components: {} };
 
 const command = (name: string) => ({ type: 2, data: { name } });
 const autocomplete = (name: string) => ({ type: 4, data: { name } });
+const component = (custom_id: string) => ({ type: 3, data: { custom_id } });
 
 function expectEphemeral(response: APIInteractionResponse): string {
   expect(response.type).toBe(InteractionResponseType.ChannelMessageWithSource);
@@ -106,9 +107,49 @@ describe("route — autocomplete (type 4)", () => {
   });
 });
 
+describe("route — message components (type 3)", () => {
+  it("dispatches to the handler registered for the custom_id namespace", async () => {
+    const reply: APIInteractionResponse = {
+      type: InteractionResponseType.ChannelMessageWithSource,
+      data: { content: "the effect", flags: MessageFlags.Ephemeral },
+    };
+    const registry: HandlerRegistry = {
+      ...empty,
+      components: { card: () => Promise.resolve(reply) },
+    };
+    // custom_id `card:effect:BT14-018` routes on its `card` namespace.
+    await expect(route(component("card:effect:BT14-018"), registry)).resolves.toBe(reply);
+  });
+
+  it("answers an unregistered namespace with a polite ephemeral message", async () => {
+    const content = expectEphemeral(await route(component("nope:go"), empty));
+    expect(content).toContain("can't handle");
+  });
+
+  it("stays total on a non-string custom_id — parses no namespace, never throws", async () => {
+    // A malformed body could carry any type; the namespace parse sits outside
+    // the handler try, so a `.split` on a non-string must not escape route().
+    const registry: HandlerRegistry = {
+      ...empty,
+      components: { card: () => Promise.reject(new Error("must not be reached")) },
+    };
+    const content = expectEphemeral(await route({ type: 3, data: { custom_id: 123 } }, registry));
+    expect(content).toContain("can't handle");
+  });
+
+  it("catches a throwing component handler and answers with a friendly error", async () => {
+    const registry: HandlerRegistry = {
+      ...empty,
+      components: { card: () => Promise.reject(new Error("D1 exploded")) },
+    };
+    const content = expectEphemeral(await route(component("card:effect:BT14-018"), registry));
+    expect(content).toContain("Something went wrong");
+    expect(content).not.toContain("D1 exploded"); // internals stay internal
+  });
+});
+
 describe("route — everything else", () => {
   it.each([
-    ["message component (type 3)", { type: 3, data: { custom_id: "x" } }],
     ["modal submit (type 5)", { type: 5 }],
     ["future interaction type", { type: 99 }],
     ["missing type", { data: {} }],

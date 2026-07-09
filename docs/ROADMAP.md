@@ -444,6 +444,31 @@ Chunks 4.1–4.3 are independent — parallelizable.
       snapshot a mixed day/month-precision list, the empty-forecast
       reply, and pin the release-day boundary (a set releasing today
       still counts as upcoming).
+- [x] **4.10 — `/card` "Show effect text" button (ephemeral effect reveal).**
+      _(Landed 2026-07-08. Needs a deploy to reach production; no
+      `npm run register` — buttons ride the message payload, not the command
+      definitions.)_ _(Owner request 2026-07-08: give viewers a way back to
+      the Effect / Inherited-Security text that 4.8 removed, without
+      un-cleaning the public embed — DECISIONS.md.)_ **Does NOT reverse 4.8:**
+      the public `/card` reply stays image-first; when a card has
+      effect/inherited text it just gains one **`Show effect text`** button
+      (Secondary style). Clicking it sends an **ephemeral** embed — Effect and
+      Inherited/Security fields, visible only to the clicker — so nobody's
+      channel view changes. Also lands the bot's **first message-component
+      dispatch**: the router gains an `InteractionType.MessageComponent` branch
+      and a third `HandlerRegistry.components` map keyed by the `custom_id`
+      **namespace** (`namespace:action:arg`, here `card:effect:<cardId>`);
+      component handlers are total like command handlers (nothing thrown
+      escapes). State rides in the `custom_id` (the handler re-queries the live
+      repo via `findPrinting`, reusing the pre-4.8 field code), so the button
+      keeps working on old messages — a card resynced away just yields a
+      graceful ephemeral note. No new runtime dependency
+      (`discord-api-types` already exports `ComponentType`/`ButtonStyle`).
+      Sets the precedent for future components (`/alt` pagination,
+      disambiguation select). Tests: `cardResponse` snapshots regenerated
+      (button present with text / absent without), new `cardEffectResponse`
+      builder tests, router type-3 dispatch + throw-safety + unknown-namespace,
+      component-handler parse/lookup/miss.
 
 **✅ Gate D criteria:** full command set live in the test guild; fuzz findings
 fixed. **Reached:** `pending`

@@ -38,6 +38,8 @@ export interface RawCard {
   specialDigivolve?: unknown;
   assembly?: unknown;
   dualEffect?: unknown;
+  optionCardColourRequirement?: unknown;
+  optionCardEffect?: unknown;
   notes?: unknown;
   rarity?: unknown;
   restrictions?: unknown;
@@ -156,6 +158,12 @@ const EFFECT_SUPPLEMENTS: ReadonlyArray<[keyof RawCard, string | null]> = [
   ["rule", "[Rule]"],
   ["aceEffect", "[ACE]"],
   ["dualEffect", null],
+  // The other side of a dual card (e.g. a Digimon/Option) lives in its own
+  // upstream fields, NOT in `effect`: the colour needed to play the Option
+  // side, then its effect text — each labeled so the merged text says which
+  // side it is (BUGS.md 2026-07-07: the Option side was being dropped).
+  ["optionCardColourRequirement", "[Option Requirement]"],
+  ["optionCardEffect", "[Option]"],
   ["specialDigivolve", null],
   ["digiXros", null],
   ["dnaDigivolve", null],

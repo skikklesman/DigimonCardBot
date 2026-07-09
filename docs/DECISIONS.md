@@ -10,6 +10,48 @@
 
 ---
 
+## 2026-07-08 — Message components: dispatch convention + /card effect-reveal button (chunk 4.10)
+
+- **Decision (owner request):** the Effect / Inherited-Security text that
+  4.8 removed from the public `/card` embed comes back as an **opt-in,
+  ephemeral reveal**, not a return to the old text-heavy embed. `/card`
+  gains a single **`Show effect text`** button (only when the card has
+  effect/inherited text); clicking it replies with an **ephemeral** embed
+  carrying those fields, visible only to the clicker. The public message
+  stays image-first — this **layers on** 4.8's "image-first default", it
+  does not reverse it. Why ephemeral + button (not a public in-place
+  expand, not a select menu): keeps the shared channel view clean (the
+  whole point of 4.8), needs no stored message state, and is one click to
+  full text.
+- **Architectural precedent — message-component dispatch:** this is the
+  bot's first `MESSAGE_COMPONENT` (type 3) handling. The router gains an
+  `InteractionType.MessageComponent` branch and a third
+  `HandlerRegistry.components` map. **Convention:** components are keyed
+  and dispatched by the **`custom_id` namespace** — `namespace:action:arg…`
+  (colon-delimited), router routes on the first segment, the handler parses
+  the rest. Here: `card:effect:<cardId>`. Component handlers are **total**
+  like command handlers (nothing thrown reaches the user — HANDOFF §6.4);
+  an unregistered namespace or a malformed/stale `custom_id` gets the same
+  polite ephemeral as any unknown interaction.
+- **Stateless by construction:** state rides in the `custom_id` (the card
+  id), so the handler re-queries the **live** repo (`findPrinting`) on each
+  click. The button therefore keeps working on old messages, and a card
+  that's since left the data degrades to a graceful ephemeral note rather
+  than a stale render or a throw. Effect text is identical across a card's
+  printings, so the base-printing lookup needs no variant in the id.
+- **No new runtime dependency:** `discord-api-types` already exports
+  `ComponentType` / `ButtonStyle` — the component types come from the
+  existing `/v10` import (consistent with the 2026-07-04 dependency entry).
+  No `npm run register`: buttons ship inside the message payload, not the
+  command definitions, so nothing about the registered command set changes.
+- **Revisit if:** we want the effect visible to a whole table (a judge
+  use-case) — that's a public in-place expand via `InteractionResponseType.UpdateMessage`
+  (type 7), a different response shape, deliberately out of scope here; or
+  if a future component needs to carry more state than fits a 100-char
+  `custom_id` (then a lookup key, not inline args). The namespace-dispatch
+  convention is the thing to reuse for `/alt` pagination or a
+  disambiguation select.
+
 ## 2026-07-07 — /banlist: choice cards get their own section, related cards named (chunk 4.7)
 
 - **Decision (owner, wording reviewed pre-commit):** `/banlist` groups

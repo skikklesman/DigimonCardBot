@@ -5,7 +5,8 @@ import type { APIInteractionResponse } from "discord-api-types/v10";
 import type { Card } from "../../data/schema.ts";
 import type { CardRepo } from "../../data/repo.ts";
 import { normalizeSearchName } from "../../data/schema.ts";
-import { createCardCommand } from "./card.ts";
+import { CARD_EFFECT_ID } from "../embeds.ts";
+import { createCardCommand, createCardEffectComponent } from "./card.ts";
 
 function card(id: string, name: string, variant = "0", overrides: Partial<Card> = {}): Card {
   return {
@@ -154,5 +155,51 @@ describe("/card choice-restriction line (chunk 4.6.1)", () => {
     expect(description(response)).toBe(
       "⚠️ **Choice restriction** — cannot be in a deck with EX7-064",
     );
+  });
+});
+
+describe("/card 'Show effect text' button (chunk 4.10)", () => {
+  const handleComponent = createCardEffectComponent(repo);
+  const click = (custom_id: string) => handleComponent({ type: 3, data: { custom_id } } as never);
+
+  // A card with effect text — the button only appears for these.
+  const withEffect = createCardEffectComponent({
+    ...repo,
+    findPrinting: (id) =>
+      Promise.resolve(
+        id === "BT1-010"
+          ? card("BT1-010", "Agumon", "0", { effect: "[On Play] Draw 1 card." })
+          : null,
+      ),
+  });
+
+  it("looks the card up by the id in the custom_id and returns its effect ephemerally", async () => {
+    const response = await withEffect({
+      type: 3,
+      data: { custom_id: `${CARD_EFFECT_ID}:BT1-010` },
+    } as never);
+    type F = { name: string; value: string };
+    const data = (
+      response as unknown as {
+        data: { flags: number; embeds: [{ fields: [F, ...F[]] }] };
+      }
+    ).data;
+    expect(data.flags).toBe(64); // MessageFlags.Ephemeral
+    expect(data.embeds[0].fields[0].value).toContain("Draw 1 card");
+  });
+
+  it("answers with a graceful ephemeral note when the id is no longer in the data", async () => {
+    // A stale button (card resynced away) resolves to null — never a throw.
+    expect(content(await click(`${CARD_EFFECT_ID}:ZZZ-999`))).toContain("can't find that card");
+  });
+
+  it("handles a malformed custom_id (no id segment) without throwing", async () => {
+    expect(content(await click(CARD_EFFECT_ID))).toContain("can't find that card");
+  });
+
+  it("ignores a different card-namespace action rather than mis-slicing it", async () => {
+    // The router hands the whole `card` namespace here; a non-`effect` action
+    // (none today, but the namespace is shared) must not be blindly sliced.
+    expect(content(await click("card:other:BT1-010"))).toContain("can't find that card");
   });
 });

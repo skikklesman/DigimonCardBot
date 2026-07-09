@@ -49,8 +49,9 @@ minimal maintenance.
   `raw.githubusercontent.com` (429-rate-limited → intermittent blank
   `/card` images) to jsDelivr's CDN — one `IMAGE_BASE` constant; ships
   `npm run image-audit` (weekly CI, Mondays 07:00 UTC) probing every
-  card image for coverage gaps. **Needs a production resync** to rewrite
-  the stored `image_url` values (OWNER-TODO).
+  card image for coverage gaps. **Production resync done** (2026-07-08,
+  OWNER-TODO checked off) — the stored `image_url` values now point at
+  jsDelivr.
   4.3 (`/page`) closed as Will Not Do; **next buildable chunk: 4.5
   (hardening/fuzz)**; 4.4 needs community input. The owner is an
   **official Digimon TCG judge**: primary source for all rules/keyword
@@ -62,8 +63,8 @@ minimal maintenance.
   fires Wed Jul 8 and is removed after. **The 7-day soak runs 2026-07-06
   → 2026-07-13**; Gate C also needs the two automated runs (expected
   Jul 8 one-off + Jul 13 weekly). Owner duties in OWNER-TODO.md.
-  Production D1: version 2, 8,425 rows, pipeline-loaded via the resync
-  route.
+  Production D1: version 6, 8,535 rows (per `/health` 2026-07-09),
+  pipeline-loaded via cron + the resync route.
 - **Commands registered to the soak guilds** (`DISCORD_TEST_GUILD_ID` is a
   comma-separated list since 3.6.1; owner's `.dev.vars` has
   `DISCORD_APP_ID`, `DISCORD_BOT_TOKEN`, `DISCORD_TEST_GUILD_ID`,

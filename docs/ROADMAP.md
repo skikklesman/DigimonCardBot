@@ -521,6 +521,72 @@ Chunks 4.1–4.3 are independent — parallelizable.
       `POST /admin/resync` (or wait for the Monday cron) so production serves
       jsDelivr URLs. Also corrects the stale 4.8 safety note below.
 
+- [ ] **4.12 — `/alt` becomes a single-image cycler (kill the gallery spam).**
+      _(Owner concern: a card with many alt-arts spams the channel — today
+      `altGalleryResponse` posts one embed **per printing** (base + every
+      alt-art, capped at `MAX_GALLERY_EMBEDS` with an overflow note), so a
+      popular card dumps a wall of images into whatever channel it's run in.
+      Independent of 4.4; can land anytime. Deploy-only — same `card-name`
+      option, so **no `npm run register`**, like 4.10.)_ **New behavior:**
+      `/alt` always replies with **exactly one** embedded image and a **`Next`**
+      button (Secondary), cycling through the ordered printing list — base
+      printing **plus** every alt-art, wrap-around — one at a time, so the
+      channel never accumulates more than the single message. The base-only
+      case now **shows the base image too** (replacing today's ephemeral "no
+      alt-art printings" text — the concern was that `/alt` sometimes shows
+      nothing visual); with one printing the `Next` button is omitted. The
+      embed carries a position indicator (`2 of 5`) and the printing label
+      (`base printing` / `alt-art <variant>`).
+      **Cycle mechanism — the anti-spam core:** the `Next` click re-renders the
+      message **in place** via `InteractionResponseType.UpdateMessage` (type 7)
+      — the bot's **first type-7 response** (4.10 set the component-dispatch
+      precedent; this adds in-place update). State rides in the `custom_id`,
+      per the 4.10 convention: `alt:cycle:<cardId>:<nextIndex>`. The component
+      handler re-queries `repo.listPrintings(cardId)` (a stable variant-ordered
+      list, so the index is meaningful across clicks), advances
+      `(index + 1) % length`, and re-renders — total like all handlers. Graceful
+      when the dataset rotated between clicks (a resync dropped printings):
+      clamp/modulo the index so it can't point off the end; an unknown or
+      malformed `custom_id`, or a card resynced away entirely, degrades to a
+      polite ephemeral note rather than a throw or a stale render.
+      **Initial printing:** random pick over the list (owner preference — avoids
+      always leading with base), the handler chooses the index and passes it
+      into a still-pure builder.
+      _Owner calls (decide in-chunk):_ **(1)** the in-place cycle edits a
+      **public** message, so whoever clicks `Next` changes it for everyone
+      watching — fine for browse-together, but if per-user control is wanted
+      the alternative is an **ephemeral pager** (each clicker gets their own).
+      Recommend public `UpdateMessage` (keeps the channel to one message, the
+      whole point). **(2)** `Next`-only with wrap vs. also a `Previous` button —
+      spec is `Next`-only; add `Previous` only if the list length makes
+      one-way cycling annoying. **(3)** power users lose the all-at-once
+      gallery — optional escape hatch: a `Show all` button that sends the old
+      multi-embed view **ephemerally** (nobody else sees the wall).
+      _Implementation map:_ `src/interactions/embeds.ts` — replace
+      `altGalleryResponse` with `altCycleResponse(printings, index)` returning a
+      single-embed image response (reuse `embedColor`/`truncate`/image logic)
+      plus the `Next` button when `printings.length > 1`; add an `ALT_CYCLE_ID`
+      = `"alt:cycle"` namespace constant and the `custom_id` builder (mirror
+      `CARD_EFFECT_ID`). `src/interactions/commands/alt.ts` — handler picks a
+      random index over `listPrintings` and returns `altCycleResponse`; the
+      `<= 1` branch now shows the base image; keep the not-found / multi-match
+      paths; add `createAltCycleComponent(repo)` (parse `cardId` + index,
+      re-query, advance, return the type-7 `UpdateMessage`). `src/index.ts` —
+      wire `components.alt = createAltCycleComponent(repo)` into
+      `buildRegistry` (the router already dispatches the `alt` namespace). No
+      new runtime dependency (`discord-api-types` already exports
+      `ComponentType` / `ButtonStyle` / `InteractionResponseType.UpdateMessage`).
+      _Tests:_ `altCycleResponse` builder snapshots — single printing (image,
+      no button), multi (button present, `custom_id` encodes the next index,
+      wrap at the end back to `0`, `N of M` label, image url); component handler
+      — advances + wraps, re-queries the live repo, index clamp when the family
+      shrank, unknown/stale/malformed `custom_id` → graceful, returns type-7;
+      command handler — always returns an image (incl. base-only), random index
+      in range (inject the RNG or assert bounds), miss/multi unchanged; replace
+      the existing `altGalleryResponse` snapshot tests; one signed end-to-end
+      `/alt` → single embed + button, and a signed component click → the next
+      printing in place.
+
 **✅ Gate D criteria:** full command set live in the test guild; fuzz findings
 fixed. **Reached:** `pending`
 

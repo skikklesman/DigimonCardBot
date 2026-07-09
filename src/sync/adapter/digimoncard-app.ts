@@ -7,8 +7,16 @@ import { normalizeSearchName, type Card } from "../../data/schema.ts";
 export const SOURCE_URL =
   "https://raw.githubusercontent.com/TakaOtaku/Digimon-Card-App/main/src/assets/cardlists/DigimonCards.json";
 
-const IMAGE_BASE =
-  "https://raw.githubusercontent.com/TakaOtaku/Digimon-Card-App/main/src/assets/images/cards";
+// Card art comes from the SAME upstream repo, but fronted by jsDelivr's CDN
+// rather than hotlinked from raw.githubusercontent.com (chunk 4.11,
+// DECISIONS.md). raw.github rate-limits (429) under load; Discord's image
+// proxy renders a blank embed when its cold fetch is throttled, which is what
+// produced non-deterministic missing card images. jsDelivr mirrors the repo,
+// serves the identical files, and is built for hotlink load — one constant, no
+// re-hosting. The exact source decision's documented fallback (DECISIONS
+// 2026-07-05: "GitHub raw hotlinking misbehaves → change one constant").
+export const IMAGE_BASE =
+  "https://cdn.jsdelivr.net/gh/TakaOtaku/Digimon-Card-App@main/src/assets/images/cards";
 
 /**
  * Upstream record shape — tolerant reader (DECISIONS.md 2026-07-05, drift

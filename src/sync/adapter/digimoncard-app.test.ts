@@ -4,7 +4,7 @@
 // catches it live; these tests pin what we BELIEVED the shape was.
 import { describe, expect, it } from "vitest";
 import fixture from "../../../test/fixtures/digimoncard-app-cards.json";
-import { fetchCards, normalize, SOURCE_URL, type RawCard } from "./digimoncard-app.ts";
+import { fetchCards, IMAGE_BASE, normalize, SOURCE_URL, type RawCard } from "./digimoncard-app.ts";
 
 const raws = fixture as RawCard[];
 const byId = new Map(raws.map((r) => [r.id as string, r]));
@@ -29,9 +29,7 @@ describe("normalize — base card mapping", () => {
       dp: 12000,
       rarity: "R",
     });
-    expect(base?.imageUrl).toBe(
-      "https://raw.githubusercontent.com/TakaOtaku/Digimon-Card-App/main/src/assets/images/cards/BT14-018.webp",
-    );
+    expect(base?.imageUrl).toBe(`${IMAGE_BASE}/BT14-018.webp`);
   });
 
   it("turns the upstream '-' sentinel into null (EX1-066 Tamer)", () => {
@@ -155,9 +153,7 @@ describe("normalize — alt-art variants", () => {
   it("gives variants their own image and set, inheriting everything else", () => {
     const cards = normalize(one("EX1-066"));
     const p1 = cards.find((c) => c.variant === "P1");
-    expect(p1?.imageUrl).toBe(
-      "https://raw.githubusercontent.com/TakaOtaku/Digimon-Card-App/main/src/assets/images/cards/EX1-066_P1.webp",
-    );
+    expect(p1?.imageUrl).toBe(`${IMAGE_BASE}/EX1-066_P1.webp`);
     expect(p1?.setName).toBe("EX-01: Theme Booster Classic Collection");
     expect(p1?.name).toBe("Analog Youth");
     expect(p1?.searchName).toBe("analog youth");

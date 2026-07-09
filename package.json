@@ -10,6 +10,7 @@
     "register:global": "node scripts/register-commands.ts --global",
     "smoke": "node scripts/smoke.ts",
     "source-contract": "node scripts/source-contract.ts",
+    "image-audit": "node scripts/image-audit.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.scripts.json --noEmit",

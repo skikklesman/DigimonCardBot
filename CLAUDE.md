@@ -45,6 +45,12 @@ minimal maintenance.
   Banned / Restricted to 1 / Choice restriction (related cards named).
   Chunk 4.6.1 (2026-07-08): `/card`'s choice line names the related
   cards — handler-resolved, same `Name (ID)` format as /banlist.
+  Chunk 4.11 (2026-07-08): card images move off hotlinked
+  `raw.githubusercontent.com` (429-rate-limited → intermittent blank
+  `/card` images) to jsDelivr's CDN — one `IMAGE_BASE` constant; ships
+  `npm run image-audit` (weekly CI, Mondays 07:00 UTC) probing every
+  card image for coverage gaps. **Needs a production resync** to rewrite
+  the stored `image_url` values (OWNER-TODO).
   4.3 (`/page`) closed as Will Not Do; **next buildable chunk: 4.5
   (hardening/fuzz)**; 4.4 needs community input. The owner is an
   **official Digimon TCG judge**: primary source for all rules/keyword

@@ -10,6 +10,78 @@
 
 ---
 
+## 2026-07-08 — Card images move to a CDN + a coverage audit (chunk 4.11)
+
+- **Symptom (owner, soak testing):** `/card` sometimes returns an embed with
+  a blank image, non-deterministically (e.g. Amaterasumon EX12-047, whose
+  image demonstrably exists). Diagnosed: image URLs are **synthesized** from
+  the card id (`${IMAGE_BASE}/${cardId}.webp`) and hotlinked from
+  `raw.githubusercontent.com`, which **rate-limits (HTTP 429)** under load.
+  Discord embeds images through its own proxy; when the proxy's _cold_ fetch
+  is throttled, it caches nothing and renders a blank image well. Already-
+  proxied (warm) images are fine — hence the non-determinism. Confirmed by
+  probe: the same image returned 200 five times running solo, but a small
+  burst of distinct cards drew three 429s out of four.
+- **Decision — front the images with jsDelivr.** `IMAGE_BASE` now points at
+  `https://cdn.jsdelivr.net/gh/TakaOtaku/Digimon-Card-App@main/src/assets/images/cards`
+  — the **same repo, same files**, served by a real CDN built for hotlink
+  load. One constant in the adapter (now `export`ed), no re-hosting, no
+  bandwidth cost to us. This is exactly the documented fallback from the
+  2026-07-05 source-mapping entry ("GitHub raw hotlinking misbehaves in
+  Discord embeds → change one constant"); we picked jsDelivr over
+  `digimoncard.app` because it's a CDN, not a hobby host, and mirrors the
+  repo we already trust. **Requires a production resync** to rewrite the
+  stored `image_url` values (they're materialized into D1, not computed at
+  read time).
+- **Decision — a coverage audit, as a script + weekly CI job, NOT a unit
+  test.** `npm run image-audit` (`scripts/image-audit.ts`) fetches the real
+  upstream, runs it through the same adapter + validation gate `/card` uses,
+  and probes **every** printing's image URL (base + alt-art variants) with a
+  bounded worker pool and retry/backoff. It **categorizes** results because
+  they demand different responses: `missing` (404 — a genuine coverage gap),
+  `throttled` (429/403 after retries — host rate-limiting, a CDN-health
+  signal), `error` (other), `ok`. Kept out of `vitest` deliberately: 8.5k
+  live requests are slow and would _self-induce_ the throttling they measure.
+  The auditor logic lives in `scripts/image-coverage.ts` (pure, injected
+  fetch, unit-tested); the CLI is the thin network half. Scheduled weekly
+  (`.github/workflows/image-audit.yml`, Mondays 07:00 UTC, an hour after
+  source-contract), `workflow_dispatch` for on-demand runs. `--base` lets it
+  probe the old raw host for a before/after.
+- **Two findings from the first real run (2026-07-08, against jsDelivr):**
+  1. **The CDN swap works:** 0 throttled vs raw.github's heavy 429s under the
+     same sweep. 2. **jsDelivr throttles a burst with HTTP 403, not 429** —
+     the first run mis-scored ~150 transient 403s as `error` until we made
+     403 retryable (a persistent 403 → `throttled`, never `missing`; jsDelivr
+     uses 404, not 403, for absent files — verified: every 403 returned 200
+     on a solo re-probe). Concurrency default dropped 8→4 to stop provoking it.
+- **The synthesized URL is NOT the gap — the art simply isn't uploaded.** The
+  audit found ~185 genuine 404s, but they are **identical on
+  raw.githubusercontent.com** (pre-existing, not a CDN regression) and the
+  upstream `cardImage` field points at the **same** filename we synthesize
+  (`assets/images/cards/<id>.webp`); alt-art `AAs` records carry no image
+  field at all. So reading `cardImage` would fix nothing — the 404s are
+  brand-new sets (e.g. all of BT-26) whose art upstream hasn't published yet,
+  plus alt-arts never imaged. They self-heal as upstream uploads.
+- **CI fails on a missing SPIKE, not the baseline** (mirrors the sync
+  drop-spike guard): `--max-missing-pct` (default 5; the current ~2% sits
+  well under). A weekly hard-fail on ~185 unfixable gaps would just train us
+  to ignore the job; a jump toward 100% means upstream restructured paths and
+  every image 404s — _that_ we want to hear about loudly. Throttling/errors
+  never fail the run.
+- **Corrects a now-false safety note:** ROADMAP 4.8 claimed "every card
+  passing validation has an `imageUrl` … so the image-only body can't come
+  up empty." True of the _field_, false of the _rendered image_ — a present
+  URL can still 404 (un-uploaded art) or be throttled. The null guard stays
+  (belt-and-braces); the real guarantee is the CDN, and the audit tracks the
+  residual gaps.
+- **Revisit if:** jsDelivr ever rate-limits sustainedly or drops the repo
+  mirror (fallback: self-host the images in R2, or the `digimoncard.app`
+  host); or a `/card`-visible base printing stays 404 long after its set
+  ships (then chase it upstream — the art is missing at the source, nothing
+  we synthesize differently would find it).
+
+---
+
 ## 2026-07-08 — Message components: dispatch convention + /card effect-reveal button (chunk 4.10)
 
 - **Decision (owner request):** the Effect / Inherited-Security text that

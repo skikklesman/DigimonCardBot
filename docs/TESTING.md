@@ -128,6 +128,22 @@ sync failed" into "we knew a day early that upstream drifted"); since
 lost to the Cloudflare cron-dialect finding and consciously not restored
 (DECISIONS.md 2026-07-07). It remains an independent probe of upstream.
 
+### 5.1 Image coverage audit (chunk 4.11)
+
+Separate weekly CI job (`npm run image-audit`, Mondays 07:00 UTC): fetch the
+real source, run it through the same adapter + validation gate `/card` uses,
+and probe **every** printing's image URL (base + alt-art) against the live
+CDN. Categorizes each as `ok` / `missing` (404 — a real coverage gap) /
+`throttled` (429, or jsDelivr's burst-403, after retries — host rate-limiting)
+/ `error`. Fails only on a **missing spike** (`--max-missing-pct`, default 5),
+not on the ~2% baseline of un-uploaded art (new sets + un-imaged alt-arts,
+identical on raw.github) — a jump toward 100% means upstream moved the image
+paths. **Deliberately not a `vitest` test** — 8.5k live requests are slow and
+would self-induce the throttling the audit measures. The categorization/retry/
+concurrency logic _is_ unit-tested (`scripts/image-coverage.test.ts`, fake
+fetch); the CLI (`scripts/image-audit.ts`) is the thin network half. `--base`
+re-probes any host for a before/after (e.g. the old raw.githubusercontent.com).
+
 ---
 
 ## 6. Manual gate scripts

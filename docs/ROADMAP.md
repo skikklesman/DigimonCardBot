@@ -405,7 +405,10 @@ Chunks 4.1–4.3 are independent — parallelizable.
       look matches `/alt`'s galleries. Safety note: every card passing
       validation has an `imageUrl` (derived from its card id), so the
       image-only body can't come up empty; the existing null guard
-      stays as belt-and-braces. Also update the stale rationale in
+      stays as belt-and-braces. _(Superseded by 4.11: a present `imageUrl`
+      guarantees only the field, not a successful fetch — a throttled host
+      renders blank. The CDN swap + coverage audit are the real guarantee;
+      the null guard remains belt-and-braces.)_ Also update the stale rationale in
       `src/data/keywords.ts` ("… `/card` still shows any card's full
       printed text") — after this chunk the glossary is the bot's only
       _text_ rules reference, which raises the stakes on its accuracy
@@ -469,6 +472,34 @@ Chunks 4.1–4.3 are independent — parallelizable.
       (button present with text / absent without), new `cardEffectResponse`
       builder tests, router type-3 dispatch + throw-safety + unknown-namespace,
       component-handler parse/lookup/miss.
+
+- [x] **4.11 — Card image reliability: CDN swap + coverage audit.** _(Landed
+      2026-07-08. Owner-reported bug from soak testing: `/card` intermittently
+      returns a blank image, e.g. Amaterasumon EX12-047. Root cause —
+      synthesized image URLs hotlinked from `raw.githubusercontent.com`, which
+      429-rate-limits under load; Discord's image proxy renders blank on a
+      throttled cold fetch, so it's non-deterministic. DECISIONS.md has the
+      diagnosis + probe evidence.)_ **(a)** Point `IMAGE_BASE` at jsDelivr
+      (`cdn.jsdelivr.net/gh/TakaOtaku/…`) — same repo, same files, a real CDN
+      built for hotlink load; one constant, no re-hosting. **Requires a
+      production resync** to rewrite the materialized `image_url` values.
+      **(b)** New `npm run image-audit` (`scripts/image-audit.ts` CLI +
+      `scripts/image-coverage.ts` pure, tested auditor): fetches real upstream,
+      runs the same adapter + validation gate as `/card`, probes every printing
+      (base + alt-art) with bounded concurrency + retry/backoff, and categorizes
+      `ok` / `missing` (404 gap) / `throttled` (429 or jsDelivr's burst-403) /
+      `error`. Fails only on a **missing spike** (`--max-missing-pct`, default 5) — the first run found ~185 genuine 404s that are pre-existing on
+      raw.github and un-fixable in code (new sets like BT-26 + un-imaged
+      alt-arts; upstream `cardImage` points at the same filenames), so a hard
+      fail on the baseline would be noise; a jump toward 100% (upstream moved
+      the image paths) is the real signal. Weekly CI job
+      (`.github/workflows/image-audit.yml`, Mondays 07:00 UTC) +
+      `workflow_dispatch`. Deliberately NOT a unit test (8.5k live requests
+      self-induce the throttling they'd measure). Tests: `image-coverage`
+      categorization/retry/concurrency (incl. 403-throttle) with a fake fetch;
+      adapter URL assertions re-pinned to `IMAGE_BASE`. **Owner:** run
+      `POST /admin/resync` (or wait for the Monday cron) so production serves
+      jsDelivr URLs. Also corrects the stale 4.8 safety note below.
 
 **✅ Gate D criteria:** full command set live in the test guild; fuzz findings
 fixed. **Reached:** `pending`

@@ -1,0 +1,25 @@
+# Weekly image-coverage audit (chunk 4.11): fetch the real upstream, run it
+# through the adapter, and probe every card image URL against the live CDN.
+# Fails (red run + GitHub's failure email) only on `missing` images — a genuine
+# coverage gap. Throttling is reported but never fails the run. Mondays 07:00
+# UTC, an hour after the source-contract job so the two don't overlap. GitHub
+# cron IS Unix dialect: `1` really is Monday. Writes nothing anywhere.
+name: Image audit
+
+on:
+  schedule:
+    - cron: "0 7 * * 1"
+  workflow_dispatch: # manual trigger for on-demand coverage checks
+
+jobs:
+  audit:
+    name: Probe every card image against the CDN
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run image-audit

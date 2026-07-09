@@ -7,6 +7,17 @@
 
 ## Anytime (no deadline, browser is enough)
 
+- [ ] **Resync production so card images use the CDN** (chunk 4.11): the
+      image host moved from `raw.githubusercontent.com` (429-rate-limited →
+      intermittent blank `/card` images) to jsDelivr. The image URL is
+      **materialized into D1**, not computed at read time, so the fix only
+      reaches production after a resync rewrites the stored `image_url`
+      values. Either trigger `POST /admin/resync` (bearer `RESYNC_TOKEN`, the
+      route proven against production) once the chunk is deployed, or just let
+      the Monday sync cron do it — until then, live `/card` still serves the
+      old raw URLs. Verify after: `/card EX12-047` (Amaterasumon, the
+      reported case) shows its image reliably.
+
 - [x] **Judge review of the keyword glossary** (`src/data/keywords.ts`,
       chunk 4.1): the owner is an **official Digimon TCG judge** — review
       all ~45 definitions for rules accuracy (they were compiled from card

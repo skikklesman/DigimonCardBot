@@ -3,8 +3,7 @@ import { verifyDiscordSignature } from "./interactions/verify.ts";
 import { route, type ErrorReporter, type HandlerRegistry } from "./interactions/router.ts";
 import { reportRequestError } from "./interactions/error-alert.ts";
 import { createRepo, type CardRepo } from "./data/repo.ts";
-import { createCardCommand, createCardEffectComponent } from "./interactions/commands/card.ts";
-import { createAltCommand } from "./interactions/commands/alt.ts";
+import { createCardCommand, createCardComponent } from "./interactions/commands/card.ts";
 import { createCardAutocomplete } from "./interactions/autocomplete.ts";
 import {
   createKeywordAutocomplete,
@@ -27,26 +26,25 @@ export function buildRegistry(repo: CardRepo): HandlerRegistry {
   return {
     commands: {
       card: createCardCommand(repo),
-      alt: createAltCommand(repo),
       keyword: createKeywordCommand(),
       set: createSetCommand(repo),
       // /release is the no-argument upcoming-releases forecast (4.9).
       release: createReleaseCommand(),
       banlist: createBanlistCommand(repo),
     },
-    // /alt shares /card's autocomplete — same option, same suggestions.
-    // /keyword and /set autocomplete static in-memory lists (no D1);
-    // /release and /banlist have no options, so no autocomplete entries.
+    // /card's autocomplete serves both its options (card-name + the 4.12 alt
+    // printing selector). /keyword and /set autocomplete static in-memory lists
+    // (no D1); /release and /banlist have no options, so no autocomplete entries.
     autocomplete: {
       card: cardAutocomplete,
-      alt: cardAutocomplete,
       keyword: createKeywordAutocomplete(),
       set: createSetAutocomplete(),
     },
     // Message components, keyed by custom_id namespace (4.10). `card` owns the
-    // /card "Show effect text" button (custom_id `card:effect:<id>`).
+    // "Show effect text" button (`card:effect:<id>`) and the 4.12 Prev/Next
+    // printing pager (`card:printing:<id>:<index>`).
     components: {
-      card: createCardEffectComponent(repo),
+      card: createCardComponent(repo),
     },
   };
 }

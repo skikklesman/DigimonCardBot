@@ -5,8 +5,9 @@ import type { APIInteractionResponse } from "discord-api-types/v10";
 import type { Card } from "../../data/schema.ts";
 import type { CardRepo } from "../../data/repo.ts";
 import { normalizeSearchName } from "../../data/schema.ts";
-import { CARD_EFFECT_ID } from "../embeds.ts";
-import { createCardCommand, createCardEffectComponent } from "./card.ts";
+import { CARD_EFFECT_ID, CARD_PRINTING_ID } from "../embeds.ts";
+import { createCardCommand, createCardComponent } from "./card.ts";
+import { createCardAutocomplete } from "../autocomplete.ts";
 
 function card(id: string, name: string, variant = "0", overrides: Partial<Card> = {}): Card {
   return {
@@ -159,11 +160,11 @@ describe("/card choice-restriction line (chunk 4.6.1)", () => {
 });
 
 describe("/card 'Show effect text' button (chunk 4.10)", () => {
-  const handleComponent = createCardEffectComponent(repo);
+  const handleComponent = createCardComponent(repo);
   const click = (custom_id: string) => handleComponent({ type: 3, data: { custom_id } } as never);
 
   // A card with effect text — the button only appears for these.
-  const withEffect = createCardEffectComponent({
+  const withEffect = createCardComponent({
     ...repo,
     findPrinting: (id) =>
       Promise.resolve(
@@ -201,5 +202,145 @@ describe("/card 'Show effect text' button (chunk 4.10)", () => {
     // The router hands the whole `card` namespace here; a non-`effect` action
     // (none today, but the namespace is shared) must not be blindly sliced.
     expect(content(await click("card:other:BT1-010"))).toContain("can't find that card");
+  });
+});
+
+type Btn = { custom_id: string; label: string };
+function buttons(response: APIInteractionResponse): Btn[] {
+  const rows =
+    (response as unknown as { data: { components?: { components: Btn[] }[] } }).data.components ??
+    [];
+  return rows.flatMap((r) => r.components);
+}
+const printingButtons = (r: APIInteractionResponse) =>
+  buttons(r).filter((b) => b.custom_id.startsWith(`${CARD_PRINTING_ID}:`));
+
+const invokeWith = (options: unknown[]) =>
+  handle({ type: 2, data: { name: "card", options } } as never);
+
+describe("/card printing navigation (chunk 4.12)", () => {
+  it("adds Prev/Next buttons for a card with more than one printing", async () => {
+    // EX3-035 has a base printing and a P1 alt in the fixture.
+    const nav = printingButtons(await invoke("EX3-035|P1"));
+    expect(nav.map((b) => b.label)).toEqual(["◀ Prev", "Next ▶"]);
+    // Shown printing is index 1 of 2; both neighbors wrap to the base (index 0).
+    expect(nav.every((b) => b.custom_id === `${CARD_PRINTING_ID}:EX3-035:0`)).toBe(true);
+  });
+
+  it("shows no printing buttons for a single-printing card", async () => {
+    expect(printingButtons(await invoke("bt14-018"))).toHaveLength(0);
+  });
+
+  it("the alt option jumps straight to that printing", async () => {
+    const response = await invokeWith([
+      { name: "card-name", type: 3, value: "goldramon" },
+      { name: "alt", type: 3, value: "EX3-035|P1" },
+    ]);
+    expect(embedTitle(response)).toBe("Goldramon — EX3-035 (P1)");
+  });
+
+  it("falls back to the card-name when the alt token is malformed", async () => {
+    const response = await invokeWith([
+      { name: "card-name", type: 3, value: "agumon" },
+      { name: "alt", type: 3, value: "not-a-token" },
+    ]);
+    expect(embedTitle(response)).toBe("Agumon — BT1-010");
+  });
+});
+
+describe("/card Prev/Next printing pager component (chunk 4.12)", () => {
+  const handleComponent = createCardComponent(repo);
+  const respType = (r: APIInteractionResponse) => (r as { type: number }).type;
+  const flags = (r: APIInteractionResponse) =>
+    (r as unknown as { data: { flags?: number } }).data.flags;
+  const clickFrom = (custom_id: string, ephemeralSource: boolean) =>
+    handleComponent({
+      type: 3,
+      data: { custom_id },
+      message: { flags: ephemeralSource ? 64 : 0 },
+    } as never);
+
+  it("from the PUBLIC message: replies with a fresh EPHEMERAL pager (public msg untouched)", async () => {
+    const r = await clickFrom(`${CARD_PRINTING_ID}:EX3-035:0`, false);
+    expect(respType(r)).toBe(4); // ChannelMessageWithSource, not UpdateMessage
+    expect(flags(r)).toBe(64); // ephemeral — no shared-control fighting
+    expect(embedTitle(r)).toBe("Goldramon — EX3-035");
+  });
+
+  it("from an EPHEMERAL pager: edits it in place (UpdateMessage)", async () => {
+    const r = await clickFrom(`${CARD_PRINTING_ID}:EX3-035:1`, true);
+    expect(respType(r)).toBe(7); // UpdateMessage
+    expect(embedTitle(r)).toBe("Goldramon — EX3-035 (P1)");
+  });
+
+  it("wraps/clamps an out-of-range index instead of throwing", async () => {
+    // index 99 % 2 printings → 1 (the P1 alt).
+    expect(embedTitle(await clickFrom(`${CARD_PRINTING_ID}:EX3-035:99`, false))).toBe(
+      "Goldramon — EX3-035 (P1)",
+    );
+  });
+
+  it("degrades gracefully when the card is gone (resynced away)", async () => {
+    expect(content(await clickFrom(`${CARD_PRINTING_ID}:ZZZ-999:0`, false))).toContain(
+      "can't find that card",
+    );
+  });
+
+  it("handles a malformed custom_id (no index segment) without throwing", async () => {
+    expect(content(await clickFrom(`${CARD_PRINTING_ID}:EX3-035`, false))).toContain(
+      "can't find that card",
+    );
+  });
+});
+
+describe("/card alt option (chunk 4.12)", () => {
+  const autocomplete = createCardAutocomplete(repo);
+  const altChoices = (cardName: string) =>
+    autocomplete({
+      type: 4,
+      data: {
+        name: "card",
+        options: [
+          { name: "card-name", type: 3, value: cardName },
+          { name: "alt", type: 3, focused: true, value: "" },
+        ],
+      },
+    } as never);
+  const invokeAlt = (cardName: string, alt: string) =>
+    handle({
+      type: 2,
+      data: {
+        name: "card",
+        options: [
+          { name: "card-name", type: 3, value: cardName },
+          { name: "alt", type: 3, value: alt },
+        ],
+      },
+    } as never);
+
+  // TESTING.md §2: "every autocomplete value it hands out must resolve." The
+  // alt choices and the /card handler parse the token independently, so prove
+  // the formats agree by feeding real choices straight back through /card.
+  it("every alt choice value resolves back to that exact printing", async () => {
+    const choices = await altChoices("EX3-035|0");
+    expect(choices.length).toBeGreaterThan(1);
+    for (const choice of choices) {
+      const [id, variant] = String(choice.value).split("|");
+      const title = embedTitle(await invokeAlt("EX3-035|0", String(choice.value)));
+      expect(title).toContain(id!);
+      if (variant !== "0") expect(title).toContain(`(${variant})`);
+    }
+  });
+
+  it("notes the fallback when an alt value can't be matched, instead of dropping it silently (#8)", async () => {
+    const response = await invokeAlt("agumon", "not-a-real-token");
+    expect(embedTitle(response)).toBe("Agumon — BT1-010"); // fell back to card-name
+    expect(content(response)).toContain("couldn't match that printing");
+  });
+
+  it("adds no note when the alt option is a clean hit", async () => {
+    const response = await invokeAlt("EX3-035|0", "EX3-035|P1");
+    expect(embedTitle(response)).toBe("Goldramon — EX3-035 (P1)");
+    expect((response as unknown as { data: { content?: string } }).data.content).toBeUndefined();
   });
 });

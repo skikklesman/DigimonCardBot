@@ -4,11 +4,11 @@ import { describe, expect, it } from "vitest";
 import { MessageFlags } from "discord-api-types/v10";
 import type { Card } from "../data/schema.ts";
 import {
-  altGalleryResponse,
   banlistResponse,
   cardEffectResponse,
   cardResponse,
   CARD_EFFECT_ID,
+  CARD_PRINTING_ID,
   disambiguationResponse,
   notFoundResponse,
   releaseResponse,
@@ -168,6 +168,31 @@ describe("cardResponse", () => {
       components(cardResponse({ ...goldramon, effect: null, inherited: null })),
     ).toBeUndefined();
   });
+
+  // Chunk 4.12: nav is passed by the handler only for multi-printing cards.
+  const row = (response: unknown) =>
+    (
+      response as {
+        data: { components?: [{ components: { custom_id: string; label: string }[] }] };
+      }
+    ).data.components?.[0].components ?? [];
+  const footerText = (response: unknown) =>
+    (response as { data: { embeds: [{ footer?: { text: string } }] } }).data.embeds[0].footer?.text;
+
+  it("adds wrap-around Prev/Next buttons and an n/total footer for a multi-printing card", () => {
+    const response = cardResponse(goldramon, undefined, { index: 1, total: 3 });
+    const buttons = row(response);
+    expect(buttons.map((b) => b.label)).toEqual(["◀ Prev", "Next ▶", "Show effect text"]);
+    expect(buttons[0]?.custom_id).toBe(`${CARD_PRINTING_ID}:BT14-018:0`); // prev wraps 1→0
+    expect(buttons[1]?.custom_id).toBe(`${CARD_PRINTING_ID}:BT14-018:2`); // next 1→2
+    expect(footerText(response)).toContain("2/3");
+  });
+
+  it("renders no nav (and no position footer) when there is only one printing", () => {
+    const response = cardResponse(goldramon, undefined, { index: 0, total: 1 });
+    expect(row(response).map((b) => b.label)).toEqual(["Show effect text"]);
+    expect(footerText(response)).not.toContain("/");
+  });
 });
 
 describe("cardEffectResponse", () => {
@@ -326,29 +351,6 @@ describe("disambiguationResponse", () => {
     const content = (response as { data: { content: string } }).data.content;
     expect(content).not.toContain("@everyone");
     expect(content).not.toContain("`boom`");
-  });
-});
-
-describe("altGalleryResponse", () => {
-  it("renders one image-first embed per printing", () => {
-    expect(
-      altGalleryResponse([
-        { ...analogYouthP1, variant: "0", imageUrl: "https://example.com/EX1-066.webp" },
-        analogYouthP1,
-        { ...analogYouthP1, variant: "P2", imageUrl: "https://example.com/EX1-066_P2.webp" },
-      ]),
-    ).toMatchSnapshot();
-  });
-
-  it("caps at Discord's 10-embed limit and says so", () => {
-    const many = Array.from({ length: 13 }, (_, i) => ({
-      ...analogYouthP1,
-      variant: `P${i}`,
-    }));
-    const response = altGalleryResponse(many);
-    const data = (response as unknown as { data: { content: string; embeds: unknown[] } }).data;
-    expect(data.embeds).toHaveLength(10);
-    expect(data.content).toContain("showing 10 of 13");
   });
 });
 

@@ -44,7 +44,8 @@ Target: all pure logic. These are the bulk of the suite and must stay fast
   (lowercase, punctuation, whatever we settle on — the autocomplete UX lives or
   dies here).
 - **Embed builder** — snapshot tests of response JSON for: ID hit, name hit,
-  multi-match, not-found, alt-art listing.
+  multi-match, not-found, and (chunk 4.12) the `/card` printing nav — Prev/Next
+  buttons + `n/total` footer on a multi-printing card, none on a single one.
 - **Autocomplete choice construction** — ≤25 cap, exact-prefix prioritization,
   label format `Name (CARD-ID)` (DECISIONS.md 2026-07-05), value format
   `card_id|variant`.
@@ -188,7 +189,9 @@ Everything in Gate B, plus:
 
 1. Typing `goldr` in the `card-name` option offers Goldramon printings with
    `Name (Set)` labels; picking one resolves that exact printing.
-2. `/alt` on a card with alt arts lists/shows the variants.
+2. `/card` on a card with alt arts shows Prev/Next buttons; the `alt` option
+   autocompletes that card's printings; Prev/Next page them in an ephemeral view
+   (chunk 4.12 — the retired `/alt` folded into `/card`).
 3. **Forced-failure drill:** point a test sync at a dead URL → alert arrives in
    the webhook channel; live lookups unaffected.
 4. **Stale-sync drill:** set `last_successful_sync` back by > cadence+margin →

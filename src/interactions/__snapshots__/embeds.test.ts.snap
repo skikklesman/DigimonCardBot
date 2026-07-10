@@ -1,46 +1,5 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`altGalleryResponse > renders one image-first embed per printing 1`] = `
-{
-  "data": {
-    "content": "**Analog Youth** \`EX1-066\` — 3 printings",
-    "embeds": [
-      {
-        "color": 15001579,
-        "footer": {
-          "text": "EX-01: Theme Booster Classic Collection",
-        },
-        "image": {
-          "url": "https://example.com/EX1-066.webp",
-        },
-        "title": "Analog Youth — EX1-066 · base printing",
-      },
-      {
-        "color": 15001579,
-        "footer": {
-          "text": "EX-01: Theme Booster Classic Collection",
-        },
-        "image": {
-          "url": "https://example.com/EX1-066_P1.webp",
-        },
-        "title": "Analog Youth — EX1-066 · alt-art P1",
-      },
-      {
-        "color": 15001579,
-        "footer": {
-          "text": "EX-01: Theme Booster Classic Collection",
-        },
-        "image": {
-          "url": "https://example.com/EX1-066_P2.webp",
-        },
-        "title": "Analog Youth — EX1-066 · alt-art P2",
-      },
-    ],
-  },
-  "type": 4,
-}
-`;
-
 exports[`banlistResponse > answers gracefully when nothing is restricted 1`] = `
 {
   "data": {

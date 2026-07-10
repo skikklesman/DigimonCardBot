@@ -122,11 +122,19 @@
       every listed guild; ④ verify `/card`, `/alt`, `/keyword`, `/release`
       and autocomplete respond in guild 2, then check 3.6.1 off in the
       roadmap.
-- [ ] **Use the bot daily in the test guild** — a few `/card` and `/alt`
-      lookups per day for 7 consecutive days; variety beats volume
-      (autocomplete picks, free text, an ID, a typo). This is Gate C
-      criterion #4. Once guild 2 is live, spread some of the daily use
-      there too.
+- [ ] **Use the bot daily in the test guild** — a few `/card` lookups per day
+      for 7 consecutive days; variety beats volume (autocomplete picks, free
+      text, an ID, a typo). This is Gate C criterion #4. Once guild 2 is live,
+      spread some of the daily use there too.
+- [ ] **After the 4.12 deploy — `npm run register`, then spot-check `/card`
+      alt-art** (once): `/card` gained an `alt` option and the standalone
+      `/alt` command was removed, so the command set needs one registration run
+      in the soak guilds. Then, on a card with alt-arts (e.g. a Goldramon
+      printing): confirm `/card` shows **◀ Prev / Next ▶** buttons; clicking one
+      shows an **ephemeral** image only you see (the public message shouldn't
+      change); and focusing the **`alt`** option after picking a card
+      autocompletes that card's printings. Confirm `/alt` is **gone** from the
+      command list.
 - [x] **After the 4.7 deploy — `npm run register`, then spot-check
       `/banlist`** **Done 7/8 by Owner** (once): the new command needs one registration run to
       appear in the soak guilds. Expect three sections — **Banned** (3:

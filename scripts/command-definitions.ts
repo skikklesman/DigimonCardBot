@@ -22,18 +22,13 @@ export const COMMAND_DEFINITIONS = [
         required: true,
         autocomplete: true,
       },
-    ],
-  },
-  {
-    name: "alt",
-    type: ApplicationCommandType.ChatInput,
-    description: "Show all printings of a Digimon TCG card, alt-arts included",
-    options: [
       {
-        name: "card-name",
+        // chunk 4.12: optional printing selector (folds in the retired /alt).
+        // Its autocomplete offers the card-name card's printings.
+        name: "alt",
         type: ApplicationCommandOptionType.String,
-        description: "Card name or ID (e.g. Analog Youth, EX1-066)",
-        required: true,
+        description: "Which printing / alt-art (optional — pick the card first)",
+        required: false,
         autocomplete: true,
       },
     ],

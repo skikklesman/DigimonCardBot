@@ -59,8 +59,12 @@ export interface CardRepo {
    * card appears once. The query is normalized with the SAME function the
    * sync used to write search_name — the invariant search depends on. */
   searchByName(query: string, limit?: number): Promise<Card[]>;
-  /** Every printing of a card (base + alt-arts), for /alt. */
-  listPrintings(cardId: string): Promise<Card[]>;
+  /** Every printing of a card (base + alt-arts), variant-ordered — base ('0')
+   * first, then P1, P2, … in natural order. Drives /card's Prev/Next pager
+   * (chunk 4.12), which consumes the order directly, and the `alt` autocomplete
+   * (passes `limit` = Discord's choice cap). Omit `limit` for the full family,
+   * which the pager needs for a correct position count. */
+  listPrintings(cardId: string, limit?: number): Promise<Card[]>;
   /** Every card carrying a deck-building restriction, for /banlist: base
    * printings only (alt-arts deduped by construction), sorted by card id.
    * `Unrestricted` is stored as NULL (chunk 4.6) and `Not released` is a
@@ -122,11 +126,19 @@ export function createRepo(db: D1Database): CardRepo {
       return results.map(toCard);
     },
 
-    async listPrintings(cardId) {
-      const { results } = await db
-        .prepare(`SELECT ${COLUMNS} FROM cards WHERE ${LIVE} AND card_id = ? ORDER BY variant`)
-        .bind(cardId)
-        .all<CardRow>();
+    async listPrintings(cardId, limit) {
+      // `length(variant), variant` natural-sorts the family so 'P10' doesn't
+      // collate between 'P1' and 'P2' — the /card pager consumes this order by
+      // index, so a lexicographic sort would jumble its position labels and
+      // Prev/Next steps for a card with double-digit alt-arts (4.12 review).
+      // Base '0' (length 1) still sorts first.
+      const ordered = `SELECT ${COLUMNS} FROM cards WHERE ${LIVE} AND card_id = ?
+         ORDER BY length(variant), variant`;
+      const statement =
+        limit === undefined
+          ? db.prepare(ordered).bind(cardId)
+          : db.prepare(`${ordered} LIMIT ?`).bind(cardId, limit);
+      const { results } = await statement.all<CardRow>();
       return results.map(toCard);
     },
 

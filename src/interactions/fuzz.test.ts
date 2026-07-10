@@ -71,40 +71,61 @@ describe("fuzz — malformed interaction payloads never throw", () => {
   );
 });
 
-describe("fuzz — hostile card-name values reach the handlers safely", () => {
+describe("fuzz — hostile option values reach the handlers safely", () => {
   const cardCommand = (value: string) => ({
     type: 2,
     data: { name: "card", options: [{ name: "card-name", type: 3, value }] },
   });
-  const altCommand = (value: string) => ({
+  // The 4.12 alt option — its value flows into repo.findByValue on the /card
+  // command path; card-name is a fixed sibling so the alt path is what's fuzzed.
+  const cardWithAlt = (alt: unknown) => ({
     type: 2,
-    data: { name: "alt", options: [{ name: "card-name", type: 3, value }] },
+    data: {
+      name: "card",
+      options: [
+        { name: "card-name", type: 3, value: "goldramon" },
+        { name: "alt", type: 3, value: alt },
+      ],
+    },
   });
   const cardAutocomplete = (value: string) => ({
     type: 4,
     data: { name: "card", options: [{ name: "card-name", type: 3, focused: true, value }] },
   });
+  // The 4.12 alt-focused autocomplete: alt is focused, card-name is the sibling
+  // it reads cross-option — both sides are attacker-controlled.
+  const altAutocomplete = (cardName: unknown, alt: unknown) => ({
+    type: 4,
+    data: {
+      name: "card",
+      options: [
+        { name: "card-name", type: 3, value: cardName },
+        { name: "alt", type: 3, focused: true, value: alt },
+      ],
+    },
+  });
+  const optionCommand = (name: string, optionName: string, value: unknown) => ({
+    type: 2,
+    data: { name, options: [{ name: optionName, type: 3, value }] },
+  });
+  const expectChoiceArray = (res: APIInteractionResponse) => {
+    expectValidResponse(res);
+    expect((res as { data?: { choices?: unknown[] } }).data?.choices).toBeInstanceOf(Array);
+  };
 
   it.each(HOSTILE_STRINGS.map((s, i) => [i, s] as const))(
-    "/card with hostile value #%i resolves to a valid response",
+    "/card with hostile card-name #%i resolves to a valid response",
     async (_i, value) => {
       expectValidResponse(await route(cardCommand(value), registry));
     },
   );
 
   it.each(HOSTILE_STRINGS.map((s, i) => [i, s] as const))(
-    "/alt with hostile value #%i resolves to a valid response",
+    "/card with hostile alt value #%i resolves to a valid response (into findByValue)",
     async (_i, value) => {
-      expectValidResponse(await route(altCommand(value), registry));
+      expectValidResponse(await route(cardWithAlt(value), registry));
     },
   );
-
-  // /keyword (option "term") and /set (option "set") share the guarded
-  // extractor; a non-string value must NOT throw (regression guard for #1).
-  const optionCommand = (name: string, optionName: string, value: unknown) => ({
-    type: 2,
-    data: { name, options: [{ name: optionName, type: 3, value }] },
-  });
 
   it.each(HOSTILE_STRINGS.map((s, i) => [i, s] as const))(
     "/keyword with hostile value #%i resolves to a valid response",
@@ -120,17 +141,34 @@ describe("fuzz — hostile card-name values reach the handlers safely", () => {
     },
   );
 
-  it("a non-string option value does not throw for /keyword or /set (finding #1)", async () => {
+  it("a non-string option value never throws (the shared guarded extractor)", async () => {
     expectValidResponse(await route(optionCommand("keyword", "term", 42), registry));
     expectValidResponse(await route(optionCommand("set", "set", 42), registry));
+    expectValidResponse(await route(cardWithAlt(42), registry));
   });
 
   it.each(HOSTILE_STRINGS.map((s, i) => [i, s] as const))(
-    "/card autocomplete with hostile value #%i answers with a choice array",
+    "/card card-name autocomplete with hostile value #%i answers with a choice array",
     async (_i, value) => {
-      const res = await route(cardAutocomplete(value), registry);
-      expectValidResponse(res);
-      expect((res as { data?: { choices?: unknown[] } }).data?.choices).toBeInstanceOf(Array);
+      expectChoiceArray(await route(cardAutocomplete(value), registry));
     },
   );
+
+  it.each(HOSTILE_STRINGS.map((s, i) => [i, s] as const))(
+    "/card alt autocomplete with hostile alt value #%i answers with a choice array",
+    async (_i, value) => {
+      expectChoiceArray(await route(altAutocomplete("goldramon", value), registry));
+    },
+  );
+
+  it.each(HOSTILE_STRINGS.map((s, i) => [i, s] as const))(
+    "/card alt autocomplete with hostile sibling card-name #%i answers with a choice array",
+    async (_i, value) => {
+      expectChoiceArray(await route(altAutocomplete(value, ""), registry));
+    },
+  );
+
+  it("alt autocomplete tolerates non-string values on either option", async () => {
+    expectChoiceArray(await route(altAutocomplete(42, 42), registry));
+  });
 });

@@ -94,6 +94,13 @@ describe("interaction endpoint", () => {
           restriction: null,
         },
         goldramon("BT14-018"),
+        // An alt-art printing of BT14-018 so the 4.12 Prev/Next nav + pager
+        // have a multi-printing card to exercise end-to-end.
+        {
+          ...goldramon("BT14-018"),
+          variant: "P1",
+          imageUrl: "https://example.com/BT14-018_P1.webp",
+        },
         goldramon("EX3-035"),
         // One banned card so the /banlist read path has something to list.
         {
@@ -153,6 +160,45 @@ describe("interaction endpoint", () => {
       expect(body.type).toBe(4);
       expect(body.data.embeds[0].title).toBe("Analog Youth — EX1-066");
       expect(body.data.embeds[0].image.url).toBe("https://example.com/EX1-066.webp");
+    });
+
+    it("attaches Prev/Next buttons for a multi-printing card (chunk 4.12)", async () => {
+      await seed();
+      const res = await SELF.fetch(
+        ENDPOINT,
+        await signedInteraction({
+          type: 2,
+          data: { name: "card", options: [{ name: "card-name", type: 3, value: "BT14-018" }] },
+        }),
+      );
+      expect(res.status).toBe(200);
+      const body = (await res.json()) as {
+        data: { components: [{ components: { custom_id: string; label: string }[] }] };
+      };
+      const labels = body.data.components[0].components.map((b) => b.label);
+      expect(labels).toEqual(["◀ Prev", "Next ▶"]);
+      expect(body.data.components[0].components[0]!.custom_id).toContain("card:printing:BT14-018:");
+    });
+
+    it("pages to the neighbor printing on a signed Prev/Next click, ephemerally (chunk 4.12)", async () => {
+      await seed();
+      const res = await SELF.fetch(
+        ENDPOINT,
+        // A click from the PUBLIC message (message not flagged ephemeral).
+        await signedInteraction({
+          type: 3,
+          data: { custom_id: "card:printing:BT14-018:1", component_type: 2 },
+          message: { flags: 0 },
+        }),
+      );
+      expect(res.status).toBe(200);
+      const body = (await res.json()) as {
+        type: number;
+        data: { flags: number; embeds: [{ title: string }] };
+      };
+      expect(body.type).toBe(4); // fresh ephemeral, public message untouched
+      expect(body.data.flags).toBe(64);
+      expect(body.data.embeds[0].title).toBe("Goldramon — BT14-018 (P1)"); // index 1 = the alt
     });
 
     it("answers a signed 'Show effect text' button click with the ephemeral effect embed (4.10)", async () => {

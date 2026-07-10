@@ -10,6 +10,66 @@
 
 ---
 
+## 2026-07-09 — Fold `/alt` into `/card`, retire the `/alt` command (chunk 4.12)
+
+- **Problem.** `/alt`'s gallery (`altGalleryResponse`) posted one embed **per
+  printing** — a card with many alt-arts walled whatever channel it was run in.
+- **Design review outcome.** Rather than the first sketch (a single-image
+  cycler that kept `/alt`), we **retired `/alt` and folded alt-art viewing into
+  `/card`.** One command, one mental model; the HANDOFF §1 alt-art goal is
+  preserved (delivered through `/card`), and the only lost behavior is the
+  all-at-once gallery — which was the spam. Cuts the command set 6→5 (helps
+  4.4) and turns the `Next ▶` button into passive alt-art discovery.
+- **Shape.** (a) An optional **`alt`** option on `/card` selects a printing;
+  its autocomplete is **cross-option** — it reads the sibling `card-name`
+  value, resolves it to one card via `resolveCardValue`, and lists that card's
+  printings (value = the `card_id|variant` token, so the handler reuses
+  `findByValue`). Ambiguous free text → no suggestions. (b) **Prev/Next** on the
+  reply for multi-printing cards.
+- **No-fighting model (the key call).** The public `/card` message **never
+  mutates**: Prev/Next open an **ephemeral** pager (fresh ephemeral from the
+  public message; in-place `UpdateMessage` from an existing ephemeral, told
+  apart by the source message's ephemeral flag). So browsing is private and
+  per-user — no shared-control fight over one public message — while the channel
+  still sees the one art the invoker chose. **No Show-all** (owner call).
+- **Timing.** Dropping a command + changing `/card`'s options is a free bulk
+  re-register while guild-only; breaking after global launch. Done now on
+  purpose. **Needs `npm run register`** (not deploy-only) — OWNER-TODO.
+- **Cost note.** Each `/card` invocation does one extra indexed `listPrintings`
+  lookup (command-rate — fine). The `alt` autocomplete's lookups are
+  **per-keystroke** while that field is focused; a picked card-name is a
+  `card_id|variant` token, so the card id is parsed from the string with **no
+  I/O**, leaving `listPrintings(cardId, 25)` as the single read (only free text
+  or a bare id costs a resolve). All point/range index reads, unrelated to the
+  2026-07-06 LIKE-scan concern.
+
+### Code-review refinements (2026-07-10, folded in before merge)
+
+A high-effort review of the branch found **no correctness bug** — the substance
+was test-coverage the fold opened, plus efficiency/behavior polish:
+
+- **The fuzz suite had gone partly vacuous.** It still fired `/alt` payloads
+  (now an unknown command) and never touched 4.12's new hostile surfaces — the
+  `alt` option value into `findByValue`, the cross-option autocomplete read, and
+  the `card:printing:<id>:<index>` custom_id parsing. Rewrote the corpus to
+  cover all three. (Ironic against 4.5's own lesson; the fuzzer only helps if it
+  fuzzes what's actually reachable.)
+- **The guard sprawled again.** The autocomplete side had grown its own copy of
+  4.5's typeof guard (plus an inline one); consolidated into
+  `options.ts#readStringOption`, used by both the command and autocomplete sides.
+- **`listPrintings` now natural-sorts** (`length(variant), variant`) so `P10`
+  can't collate between `P1` and `P2` — the pager consumes that order by index.
+  Added an optional `LIMIT` (the autocomplete passes 25; the pager omits it, as
+  it needs the full family for a correct count).
+- **Round-trip test** asserts an `alt` autocomplete choice value resolves back
+  through `/card` (the "every value it hands out must resolve" invariant).
+- **Owner calls:** an `alt` value that doesn't resolve (free text / stale token)
+  now shows a "couldn't match that printing" note rather than silently falling
+  back (#8). A **single-printing** `/card` shows the card with no nav and **no**
+  note — `/card` is the general lookup, so an affirmative "no alt-arts" line on
+  every one-printing card would be noise; the old `/alt`'s explicit message is
+  intentionally not carried over (#9, accepted).
+
 ## 2026-07-09 — Request-path errors alert the owner; catastrophic faults also 500 (chunk 4.5)
 
 - **Context.** The hardening chunk asked "what does a user see if D1 errors

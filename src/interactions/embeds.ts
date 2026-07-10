@@ -7,6 +7,7 @@ import {
   ComponentType,
   InteractionResponseType,
   MessageFlags,
+  type APIButtonComponentWithCustomId,
   type APIEmbed,
   type APIInteractionResponse,
   type APIInteractionResponseCallbackData,
@@ -93,19 +94,54 @@ function hasEffectText(card: Card): boolean {
   return Boolean(card.effect || card.inherited);
 }
 
-/** Image-first (chunk 4.8, owner call): the card image already prints
- * every stat and effect, so the embed carries only what the image
- * lacks — title, set name, and the 4.6 restriction warning as the
- * description line. `relatedCardNames` (4.6.1) is the handler-resolved
- * id→name map for choice-restriction partners — passed in so this
- * builder stays a pure function with no repo access. Chunk 4.10: when the
- * card has effect/inherited text, a single "Show effect text" button lets a
- * viewer pull that text up as an ephemeral reply (built by
- * cardEffectResponse) without cluttering the public, image-first message. */
-export function cardResponse(
+/** custom_id `namespace:action` for the /card Prev/Next printing buttons
+ * (chunk 4.12). Shares the `card` namespace with the effect button; the
+ * component dispatcher branches on the action. Trailing segments carry the
+ * card id and the TARGET index: `card:printing:<cardId>:<index>`. */
+export const CARD_PRINTING_ID = "card:printing";
+
+/** Where the shown printing sits in the card's variant-ordered family, so the
+ * embed can show a `2/5` position and the Prev/Next buttons can target the
+ * neighbors. Only meaningful — and only rendered — when `total > 1`. */
+export interface PrintingNav {
+  index: number;
+  total: number;
+}
+
+function navButtons(cardId: string, nav: PrintingNav): APIButtonComponentWithCustomId[] {
+  const prev = (nav.index - 1 + nav.total) % nav.total;
+  const next = (nav.index + 1) % nav.total;
+  return [
+    {
+      type: ComponentType.Button,
+      style: ButtonStyle.Secondary,
+      label: "◀ Prev",
+      custom_id: `${CARD_PRINTING_ID}:${cardId}:${prev}`,
+    },
+    {
+      type: ComponentType.Button,
+      style: ButtonStyle.Secondary,
+      label: "Next ▶",
+      custom_id: `${CARD_PRINTING_ID}:${cardId}:${next}`,
+    },
+  ];
+}
+
+/** Image-first message BODY (embeds + components) shared by the public /card
+ * reply and the ephemeral printing pager (chunk 4.12) — the pager wraps this
+ * same data as an ephemeral reply or an in-place UpdateMessage. The image
+ * already prints every stat and effect, so the embed carries only what the
+ * image lacks: title, a set-name + `n/total` position footer, and the 4.6
+ * restriction warning as the description line. `relatedCardNames` (4.6.1) is
+ * the handler-resolved id→name map for choice-restriction partners, passed in
+ * so this stays a pure builder. Buttons attach in one action row: Prev/Next
+ * (4.12) when the card has >1 printing, then "Show effect text" (4.10) when it
+ * has effect/inherited text. */
+export function cardMessageData(
   card: Card,
   relatedCardNames?: ReadonlyMap<string, string>,
-): APIInteractionResponse {
+  nav?: PrintingNav,
+): APIInteractionResponseCallbackData {
   const embed: APIEmbed = {
     title: cardTitle(card),
     color: embedColor(card.color),
@@ -117,27 +153,44 @@ export function cardResponse(
   if (card.imageUrl) {
     embed.image = { url: card.imageUrl };
   }
-  if (card.setName) {
-    embed.footer = { text: truncate(card.setName, MAX_FIELD) };
+  const footerParts: string[] = [];
+  if (card.setName) footerParts.push(card.setName);
+  if (nav && nav.total > 1) footerParts.push(`${nav.index + 1}/${nav.total}`);
+  if (footerParts.length > 0) {
+    embed.footer = { text: truncate(footerParts.join(" · "), MAX_FIELD) };
+  }
+
+  const buttons: APIButtonComponentWithCustomId[] = [];
+  if (nav && nav.total > 1) {
+    buttons.push(...navButtons(card.cardId, nav));
+  }
+  if (hasEffectText(card)) {
+    buttons.push({
+      type: ComponentType.Button,
+      style: ButtonStyle.Secondary,
+      label: "Show effect text",
+      custom_id: `${CARD_EFFECT_ID}:${card.cardId}`,
+    });
   }
 
   const data: APIInteractionResponseCallbackData = { embeds: [embed] };
-  if (hasEffectText(card)) {
-    data.components = [
-      {
-        type: ComponentType.ActionRow,
-        components: [
-          {
-            type: ComponentType.Button,
-            style: ButtonStyle.Secondary,
-            label: "Show effect text",
-            custom_id: `${CARD_EFFECT_ID}:${card.cardId}`,
-          },
-        ],
-      },
-    ];
+  if (buttons.length > 0) {
+    data.components = [{ type: ComponentType.ActionRow, components: buttons }];
   }
+  return data;
+}
 
+/** The public, image-first /card reply (chunks 4.8/4.10/4.12). `note` is an
+ * optional message-content line above the embed — used when an `alt` printing
+ * pick couldn't be matched, so the fallback to the base card isn't silent. */
+export function cardResponse(
+  card: Card,
+  relatedCardNames?: ReadonlyMap<string, string>,
+  nav?: PrintingNav,
+  note?: string,
+): APIInteractionResponse {
+  const data = cardMessageData(card, relatedCardNames, nav);
+  if (note) data.content = note;
   return {
     type: InteractionResponseType.ChannelMessageWithSource,
     data,
@@ -384,36 +437,6 @@ export function banlistResponse(cards: Card[]): APIInteractionResponse {
           footer: { text: "Official list: en.digimoncard.com/rule/restriction_card" },
         },
       ],
-    },
-  };
-}
-
-/** Discord allows at most 10 embeds per message — the /alt gallery cap. */
-const MAX_GALLERY_EMBEDS = 10;
-
-/** Every printing of one card as an embed gallery: image-first, one embed
- * per printing, stats omitted — /alt is about the art. */
-export function altGalleryResponse(printings: Card[]): APIInteractionResponse {
-  const shown = printings.slice(0, MAX_GALLERY_EMBEDS);
-  const first = shown[0];
-  const overflow =
-    printings.length > shown.length ? ` (showing ${shown.length} of ${printings.length})` : "";
-  return {
-    type: InteractionResponseType.ChannelMessageWithSource,
-    data: {
-      content: first
-        ? `**${first.name}** \`${first.cardId}\` — ${printings.length} printings${overflow}`
-        : undefined,
-      embeds: shown.map((card) => {
-        const label = card.variant === "0" ? "base printing" : `alt-art ${card.variant}`;
-        const embed: APIEmbed = {
-          title: truncate(`${card.name} — ${card.cardId} · ${label}`, MAX_TITLE),
-          color: embedColor(card.color),
-        };
-        if (card.imageUrl) embed.image = { url: card.imageUrl };
-        if (card.setName) embed.footer = { text: truncate(card.setName, MAX_FIELD) };
-        return embed;
-      }),
     },
   };
 }

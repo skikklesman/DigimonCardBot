@@ -33,7 +33,7 @@ minimal maintenance.
   lands (chunk 3.6) — data staleness is expected and harmless until then.
 - **Phases 1–3 complete + chunks 4.1/4.2/4.8/4.9 and 3.6.1**
   (2026-07-05/07): sync pipeline, router, repository, `/card` (image-first
-  since 4.8, autocomplete), `/alt` (gallery), `/keyword` (static
+  since 4.8, autocomplete; owns alt-art viewing since 4.12), `/keyword` (static
   glossary), `/set` (set lookup — born as `/release`, renamed in 4.9),
   `/release` (upcoming-releases forecast, 4.9), alerting (proven by live
   drills), `POST /admin/resync` (bearer-auth, proven against production),
@@ -60,11 +60,18 @@ minimal maintenance.
   gained a top-level catch that alerts AND returns 500 for catastrophic
   faults (owner call — "err on the side of knowing the error"; DECISIONS
   2026-07-09).
-  4.3 (`/page`) closed as Will Not Do; **4.5 landed — the only remaining
-  Phase 4 chunk is 4.4 (command-set parity review), which needs community
-  input, so nothing else is buildable solo before Gate D.** The owner is an
-  **official Digimon TCG judge**: primary source for all rules/keyword
-  content (see OWNER-TODO's glossary-review item).
+  Chunk 4.12 (2026-07-09): **`/alt` retired, folded into `/card`** — an
+  optional `alt` option (cross-option autocomplete over the card's
+  printings) plus Prev/Next buttons that page printings in an ephemeral
+  view (the public message never mutates — no shared-control fighting;
+  `card:printing:<id>:<index>`). `altGalleryResponse` + `commands/alt.ts`
+  removed. **Needs `npm run register`** — `/card` gained an option and
+  `/alt` was removed (OWNER-TODO).
+  4.3 (`/page`) closed as Will Not Do; **4.4 (command-set parity review) is
+  the only remaining Phase 4 chunk, and it needs community input — nothing
+  else is buildable solo before Gate D** (4.12 also trimmed 4.4's surface,
+  6→5 commands). The owner is an **official Digimon TCG judge**: primary
+  source for all rules/keyword content (see OWNER-TODO's glossary-review item).
 - **Cron is LIVE**: `0 6 * * 2` — which on Cloudflare means **Mondays**
   06:00 UTC (their cron numbers weekdays from 1 = Sunday; diagnosed and
   deliberately kept 2026-07-07, DECISIONS — spell days by NAME in any

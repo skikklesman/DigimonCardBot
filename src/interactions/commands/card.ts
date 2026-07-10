@@ -1,10 +1,14 @@
 // The /card command (HANDOFF §6.3): resolve the card-name value via the
-// shared ladder, render hit / disambiguation / not-found.
+// shared ladder, render hit / disambiguation / not-found. Since chunk 4.12 it
+// also owns alt-art viewing (the retired /alt): an optional `alt` option jumps
+// to a specific printing, and multi-printing cards get Prev/Next buttons that
+// page the family in an ephemeral view.
 import {
   InteractionResponseType,
   MessageFlags,
   type APIChatInputApplicationCommandInteraction,
   type APIInteractionResponse,
+  type APIMessageComponentInteraction,
 } from "discord-api-types/v10";
 import type { Card } from "../../data/schema.ts";
 import type { CardRepo } from "../../data/repo.ts";
@@ -13,14 +17,20 @@ import type { CommandHandler, ComponentHandler } from "../router.ts";
 import { stringOption } from "../options.ts";
 import {
   CARD_EFFECT_ID,
+  CARD_PRINTING_ID,
   cardEffectResponse,
+  cardMessageData,
   cardResponse,
   disambiguationResponse,
   notFoundResponse,
+  type PrintingNav,
 } from "../embeds.ts";
-import { resolveCardValue } from "./resolve.ts";
+import { resolveCardValue, type CardResolution } from "./resolve.ts";
 
 export const CARD_NAME_OPTION = "card-name";
+/** Optional printing selector (chunk 4.12): its autocomplete offers the
+ * card-name card's printings, value = the `card_id|variant` token. */
+export const ALT_OPTION = "alt";
 
 export function cardNameValue(
   interaction: APIChatInputApplicationCommandInteraction,
@@ -49,51 +59,128 @@ async function relatedCardNames(
   return new Map(printings.filter((p) => p !== null).map((p) => [p.cardId, p.name]));
 }
 
+/** The shown printing's position in its card's variant-ordered family, or
+ * undefined for a single-printing card (no Prev/Next). One indexed query per
+ * /card — a command invocation, not the autocomplete hot path. */
+async function printingNav(repo: CardRepo, card: Card): Promise<PrintingNav | undefined> {
+  const printings = await repo.listPrintings(card.cardId);
+  if (printings.length <= 1) return undefined;
+  const index = printings.findIndex((p) => p.variant === card.variant);
+  return { index: index < 0 ? 0 : index, total: printings.length };
+}
+
 export function createCardCommand(repo: CardRepo): CommandHandler {
   return async (interaction): Promise<APIInteractionResponse> => {
-    const value = cardNameValue(interaction as APIChatInputApplicationCommandInteraction);
-    if (value === null) return MISSING_OPTION_RESPONSE;
+    const chat = interaction as APIChatInputApplicationCommandInteraction;
+    const nameValue = cardNameValue(chat);
+    const altValue = stringOption(chat, ALT_OPTION);
+    if (nameValue === null && altValue === null) return MISSING_OPTION_RESPONSE;
 
-    const resolution = await resolveCardValue(repo, value);
+    // An explicit alt-printing pick (a `card_id|variant` token from the alt
+    // autocomplete) wins; otherwise resolve the card-name value. An alt value
+    // that doesn't resolve — free text, or a token gone stale — falls back to
+    // the card-name card, but says so rather than dropping the pick silently
+    // (altMissed; owner call, 4.12 review #8).
+    const picked = altValue ? await repo.findByValue(altValue) : null;
+    const altMissed = altValue !== null && picked === null;
+    const resolution: CardResolution = picked
+      ? { kind: "hit", card: picked }
+      : nameValue !== null
+        ? await resolveCardValue(repo, nameValue)
+        : { kind: "miss" };
+
+    const query = nameValue ?? altValue ?? "";
     switch (resolution.kind) {
-      case "hit":
-        return cardResponse(resolution.card, await relatedCardNames(repo, resolution.card));
+      case "hit": {
+        // Two independent query groups — overlap them (a left-to-right await
+        // would serialize them for no reason; 4.12 review #7).
+        const [related, nav] = await Promise.all([
+          relatedCardNames(repo, resolution.card),
+          printingNav(repo, resolution.card),
+        ]);
+        const note = altMissed
+          ? "I couldn't match that printing, so here's the card itself."
+          : undefined;
+        return cardResponse(resolution.card, related, nav, note);
+      }
       case "multi":
-        return disambiguationResponse(value, resolution.matches);
+        return disambiguationResponse(query, resolution.matches);
       case "miss":
-        return notFoundResponse(value);
+        return notFoundResponse(query);
     }
   };
 }
 
-/** Ephemeral response for a card whose effect text can't be shown — the button
+/** Ephemeral note when a component's card can't be resolved — the button
  * carried a card id no longer in the live data (resynced away) or malformed. */
-const EFFECT_UNAVAILABLE: APIInteractionResponse = {
+const CARD_COMPONENT_UNAVAILABLE: APIInteractionResponse = {
   type: InteractionResponseType.ChannelMessageWithSource,
   data: {
-    content: "I can't find that card's effect anymore — try `/card` again.",
+    content: "I can't find that card anymore — try `/card` again.",
     flags: MessageFlags.Ephemeral,
   },
 };
 
-/** The "Show effect text" button (chunk 4.10). custom_id is
- * `card:effect:<cardId>` (built by cardResponse); the card id is the third
- * `:`-segment. The router dispatches the whole `card` namespace here, so this
- * verifies the `effect` action before slicing — a different `card:` action
- * (none today, but the namespace is shared) is not this handler's to answer.
- * Re-queries the live repo so the button keeps working on old messages — a
- * card that's since left the data just yields the ephemeral note. Effect text
- * is identical across a card's printings, so the base printing lookup is
- * enough (no variant carried in the id). */
-export function createCardEffectComponent(repo: CardRepo): ComponentHandler {
-  const prefix = `${CARD_EFFECT_ID}:`;
+/**
+ * The `card`-namespace component handler (chunks 4.10 + 4.12). The router
+ * dispatches the whole namespace here; this branches on the action prefix:
+ *   - `card:effect:<cardId>`   → the ephemeral effect-text reveal (4.10).
+ *   - `card:printing:<cardId>:<index>` → Prev/Next printing paging (4.12).
+ * Total like all handlers; an unknown action degrades to the polite note.
+ */
+export function createCardComponent(repo: CardRepo): ComponentHandler {
+  const effectPrefix = `${CARD_EFFECT_ID}:`;
+  const printingPrefix = `${CARD_PRINTING_ID}:`;
   return async (interaction): Promise<APIInteractionResponse> => {
     const { custom_id } = interaction.data;
-    if (!custom_id.startsWith(prefix)) return EFFECT_UNAVAILABLE;
-    const cardId = custom_id.slice(prefix.length);
-    if (!cardId) return EFFECT_UNAVAILABLE;
-    const card = await repo.findPrinting(cardId);
-    if (!card) return EFFECT_UNAVAILABLE;
-    return cardEffectResponse(card);
+    if (custom_id.startsWith(effectPrefix)) {
+      const cardId = custom_id.slice(effectPrefix.length);
+      if (!cardId) return CARD_COMPONENT_UNAVAILABLE;
+      const card = await repo.findPrinting(cardId);
+      if (!card) return CARD_COMPONENT_UNAVAILABLE;
+      return cardEffectResponse(card);
+    }
+    if (custom_id.startsWith(printingPrefix)) {
+      return printingPage(repo, interaction, custom_id.slice(printingPrefix.length));
+    }
+    return CARD_COMPONENT_UNAVAILABLE;
   };
+}
+
+/**
+ * Prev/Next paging (chunk 4.12). `rest` is `<cardId>:<targetIndex>`; card ids
+ * carry no colon, so the index is the segment after the LAST colon. Re-queries
+ * the live family so the buttons keep working on old messages, wrapping/clamping
+ * the index if a resync changed the printing count. Responds EPHEMERALLY when
+ * the click came from the public /card message (so that message never mutates —
+ * no shared-control fighting), and edits IN PLACE when it came from an existing
+ * ephemeral pager (told apart by the source message's ephemeral flag).
+ */
+async function printingPage(
+  repo: CardRepo,
+  interaction: APIMessageComponentInteraction,
+  rest: string,
+): Promise<APIInteractionResponse> {
+  const lastColon = rest.lastIndexOf(":");
+  if (lastColon <= 0) return CARD_COMPONENT_UNAVAILABLE;
+  const cardId = rest.slice(0, lastColon);
+  const target = Number(rest.slice(lastColon + 1));
+  if (!Number.isInteger(target)) return CARD_COMPONENT_UNAVAILABLE;
+
+  const printings = await repo.listPrintings(cardId);
+  if (printings.length === 0) return CARD_COMPONENT_UNAVAILABLE;
+  const index = ((target % printings.length) + printings.length) % printings.length;
+  const card = printings[index]!;
+  const data = cardMessageData(card, await relatedCardNames(repo, card), {
+    index,
+    total: printings.length,
+  });
+
+  const fromEphemeral = Boolean((interaction.message?.flags ?? 0) & MessageFlags.Ephemeral);
+  return fromEphemeral
+    ? { type: InteractionResponseType.UpdateMessage, data }
+    : {
+        type: InteractionResponseType.ChannelMessageWithSource,
+        data: { ...data, flags: MessageFlags.Ephemeral },
+      };
 }

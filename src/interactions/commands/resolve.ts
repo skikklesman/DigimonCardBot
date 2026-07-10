@@ -1,6 +1,6 @@
-// The shared card-value resolution ladder (HANDOFF §6.4 edge cases), used
-// by /card and /alt. The card-name value may or may not have come from a
-// picked autocomplete suggestion:
+// The shared card-value resolution ladder (HANDOFF §6.4 edge cases), used by
+// /card (command + the alt-option autocomplete). The card-name value may or
+// may not have come from a picked autocomplete suggestion:
 //   1. looks like a `card_id|variant` token → exact printing lookup
 //   2. looks like a card id (EX1-066) → base printing lookup
 //   3. anything else → normalized name search

@@ -91,3 +91,58 @@ describe("/card autocomplete", () => {
     expect(choice?.name).toHaveLength(100);
   });
 });
+
+describe("/card alt-option autocomplete (chunk 4.12)", () => {
+  // EX3-035 has a base printing and a P1 alt; the alt option offers both.
+  const printings = [
+    { ...card("EX3-035", "Goldramon"), setName: "BOOSTER 3" },
+    { ...card("EX3-035", "Goldramon"), variant: "P1", setName: "EX-03" },
+  ];
+  const altRepo = {
+    findByValue: (value: string) => {
+      const [id, variant] = value.split("|");
+      if (!id || !variant) return Promise.resolve(null);
+      return Promise.resolve(
+        printings.find((p) => p.cardId === id && p.variant === variant) ?? null,
+      );
+    },
+    findPrinting: (id: string, variant = "0") =>
+      Promise.resolve(printings.find((p) => p.cardId === id && p.variant === variant) ?? null),
+    searchByName: (query: string) => {
+      const prefix = normalizeSearchName(query);
+      return Promise.resolve(
+        prefix === "" ? [] : CARDS.filter((c) => c.searchName.startsWith(prefix)),
+      );
+    },
+    listPrintings: (id: string) => Promise.resolve(printings.filter((p) => p.cardId === id)),
+  } as unknown as CardRepo;
+
+  const altHandle = createCardAutocomplete(altRepo);
+  const altInvoke = (cardName: string) =>
+    altHandle({
+      type: 4,
+      data: {
+        name: "card",
+        options: [
+          { name: "card-name", type: 3, value: cardName },
+          { name: "alt", type: 3, value: "", focused: true },
+        ],
+      },
+    } as never);
+
+  it("offers the picked card's printings when card-name resolves to one card", async () => {
+    const choices = await altInvoke("EX3-035|0"); // a resolved autocomplete token
+    expect(choices.map((c) => c.value)).toEqual(["EX3-035|0", "EX3-035|P1"]);
+    expect(choices[0]?.name).toContain("Base printing");
+    expect(choices[1]?.name).toContain("Alt-art P1");
+  });
+
+  it("offers nothing while card-name is still ambiguous (pick the card first)", async () => {
+    // "goldramon" matches three cards → no single card to expand.
+    await expect(altInvoke("goldramon")).resolves.toEqual([]);
+  });
+
+  it("offers nothing when card-name is empty", async () => {
+    await expect(altInvoke("")).resolves.toEqual([]);
+  });
+});

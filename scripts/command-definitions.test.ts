@@ -20,18 +20,24 @@ describe("command definitions", () => {
     }
   });
 
-  it.each(["card", "alt"])(
-    "defines /%s with a required, autocompleting card-name option",
-    (name) => {
-      const command = COMMAND_DEFINITIONS.find((c) => c.name === name);
-      const option = command?.options?.find((o) => o.name === "card-name");
-      expect(option).toMatchObject({
-        type: ApplicationCommandOptionType.String,
-        required: true,
-        autocomplete: true,
-      });
-    },
-  );
+  it("defines /card with a required autocompleting card-name and an optional autocompleting alt option (chunk 4.12)", () => {
+    const command = COMMAND_DEFINITIONS.find((c) => c.name === "card");
+    expect(command?.options?.find((o) => o.name === "card-name")).toMatchObject({
+      type: ApplicationCommandOptionType.String,
+      required: true,
+      autocomplete: true,
+    });
+    // The alt printing selector is optional but still autocompletes.
+    expect(command?.options?.find((o) => o.name === "alt")).toMatchObject({
+      type: ApplicationCommandOptionType.String,
+      required: false,
+      autocomplete: true,
+    });
+  });
+
+  it("no longer defines a standalone /alt command (folded into /card, chunk 4.12)", () => {
+    expect(COMMAND_DEFINITIONS.find((c) => c.name === "alt")).toBeUndefined();
+  });
 
   it("defines /set with a required, autocompleting set option", () => {
     const command = COMMAND_DEFINITIONS.find((c) => c.name === "set");

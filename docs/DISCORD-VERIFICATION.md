@@ -79,14 +79,16 @@ Service URL** on the app profile; without them the submission can't go through.
 These are the real long-poles, not the answer wording above — so line them up
 before crossing 75 servers, not after.
 
-- [ ] **Privacy Policy URL** — the easiest one: it just states plainly that the
-      bot collects/stores **no user data** (which is true — matches the
-      data-storage answer above). Needs a public URL (a GitHub Pages page, a
-      gist, or a section of the public README all work). _Offer: this is short
-      and factual — ask and it can be drafted in one pass._
-- [ ] **Terms of Service URL** — a short, standard ToS (as-is, no warranty,
-      acceptable-use). Also needs a public URL. _Can be drafted alongside the
-      Privacy Policy._
+- [x] **Privacy Policy — drafted** ([docs/PRIVACY.md](PRIVACY.md), 2026-07-10):
+      states plainly the bot collects/stores no user data. **Still to do:** fill
+      the `[CONTACT]` placeholder, set the effective date to the publish date,
+      publish it to a public URL (GitHub raw/Pages once the repo is public, or a
+      README section), then paste the URL below.
+- [x] **Terms of Service — drafted** ([docs/TERMS.md](TERMS.md), 2026-07-10):
+      short, standard as-is/no-warranty/acceptable-use, with the
+      not-an-official-rules-source disclaimer. **Still to do:** fill the
+      `[JURISDICTION]` and `[CONTACT]` placeholders, publish to a public URL,
+      paste it below.
 - [ ] **App profile** — description, icon, and links filled in on the Developer
       Portal (human, one-time; uses the "what does your app do" text above).
 - [ ] **License + public README** (launch-phase open decision) — the repo goes

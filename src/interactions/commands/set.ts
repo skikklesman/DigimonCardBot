@@ -4,7 +4,6 @@
 // entirely in-memory (like /keyword) — the only D1 query runs on the
 // command invocation itself, never per keystroke.
 import {
-  ApplicationCommandOptionType,
   InteractionResponseType,
   MessageFlags,
   type APIChatInputApplicationCommandInteraction,
@@ -15,7 +14,7 @@ import { normalizeSearchName } from "../../data/schema.ts";
 import type { CardRepo } from "../../data/repo.ts";
 import type { AutocompleteHandler, CommandHandler } from "../router.ts";
 import { releaseResponse } from "../embeds.ts";
-import { stringOption } from "../options.ts";
+import { readStringOption, stringOption } from "../options.ts";
 
 export const SET_OPTION = "set";
 
@@ -74,13 +73,9 @@ export function createSetCommand(repo: CardRepo): CommandHandler {
 export function createSetAutocomplete(): AutocompleteHandler {
   const newestFirst = [...RELEASES].sort((a, b) => b.releasedEN.localeCompare(a.releasedEN));
   return (interaction) => {
-    const focused = interaction.data.options?.find(
-      (o) => o.type === ApplicationCommandOptionType.String && o.name === SET_OPTION && o.focused,
-    );
-    const typed =
-      focused && "value" in focused && typeof focused.value === "string"
-        ? normalizeSearchName(focused.value)
-        : "";
+    // Single-option command — the shared guarded reader covers it (4.12 review
+    // #3); no re-inlined typeof guard.
+    const typed = normalizeSearchName(readStringOption(interaction.data.options, SET_OPTION) ?? "");
     const pool = typed ? prefixMatchesInOrder(typed, newestFirst) : newestFirst;
     return Promise.resolve(pool.map((s) => ({ name: `${s.code} — ${s.name}`, value: s.code })));
   };

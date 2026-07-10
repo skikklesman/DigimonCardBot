@@ -2,7 +2,6 @@
 // dataset in data/keywords.ts. Entirely in-memory — no D1 — so both the
 // command and its autocomplete are pure functions over a constant list.
 import {
-  ApplicationCommandOptionType,
   InteractionResponseType,
   MessageFlags,
   type APIChatInputApplicationCommandInteraction,
@@ -12,7 +11,7 @@ import { KEYWORDS, type Keyword } from "../../data/keywords.ts";
 import { normalizeSearchName } from "../../data/schema.ts";
 import type { AutocompleteHandler, CommandHandler } from "../router.ts";
 import { keywordResponse } from "../embeds.ts";
-import { stringOption } from "../options.ts";
+import { readStringOption, stringOption } from "../options.ts";
 
 export const TERM_OPTION = "term";
 
@@ -67,13 +66,12 @@ export function createKeywordCommand(): CommandHandler {
 export function createKeywordAutocomplete(): AutocompleteHandler {
   const sorted = [...KEYWORDS].sort((a, b) => a.name.localeCompare(b.name));
   return (interaction) => {
-    const focused = interaction.data.options?.find(
-      (o) => o.type === ApplicationCommandOptionType.String && o.name === TERM_OPTION && o.focused,
+    // Single-option command: the term is the (only, always-focused) option, so
+    // the shared guarded reader is enough — no re-inlined typeof dance (4.12
+    // review #3). readStringOption returns null when absent/empty/malformed.
+    const typed = normalizeSearchName(
+      readStringOption(interaction.data.options, TERM_OPTION) ?? "",
     );
-    const typed =
-      focused && "value" in focused && typeof focused.value === "string"
-        ? normalizeSearchName(focused.value)
-        : "";
     const pool = typed
       ? sorted.filter((k) =>
           [k.name, ...(k.aliases ?? [])].some((n) => normalizeSearchName(n).startsWith(typed)),

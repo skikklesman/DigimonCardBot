@@ -3,17 +3,24 @@
 > Draft answers for the Developer Portal **App Verification** form, so
 > submission (roadmap chunk 5.3) is copy-paste-and-go the moment the tab
 > unlocks. **The tab only appears at >75 servers**; 100 is the hard freeze
-> (DECISIONS.md 2026-07-07). Owner: review and tweak the wording once, then
-> leave it here until you cross 75.
+> (DECISIONS.md 2026-07-07, re-confirmed 5.1 on 2026-07-10). Owner: review and
+> tweak the wording once, then leave it here until you cross 75.
+>
+> **Refreshed 2026-07-10** for the current command set (chunk 4.12 retired
+> `/alt` into `/card`; `/banlist` added) and the 5.1 drift-fact check.
 
 ## Facts the form will lean on
 
 - **Ownership:** the app is owned by a Discord **Team** (DECISIONS #5), so
-  verifying the team owner's identity (Stripe) verifies the app.
+  verifying the team owner's identity (Stripe) verifies the app. The Stripe
+  government-ID check is the one genuinely human, ~5-day step.
 - **Interaction model:** HTTP interactions only — no Gateway connection, no
   bot member in any server (installed with `applications.commands` scope
   only). **No privileged intents requested** (HANDOFF §15), so the
-  intent-justification prompts should be N/A.
+  intent-justification prompts are N/A. _(5.1, 2026-07-10: Discord moved
+  intent review to a 10,000-**user** threshold in 2026 — but that never
+  touches us, because we request no intents at any scale. Bot verification at
+  100 **servers** is a separate process and is unchanged.)_
 - **What it stores about users:** nothing. See the data-storage answer.
 
 ---
@@ -26,12 +33,13 @@
 > responds to slash commands with card information so players can quickly
 > reference cards during discussion and deckbuilding:
 >
-> - `/card` — look up a card by name or card ID (with autocomplete);
->   replies with the card's image.
-> - `/alt` — show a card's alternate-art printings.
+> - `/card` — look up a card by name or card ID (with autocomplete); replies
+>   with the card's image, flags any banned/restricted status, and lets you
+>   page through the card's alternate-art printings.
 > - `/keyword` — explain a rules keyword from a curated glossary.
 > - `/set` — look up information about a specific set/release.
 > - `/release` — list upcoming Digimon TCG releases.
+> - `/banlist` — list the currently banned and restricted cards.
 >
 > It uses HTTP interactions only (no Gateway connection) and is not a member
 > of any server — it is installed with the `applications.commands` scope
@@ -64,15 +72,37 @@
 
 ---
 
-## Companion launch tasks (not part of this form, but reviewers check)
+## Required before submitting (these GATE 5.3 — get them ready pre-75)
 
-- [ ] **Terms of Service URL** — needed on the app's profile. _(Not written
-      yet — DECISIONS open decision; launch-phase task.)_
-- [ ] **Privacy Policy URL** — should state plainly that no user data is
-      collected/stored (matches the data-storage answer above). _(Not
-      written yet.)_
-- [ ] **App profile** — description, icon, and links filled in on the
-      Developer Portal.
+The verification form itself asks for a **Privacy Policy URL** and a **Terms of
+Service URL** on the app profile; without them the submission can't go through.
+These are the real long-poles, not the answer wording above — so line them up
+before crossing 75 servers, not after.
 
-> When the ToS/Privacy pages exist, drop their URLs here so everything for
-> 5.3 lives in one place.
+- [ ] **Privacy Policy URL** — the easiest one: it just states plainly that the
+      bot collects/stores **no user data** (which is true — matches the
+      data-storage answer above). Needs a public URL (a GitHub Pages page, a
+      gist, or a section of the public README all work). _Offer: this is short
+      and factual — ask and it can be drafted in one pass._
+- [ ] **Terms of Service URL** — a short, standard ToS (as-is, no warranty,
+      acceptable-use). Also needs a public URL. _Can be drafted alongside the
+      Privacy Policy._
+- [ ] **App profile** — description, icon, and links filled in on the Developer
+      Portal (human, one-time; uses the "what does your app do" text above).
+- [ ] **License + public README** (launch-phase open decision) — the repo goes
+      public around launch; the Privacy Policy / ToS can live in it, which folds
+      two tasks into one.
+
+> When the ToS/Privacy pages exist, drop their URLs here so everything for 5.3
+> lives in one place.
+
+## When the tab unlocks (>75 servers) — submission checklist
+
+1. Fill the app profile (description/icon/links) if not already done.
+2. Paste the Privacy Policy + ToS URLs.
+3. Paste the "what does your app do" and data-storage answers above.
+4. Intents section → **None** (see the intents answer).
+5. Complete the **Stripe identity verification** (team owner, government ID) —
+   the ~5-day human step; start it the moment the tab appears.
+6. Submit, then **throttle invites** so verification clears before server #100
+   (5.5 / DECISIONS 2026-07-07).

@@ -126,17 +126,10 @@
       for 7 consecutive days; variety beats volume (autocomplete picks, free
       text, an ID, a typo). This is Gate C criterion #4. Once guild 2 is live,
       spread some of the daily use there too.
-- [ ] **After the 4.12 deploy — `npm run register`, then spot-check `/card`
-      alt-art** (once): `/card` gained an `alt` option and the standalone
-      `/alt` command was removed, so the command set needs one registration run
-      in the soak guilds. Then, on a card with alt-arts (e.g. a Goldramon
-      printing): confirm `/card` shows **◀ Prev / Next ▶** buttons; clicking one
-      shows an **ephemeral** image only you see (the public message shouldn't
-      change); and focusing the **`alt`** option after picking a card
-      autocompletes that card's printings. Confirm `/alt` is **gone** from the
-      command list. **This is the last step before Gate D (Feature Complete)** —
-      once the folded set is live in the guild, Gate D is reached (date it in
-      ROADMAP; 4.4 parity was called complete 2026-07-10).
+- [x] **After the 4.12 deploy — `npm run register`, then spot-check `/card`
+      alt-art** **Done 2026-07-10**: registered; the spot-check surfaced the
+      2-printing "did not respond" bug (duplicate nav custom_ids), fixed same
+      day (DECISIONS 2026-07-10). Gate D reached 2026-07-10.
 - [x] **After the 4.7 deploy — `npm run register`, then spot-check
       `/banlist`** **Done 7/8 by Owner** (once): the new command needs one registration run to
       appear in the soak guilds. Expect three sections — **Banned** (3:
@@ -173,16 +166,39 @@
       and **throttle invites to stay under 100** until the badge lands (a
       fast rollout can hit 100 during the ~5-day review and freeze). Prep
       the two items below now so submission is instant at 75.
-- [ ] **Pre-draft the verification checklist answers** (do anytime before
-      75 servers): the App Verification form asks what the bot does and how
-      it stores data. Draft answers are ready to paste in
-      [DISCORD-VERIFICATION.md](DISCORD-VERIFICATION.md) — review/tweak them
-      once, so 5.3 is copy-paste-submit.
+- [x] **Pre-draft the verification checklist answers** **Done 2026-07-10**
+      (chunk 5.3 pre-draft): [DISCORD-VERIFICATION.md](DISCORD-VERIFICATION.md)
+      refreshed for the current command set + the 5.1 drift check, with a
+      step-by-step submission checklist. **Still yours:** review/tweak the
+      wording once. The real long-pole (Privacy/ToS) is its own item below.
+- [ ] **Finish + publish the Privacy Policy and Terms of Service** — the real
+      gating dependency for verification (the form requires both URLs). Drafts
+      are ready at [docs/PRIVACY.md](PRIVACY.md) (bot stores **no** user data)
+      and [docs/TERMS.md](TERMS.md) (standard as-is / no-warranty). Three small
+      fills, all yours: `[CONTACT]` in both, `[JURISDICTION]` in the ToS, and a
+      once-over of the wording (I'm not a lawyer). Then **publish to public
+      URLs** — the public README or raw GitHub links both work — and paste the
+      URLs into [DISCORD-VERIFICATION.md](DISCORD-VERIFICATION.md). Do this
+      before crossing 75 servers so submission is instant.
 - [ ] **License + public README** (DECISIONS open decision): pick a license
-      (MIT is the path of least resistance) before flipping the repo
-      public.
+      (MIT is the path of least resistance — the card-data source is MIT too,
+      confirmed 5.1) before flipping the repo public. The Privacy/ToS pages can
+      live in this README, folding two tasks into one.
+- [ ] **Watch usage during rollout; be ready to enable Workers Paid** (5.1
+      finding, 2026-07-10): the free tier is 100k Worker requests/day and 5M D1
+      rows-read/day. Autocomplete keystrokes (one request each) are the driver —
+      approaching ~1,000 servers you may hit the request cap. Watch the
+      Cloudflare Workers/D1 analytics during 5.5; if you near the cap, flip on
+      **Workers Paid ($5/mo)** — no code change, still cheap. Not a blocker for
+      launch, just don't get surprised by a mid-rollout throttle.
 - [ ] **Community announcement plan**: where/when to tell the old bot's
       communities, invite link distribution.
+
+> **Note (5.2, done 2026-07-10):** commands are now registered **globally**
+> (Claude ran `npm run register:global`), so every future server gets them.
+> Guild registration is kept for the soak guilds as the instant-iteration path.
+> If you change any command definition, re-run **both** `npm run register`
+> (guild, instant) and `npm run register:global` (~1h propagation).
 
 ---
 

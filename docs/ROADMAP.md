@@ -557,11 +557,12 @@ Chunks 4.1–4.3 are independent — parallelizable.
       nav buttons + a signed Prev/Next click → the neighbor printing.
 
 **✅ Gate D criteria:** full command set live in the test guild; fuzz findings
-fixed. **Reached:** `pending` — all Phase 4 chunks are complete (4.4 parity call
-2026-07-10; 4.5 fuzz findings fixed); the only outstanding step is the **4.12
-`npm run register`** (owner) so the folded `/card` set is live in the soak
-guild. Gate D is reached the moment that runs (owner call 2026-07-10). Date it
-here when done.
+fixed. **Reached: 2026-07-10** — all Phase 4 chunks complete (4.4 parity call
+2026-07-10; 4.5 fuzz findings fixed), and the folded `/card` set is registered
+and live in the soak guilds (owner-verified in Discord — the same live
+verification that surfaced the 2-printing pager bug, fixed same day:
+duplicate nav custom_ids, DECISIONS 2026-07-10; fuzz suite refreshed for the
+new 4.12 surfaces).
 
 ---
 

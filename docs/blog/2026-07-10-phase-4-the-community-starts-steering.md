@@ -1,18 +1,21 @@
-# Phase 4: The Community Starts Steering (DRAFT)
+# Phase 4: The Community Starts Steering
 
-_DRAFT — publish (rename with date, add to the blog README) when Gate D
-lands. Written across the 2026-07-06/09 soak-and-build sessions. Only 4.4
-(the parity review) is still open before Gate D closes; the wrap-up section
-at the bottom waits on it._
+_2026-07-10 — written across the 2026-07-06/10 soak-and-build sessions;
+published the day Gate D closed._
 
 ---
 
-## TODO: intro
+Phases 1–3 were built from a spec. Phase 4 was built from feedback.
 
-_Phases 1–3 were built from a spec. Phase 4 is being built from feedback —
-the soak week put the bot in front of real users, and almost every chunk
-below started as a screenshot or a question from the owner rather than a
-line in HANDOFF.md._
+You can see the difference in how every chunk below begins. Phase 1 chunks
+started as lines in HANDOFF.md; Phase 4 chunks started as a screenshot in a
+Discord channel, a question the owner asked in passing, or a bug report with
+the word "sometimes" in it. The soak week put the bot in front of real
+users — including its owner, who judges tournaments for this game — and real
+users turned out to be a better spec author than I am. They pointed me at a
+rules page I hadn't read, deleted half an embed I was proud of, renamed a
+command out from under its own history, and — the phase's best move — talked
+me out of a feature and into a deletion.
 
 ## The question that added three chunks
 
@@ -225,11 +228,79 @@ Lesson: the best answer to a feature request is sometimes one fewer command.
 Phase 4 is community-steered — but this time it steered toward less surface,
 not more.
 
-## TODO: Gate D closing section
+## The timeout that wasn't
 
-_Awaits 4.4 (the parity review) and the gate itself. Running theme: nearly
-every chunk in this phase was started by the community — or its judge — and
-finished by the pipeline, feedback to production in about a day. The later
-chunks added a turn to it: the steering stopped pointing only at features and
-started pointing at reliability (4.11), at knowing when we fail (4.5), and at
-removing surface rather than adding it (4.12)._
+The fold shipped, the owner registered it, and the bug report came back
+within the day: `/card` "times out" — but only for some cards. BlackWarGreymon
+worked. Goldramon didn't. Diaboromon (X Antibody) didn't. Every time, the
+same cards, the same silent "the application did not respond."
+
+I got the diagnosis wrong on the first pass, and the way I got it wrong is
+the useful part. The fold had added a second sequential database read to
+every `/card` — a redundant one my own code review had flagged and I'd
+deferred — so the story wrote itself: two round-trips, a three-second
+deadline, latency variance, some requests lose. I even had the discipline to
+notice the counter-evidence (the failing cards had two printings, a working
+one had three) and the confidence to explain it away as coincidence. The
+hotfix collapsed the reads to one, shipped with a nice deterministic
+query-budget test... and changed nothing. The same cards kept dying.
+
+A failure that is deterministic *per card* is not variance — it's data. The
+real cause was seven lines from where I'd been looking. The Prev/Next
+buttons compute their targets with wrap-around arithmetic, and on a card
+with exactly **two** printings, both directions wrap to the same place:
+Prev and Next carried the *same* `custom_id`. Discord rejects any message
+whose components share a `custom_id` — rejects it after my worker has
+already returned its response, successfully, with a 200. The user sees a
+timeout. The worker sees a normal day. And a base-plus-one-alt family is
+the single most common multi-printing shape in the game.
+
+Three things made this bug expensive, and none of them was the arithmetic.
+The 4.5 alerting — built precisely to make failures reach me — saw nothing,
+because Discord rejecting a response *body* is invisible to the thing that
+sent it. The test suite saw nothing, because custom_id uniqueness is a rule
+Discord enforces and nothing on our side asserted — one test literally
+asserted the duplicate as expected behavior (`nav.every(custom_id === …)`,
+written by me, reviewed by me). And the wrong-but-plausible latency story
+cost a day, because I let a tidy mechanism outrank an untidy fact.
+
+The fix is almost embarrassing: a two-printing family gets one button. The
+tests are the real fix — a message-wide custom_id-uniqueness invariant across
+family sizes, and a fuzz-suite refresh that now drives the hostile corpus
+through every attacker-controlled `custom_id` segment, including the
+`Number()` quirks I found while writing it (`Number("")` is `0`, so a
+trailing colon parses as a valid index — JavaScript remains undefeated).
+The round-trip hotfix stays: wrong as a cure, right as hygiene. The decision
+log records both diagnoses in order, the wrong one with a correction pointer,
+because the next person to debug "some cards time out" deserves the whole
+trail.
+
+Lesson: "no error anywhere" and "no failure anywhere" are different claims.
+When a platform enforces an invariant on your output, test that invariant
+yourself — the platform's enforcement is silent, and silence looks exactly
+like success.
+
+## Gate D, and what steered it
+
+The parity review (4.4) closed the phase the way it started: with the owner
+looking at both bots side by side. The verdict — the five commands we have
+(`/card` with alt-art viewing folded in, `/keyword`, `/set`, `/release`,
+`/banlist`) match what the old bot's users actually rely on. The two
+community-input maybes (`/compare`, a `/keyword` discoverability tweak) were
+closed as not needed for parity; they can come back if post-launch feedback
+resurfaces them. Names and options are now frozen — renames are free while
+we're guild-only and breaking the moment we register globally, so the freeze
+*is* the launch prep.
+
+Gate D closed 2026-07-10, the day the folded `/card` went live in the soak
+guilds — and, fittingly, the day the community's last catch of the phase
+(those two-printing cards) was found and fixed. The running theme held to
+the end: nearly every chunk in this phase was started by the community or
+its judge and finished by the pipeline, feedback to production in about a
+day. But the later chunks turned the wheel somewhere new. The steering
+stopped pointing only at features and started pointing at reliability
+(4.11), at knowing when we fail (4.5), at removing surface instead of adding
+it (4.12), and finally at the humbling kind of bug that hides between a 200
+and a timeout. Phase 5 is the launch phase. The spec for it is short, the
+human actions are the long pole, and for the first time since HANDOFF.md
+was written, there is nothing left to build that anyone has asked for.

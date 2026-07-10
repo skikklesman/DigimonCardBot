@@ -65,14 +65,21 @@ minimal maintenance.
   printings) plus Prev/Next buttons that page printings in an ephemeral
   view (the public message never mutates — no shared-control fighting;
   `card:printing:<id>:<index>`). `altGalleryResponse` + `commands/alt.ts`
-  removed. **Needs `npm run register`** — `/card` gained an option and
-  `/alt` was removed (OWNER-TODO).
+  removed. Registered (`npm run register` done — folded `/card` live in the
+  soak guilds).
+  2026-07-10 post-fold fixes: the `/card` "timeout" on 2-printing cards was
+  **duplicate nav custom_ids** (prev===next on a pair; Discord rejects the
+  message — invisible to the worker, which 200s normally). Fixed: single
+  Next button on 2-families + a message-wide custom_id-uniqueness test; the
+  same-day round-trip hotfix (one D1 read via `resolveCardFamily`) was a
+  wrong diagnosis but kept as hygiene — both in DECISIONS 2026-07-10. Fuzz
+  suite refreshed same day (hostile corpus through component custom_id
+  segments; `Number("")===0` quirk shapes).
   4.3 (`/page`) closed as Will Not Do. **Chunk 4.4 (parity review) complete
   2026-07-10 (owner call): the five commands are frozen at parity; the
   `/compare` and `/keyword`-discoverability items closed as not-needed
-  (DECISIONS 2026-07-10). All Phase 4 chunks are now done — Gate D is
-  reached the moment the outstanding 4.12 `npm run register` puts the folded
-  `/card` set live in the soak guild.** Next is Phase 5 (launch). The owner is
+  (DECISIONS 2026-07-10). Phase 4 complete — Gate D reached 2026-07-10;
+  Phase 4 blog published (docs/blog).** Next is Phase 5 (launch). The owner is
   an **official Digimon TCG judge**: primary source for all rules/keyword
   content (see OWNER-TODO's glossary-review item).
 - **Cron is LIVE**: `0 6 * * 2` — which on Cloudflare means **Mondays**

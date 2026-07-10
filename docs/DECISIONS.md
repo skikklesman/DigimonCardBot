@@ -10,6 +10,41 @@
 
 ---
 
+## 2026-07-10 — Drift-fact re-verification for launch (chunk 5.1, HANDOFF §16)
+
+Re-checked the four "verify at build time" facts against current sources before
+flipping to global. All confirmed; one genuine drift, irrelevant to us.
+
+- **Cloudflare Workers free tier:** 100,000 requests/day, **10 ms CPU/invocation**
+  (I/O waits like D1 don't count), 50 subrequests/request, 128 MB/isolate.
+- **Cloudflare D1 free tier:** 500 MB/database, 5 GB/account, 50 queries per
+  invocation, **5 M rows read/day, 100 k rows written/day** (reset 00:00 UTC).
+- **Load posture at ~1,000 servers.** The two ceilings that bite are Workers
+  **requests/day** and D1 **rows-read/day**, both driven by autocomplete
+  keystroke fan-out (one interaction per keystroke). Our index-range
+  autocomplete reads ~25 rows/keystroke (NOT the ~8.4 k scan a `LIKE` would —
+  the chunk-3.1 optimization), which is exactly what keeps rows-read viable;
+  writes are trivial (one weekly cron sync ≈ 8.5 k rows). Approaching 1,000
+  servers we may hit the 100 k requests/day cap and need Workers Paid ($5/mo) —
+  a monitoring item (5.5 / OWNER-TODO), not a launch blocker, and consistent
+  with the ~$0 goal until real scale.
+- **Discord bot verification:** the **100-server cap is UNCHANGED** — still
+  gates 5.3, still human + gov-ID, ~5-day review; App Verification tab appears
+  at ~75 servers (last checked 2026-07-07). **Genuine 2026 drift:** privileged-
+  intents review moved from a 100-server threshold to a **10,000-user**
+  threshold — **N/A to us** (HTTP interactions, zero intents), which is the
+  design paying off: we never enter intent review at any scale.
+- **Discord API version:** **v10 is current/latest available** (v9 available;
+  v8/v7 deprecated; the unversioned default is still legacy v6). We pin
+  `/api/v10` explicitly in `register-commands.ts` and the interaction endpoint —
+  correct. Interaction response types we use (1/4/5/7 + autocomplete 8) are
+  stable in v10; `discord-api-types` encodes them, so we're aligned by
+  construction.
+- **Card source:** `TakaOtaku/Digimon-Card-App` — not archived, **MIT-licensed**
+  (compatible with open-sourcing this bot), last push 2026-07-10 (active), the
+  `DigimonCards.json` cardlist returns 200. Healthy; no adapter action needed.
+- **No code changes** fell out of 5.1 — everything we depend on is current.
+
 ## 2026-07-10 — `/card` "timeout" root cause: duplicate nav custom_ids on 2-printing families
 
 - **Symptom persisted after the same-day round-trip hotfix (next entry),

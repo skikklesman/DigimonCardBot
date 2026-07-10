@@ -571,9 +571,16 @@ new 4.12 surfaces).
 Sequencing here is dictated by Discord's rules — HUMAN actions included
 (HANDOFF §12).
 
-- [ ] **5.1 — Re-verify drift facts.** Everything in
-      [HANDOFF §16](../HANDOFF.md): free-tier limits, verification thresholds, API
-      version, source status.
+- [x] **5.1 — Re-verify drift facts.** _(Done 2026-07-10, DECISIONS.md. All four
+      HANDOFF §16 facts confirmed current; no code changes fell out. Workers free
+      100k req/day + 10ms CPU + 50 subreq; D1 free 5M rows-read/day + 100k
+      write/day (autocomplete row-reads are the ceiling to watch at ~1k servers —
+      may need Workers Paid $5/mo, a monitoring item not a blocker). Discord
+      100-server verification cap UNCHANGED (still gates 5.3); the 2026
+      privileged-intents change (100 servers → 10k users) is N/A — we use no
+      intents. API v10 current, pinned explicitly. Source repo healthy + MIT.)_
+      Everything in [HANDOFF §16](../HANDOFF.md): free-tier limits, verification
+      thresholds, API version, source status.
 - [ ] **5.2 — Global command registration.** Flip the registration script to
       global (allow ~1h propagation). Keep guild registration for the test guild as
       the fast-iteration path.

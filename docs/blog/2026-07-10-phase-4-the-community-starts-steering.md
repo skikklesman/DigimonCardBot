@@ -245,11 +245,11 @@ one had three) and the confidence to explain it away as coincidence. The
 hotfix collapsed the reads to one, shipped with a nice deterministic
 query-budget test... and changed nothing. The same cards kept dying.
 
-A failure that is deterministic *per card* is not variance — it's data. The
+A failure that is deterministic _per card_ is not variance — it's data. The
 real cause was seven lines from where I'd been looking. The Prev/Next
 buttons compute their targets with wrap-around arithmetic, and on a card
 with exactly **two** printings, both directions wrap to the same place:
-Prev and Next carried the *same* `custom_id`. Discord rejects any message
+Prev and Next carried the _same_ `custom_id`. Discord rejects any message
 whose components share a `custom_id` — rejects it after my worker has
 already returned its response, successfully, with a 200. The user sees a
 timeout. The worker sees a normal day. And a base-plus-one-alt family is
@@ -257,7 +257,7 @@ the single most common multi-printing shape in the game.
 
 Three things made this bug expensive, and none of them was the arithmetic.
 The 4.5 alerting — built precisely to make failures reach me — saw nothing,
-because Discord rejecting a response *body* is invisible to the thing that
+because Discord rejecting a response _body_ is invisible to the thing that
 sent it. The test suite saw nothing, because custom_id uniqueness is a rule
 Discord enforces and nothing on our side asserted — one test literally
 asserted the duplicate as expected behavior (`nav.every(custom_id === …)`,
@@ -290,7 +290,7 @@ community-input maybes (`/compare`, a `/keyword` discoverability tweak) were
 closed as not needed for parity; they can come back if post-launch feedback
 resurfaces them. Names and options are now frozen — renames are free while
 we're guild-only and breaking the moment we register globally, so the freeze
-*is* the launch prep.
+_is_ the launch prep.
 
 Gate D closed 2026-07-10, the day the folded `/card` went live in the soak
 guilds — and, fittingly, the day the community's last catch of the phase

@@ -217,12 +217,13 @@ const invokeWith = (options: unknown[]) =>
   handle({ type: 2, data: { name: "card", options } } as never);
 
 describe("/card printing navigation (chunk 4.12)", () => {
-  it("adds Prev/Next buttons for a card with more than one printing", async () => {
-    // EX3-035 has a base printing and a P1 alt in the fixture.
+  it("adds a single Next button for a 2-printing card (2026-07-10 duplicate-custom_id fix)", async () => {
+    // EX3-035 has a base printing and a P1 alt in the fixture. Both wrap
+    // directions target the base, so Prev+Next would share one custom_id and
+    // Discord would reject the message — one Next button pages the pair.
     const nav = printingButtons(await invoke("EX3-035|P1"));
-    expect(nav.map((b) => b.label)).toEqual(["◀ Prev", "Next ▶"]);
-    // Shown printing is index 1 of 2; both neighbors wrap to the base (index 0).
-    expect(nav.every((b) => b.custom_id === `${CARD_PRINTING_ID}:EX3-035:0`)).toBe(true);
+    expect(nav.map((b) => b.label)).toEqual(["Next ▶"]);
+    expect(nav[0]?.custom_id).toBe(`${CARD_PRINTING_ID}:EX3-035:0`);
   });
 
   it("shows no printing buttons for a single-printing card", async () => {

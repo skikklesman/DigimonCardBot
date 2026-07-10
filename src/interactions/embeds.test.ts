@@ -193,6 +193,30 @@ describe("cardResponse", () => {
     expect(row(response).map((b) => b.label)).toEqual(["Show effect text"]);
     expect(footerText(response)).not.toContain("/");
   });
+
+  // 2026-07-10 fix: a 2-printing family wraps Prev and Next onto the same
+  // target — two buttons would share a custom_id and Discord would reject the
+  // message (50035), shown to users as /card "not responding" on every
+  // base+one-alt card (BT14-018 Goldramon, BT24-065 Diaboromon (X Antibody)).
+  it("renders a single Next button for a 2-printing family (both directions target the same printing)", () => {
+    for (const index of [0, 1]) {
+      const response = cardResponse(goldramon, undefined, { index, total: 2 });
+      const nav = row(response).filter((b) => b.custom_id.startsWith(CARD_PRINTING_ID));
+      expect(nav.map((b) => b.label)).toEqual(["Next ▶"]);
+      expect(nav[0]?.custom_id).toBe(`${CARD_PRINTING_ID}:BT14-018:${1 - index}`);
+    }
+  });
+
+  it("never emits duplicate custom_ids in one message — the invariant Discord enforces", () => {
+    for (let total = 2; total <= 5; total++) {
+      for (let index = 0; index < total; index++) {
+        const ids = row(cardResponse(goldramon, undefined, { index, total })).map(
+          (b) => b.custom_id,
+        );
+        expect(new Set(ids).size).toBe(ids.length);
+      }
+    }
+  });
 });
 
 describe("cardEffectResponse", () => {

@@ -162,7 +162,7 @@ describe("interaction endpoint", () => {
       expect(body.data.embeds[0].image.url).toBe("https://example.com/EX1-066.webp");
     });
 
-    it("attaches Prev/Next buttons for a multi-printing card (chunk 4.12)", async () => {
+    it("attaches printing nav for a multi-printing card (chunk 4.12)", async () => {
       await seed();
       const res = await SELF.fetch(
         ENDPOINT,
@@ -175,9 +175,13 @@ describe("interaction endpoint", () => {
       const body = (await res.json()) as {
         data: { components: [{ components: { custom_id: string; label: string }[] }] };
       };
-      const labels = body.data.components[0].components.map((b) => b.label);
-      expect(labels).toEqual(["◀ Prev", "Next ▶"]);
-      expect(body.data.components[0].components[0]!.custom_id).toContain("card:printing:BT14-018:");
+      // The seeded family is base+P1 (2 printings): a single Next button — a
+      // Prev/Next pair would share a custom_id and Discord rejects duplicates
+      // (the 2026-07-10 "/card times out on 2-printing cards" bug).
+      const nav = body.data.components[0].components;
+      expect(nav.map((b) => b.label)).toEqual(["Next ▶"]);
+      expect(nav[0]!.custom_id).toBe("card:printing:BT14-018:1");
+      expect(new Set(nav.map((b) => b.custom_id)).size).toBe(nav.length);
     });
 
     it("pages to the neighbor printing on a signed Prev/Next click, ephemerally (chunk 4.12)", async () => {

@@ -111,6 +111,17 @@ export interface PrintingNav {
 function navButtons(cardId: string, nav: PrintingNav): APIButtonComponentWithCustomId[] {
   const prev = (nav.index - 1 + nav.total) % nav.total;
   const next = (nav.index + 1) % nav.total;
+  const nextButton: APIButtonComponentWithCustomId = {
+    type: ComponentType.Button,
+    style: ButtonStyle.Secondary,
+    label: "Next ▶",
+    custom_id: `${CARD_PRINTING_ID}:${cardId}:${next}`,
+  };
+  // A 2-printing family wraps both directions onto the SAME target, and two
+  // buttons with one custom_id make Discord reject the whole message (50035,
+  // COMPONENT_CUSTOM_ID_DUPLICATED) — the user sees "did not respond". One
+  // Next button pages a pair fine (2026-07-10 fix; DECISIONS.md).
+  if (prev === next) return [nextButton];
   return [
     {
       type: ComponentType.Button,
@@ -118,12 +129,7 @@ function navButtons(cardId: string, nav: PrintingNav): APIButtonComponentWithCus
       label: "◀ Prev",
       custom_id: `${CARD_PRINTING_ID}:${cardId}:${prev}`,
     },
-    {
-      type: ComponentType.Button,
-      style: ButtonStyle.Secondary,
-      label: "Next ▶",
-      custom_id: `${CARD_PRINTING_ID}:${cardId}:${next}`,
-    },
+    nextButton,
   ];
 }
 

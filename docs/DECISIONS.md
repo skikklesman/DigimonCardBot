@@ -10,7 +10,43 @@
 
 ---
 
+## 2026-07-10 — `/card` "timeout" root cause: duplicate nav custom_ids on 2-printing families
+
+- **Symptom persisted after the same-day round-trip hotfix (next entry),
+  which proved the diagnosis below it wrong.** The failure was deterministic
+  and card-specific after all: every affected card has **exactly 2**
+  printings (BT14-018 Goldramon, BT24-065 Diaboromon X Antibody — verified
+  against production D1); 3-printing EX10-010 worked; 1-printing cards render
+  no nav at all.
+- **Root cause:** `navButtons` computes wrap-around targets, and with
+  `total = 2` both directions land on the same printing —
+  `prev === next` — so ◀ Prev and Next ▶ carried the **same `custom_id`**.
+  Discord rejects any message whose components share a custom_id (API error
+  50035, `COMPONENT_CUSTOM_ID_DUPLICATED`) and discards the interaction
+  callback, which users see as "the application did not respond" —
+  indistinguishable from a timeout.
+- **Why nothing caught it:** the Worker returns its 200 normally, so the
+  4.5 request-path alerting (correctly) saw nothing — Discord rejecting a
+  callback **body** is invisible to the bot. Tests asserted our JSON, and one
+  even encoded the bug as expected behavior (`nav.every(custom_id === …)`);
+  custom_id uniqueness is enforced only on Discord's side. **Lesson:**
+  response-validity failures are a monitoring blind spot; invariants Discord
+  enforces need explicit tests on our side.
+- **Fix:** a 2-printing family renders a **single Next ▶ button** (one
+  target, one button); 3+ keep the Prev/Next pair. Tests: a 2-family case at
+  both indices, plus a message-wide custom_id-uniqueness invariant over
+  family sizes 2–5 at every index.
+- **The round-trip hotfix stays** — wrong as a root-cause fix, right as
+  hygiene: it implemented review finding #6 (the redundant double-read),
+  ships a deterministic query-budget guard, and one round-trip on a
+  3-second-capped path is simply better. Its entry below is kept as written,
+  with this correction pointer.
+
 ## 2026-07-10 — `/card` timeout regression: one D1 read on the critical path (4.12 hotfix)
+
+> **Correction (same day):** the diagnosis below is wrong — the failures were
+> deterministic per-card, not latency variance; see the entry above (duplicate
+> nav custom_ids). The change itself is kept as a healthy efficiency fix.
 
 - **Symptom (owner, in the soak guild):** `/card` intermittently returned
   Discord's "didn't respond in time" — some cards fine, others not, no obvious

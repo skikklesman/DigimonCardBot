@@ -581,9 +581,15 @@ Sequencing here is dictated by Discord's rules — HUMAN actions included
       intents. API v10 current, pinned explicitly. Source repo healthy + MIT.)_
       Everything in [HANDOFF §16](../HANDOFF.md): free-tier limits, verification
       thresholds, API version, source status.
-- [ ] **5.2 — Global command registration.** Flip the registration script to
-      global (allow ~1h propagation). Keep guild registration for the test guild as
-      the fast-iteration path.
+- [x] **5.2 — Global command registration.** _(Done 2026-07-10: ran
+      `npm run register:global` — the 5 commands (`/card` incl. the `alt`
+      option, `/keyword`, `/set`, `/release`, `/banlist`) are registered to the
+      global scope (fresh global command ids), ~1h propagation. Guild
+      registration kept for the soak guilds as the fast-iteration path (guild
+      commands take precedence there, so no visible duplicates). Zero user reach
+      until the bot is publicly invited (5.5). Reversible.)_ Flip the
+      registration script to global (allow ~1h propagation). Keep guild
+      registration for the test guild as the fast-iteration path.
 - [ ] **5.3 — Submit Discord bot verification** _(human, government ID)_
       **before crossing 100 servers** — the bot freezes at #100 otherwise
       (HANDOFF §12). Historically ~5-day review. _Can't be started before

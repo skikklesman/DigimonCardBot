@@ -291,14 +291,15 @@ Chunks 4.1–4.3 are independent — parallelizable.
       supplies the missing spec.)_ Whatever the old bot's `/page` did —
       **confirm with the community what this command actually does before
       building** (open decision, HANDOFF §14).
-- [ ] **4.4 — Command-set parity review.** Compare against the old bot with
-      community input; finalize names/options (HANDOFF §14). _Community
-      input collected so far (soak testing 2026-07-07, DECISIONS.md):
-      side-by-side card comparison (e.g. `/compare card1 card2` — the
-      `/alt` multi-embed machinery plus Discord's shared-`url` trick makes
-      this cheap); a discoverability gap around `/keyword` (tester didn't
-      know effect definitions existed — consider `/help` or richer command
-      descriptions)._
+- [x] **4.4 — Command-set parity review.** _(Complete 2026-07-10, owner call:
+      the current five commands — `/card` (with alt-art viewing folded in,
+      4.12), `/keyword`, `/set`, `/release`, `/banlist` — match what the old
+      bot's users rely on; names/options frozen ahead of global launch. The two
+      soak-week community-input items are **closed as not needed for parity**
+      (Will Not Do unless post-launch feedback resurfaces them, like `/page`):
+      a `/compare` side-by-side command, and the `/keyword` discoverability gap.
+      DECISIONS.md 2026-07-10.)_ Compare against the old bot with community
+      input; finalize names/options (HANDOFF §14).
 - [x] **4.5 — Hardening pass.** _(Landed 2026-07-09. Two halves: input
       fuzzing + error visibility. Finding: the router was already total, so
       the gap was the worker entry — a throw in verify/buildRegistry/
@@ -556,7 +557,11 @@ Chunks 4.1–4.3 are independent — parallelizable.
       nav buttons + a signed Prev/Next click → the neighbor printing.
 
 **✅ Gate D criteria:** full command set live in the test guild; fuzz findings
-fixed. **Reached:** `pending`
+fixed. **Reached:** `pending` — all Phase 4 chunks are complete (4.4 parity call
+2026-07-10; 4.5 fuzz findings fixed); the only outstanding step is the **4.12
+`npm run register`** (owner) so the folded `/card` set is live in the soak
+guild. Gate D is reached the moment that runs (owner call 2026-07-10). Date it
+here when done.
 
 ---
 

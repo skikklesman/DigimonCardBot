@@ -10,6 +10,30 @@
 
 ---
 
+## 2026-07-10 — Command-set parity call: five commands, frozen (chunk 4.4, closes Phase 4)
+
+- **Decision (owner).** The command set is at parity with the old bot and is
+  **frozen** ahead of global launch: `/card` (with alt-art viewing folded in via
+  the `alt` option + Prev/Next, chunk 4.12), `/keyword`, `/set`, `/release`,
+  `/banlist`. No renames or option changes pending — which matters because those
+  are free now (guild-only) and breaking after global registration.
+- **The two soak-week community-input items are closed as _not needed for
+  parity_** (Will Not Do unless post-launch feedback resurfaces them, the same
+  bar that closed `/page`):
+  - **`/compare card1 card2`** (side-by-side) — a nice-to-have, not something
+    the old bot did or that users asked for as a gap. Cheap to build later (the
+    printing-pager + shared-`url` machinery is in place), so deferring costs
+    nothing.
+  - **`/keyword` discoverability** (a tester didn't know effect definitions
+    existed) — real but minor; not a missing command. If it resurfaces, the fix
+    is richer command descriptions or a `/help`, both post-launch polish.
+- **Revisit if:** post-launch community feedback specifically asks for
+  side-by-side comparison or reports the glossary is undiscoverable — either
+  reopens as a Phase 5+ enhancement, not a parity gap.
+- **Gate D (Feature Complete)** is thereby met on content; it's dated the moment
+  the outstanding 4.12 `npm run register` puts the folded `/card` set live in the
+  soak guild (owner call — see ROADMAP Gate D note).
+
 ## 2026-07-09 — Fold `/alt` into `/card`, retire the `/alt` command (chunk 4.12)
 
 - **Problem.** `/alt`'s gallery (`altGalleryResponse`) posted one embed **per

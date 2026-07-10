@@ -134,7 +134,9 @@
       shows an **ephemeral** image only you see (the public message shouldn't
       change); and focusing the **`alt`** option after picking a card
       autocompletes that card's printings. Confirm `/alt` is **gone** from the
-      command list.
+      command list. **This is the last step before Gate D (Feature Complete)** —
+      once the folded set is live in the guild, Gate D is reached (date it in
+      ROADMAP; 4.4 parity was called complete 2026-07-10).
 - [x] **After the 4.7 deploy — `npm run register`, then spot-check
       `/banlist`** **Done 7/8 by Owner** (once): the new command needs one registration run to
       appear in the soak guilds. Expect three sections — **Banned** (3:

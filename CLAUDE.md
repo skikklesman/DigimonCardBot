@@ -17,7 +17,7 @@ minimal maintenance.
   verification (human action, ~5-day review) must be submitted before the bot
   reaches 100 servers.
 
-### Live deployment (current through chunk 4.9, 2026-07-07)
+### Live deployment (current through chunk 4.12 + Phase 4 complete, 2026-07-10)
 
 - **Worker is deployed and live** (production) at
   `https://digimon-tcg-bot.rstewart555.workers.dev`; the interactions endpoint
@@ -67,11 +67,14 @@ minimal maintenance.
   `card:printing:<id>:<index>`). `altGalleryResponse` + `commands/alt.ts`
   removed. **Needs `npm run register`** — `/card` gained an option and
   `/alt` was removed (OWNER-TODO).
-  4.3 (`/page`) closed as Will Not Do; **4.4 (command-set parity review) is
-  the only remaining Phase 4 chunk, and it needs community input — nothing
-  else is buildable solo before Gate D** (4.12 also trimmed 4.4's surface,
-  6→5 commands). The owner is an **official Digimon TCG judge**: primary
-  source for all rules/keyword content (see OWNER-TODO's glossary-review item).
+  4.3 (`/page`) closed as Will Not Do. **Chunk 4.4 (parity review) complete
+  2026-07-10 (owner call): the five commands are frozen at parity; the
+  `/compare` and `/keyword`-discoverability items closed as not-needed
+  (DECISIONS 2026-07-10). All Phase 4 chunks are now done — Gate D is
+  reached the moment the outstanding 4.12 `npm run register` puts the folded
+  `/card` set live in the soak guild.** Next is Phase 5 (launch). The owner is
+  an **official Digimon TCG judge**: primary source for all rules/keyword
+  content (see OWNER-TODO's glossary-review item).
 - **Cron is LIVE**: `0 6 * * 2` — which on Cloudflare means **Mondays**
   06:00 UTC (their cron numbers weekdays from 1 = Sunday; diagnosed and
   deliberately kept 2026-07-07, DECISIONS — spell days by NAME in any

@@ -172,3 +172,39 @@ describe("fuzz — hostile option values reach the handlers safely", () => {
     expectChoiceArray(await route(altAutocomplete(42, 42), registry));
   });
 });
+
+// MALFORMED_COMPONENTS pins fixed malformed shapes; this drives the hostile
+// STRING corpus through each attacker-controlled custom_id segment — the
+// effect id, the pager card id, and the pager index all arrive verbatim from
+// whatever client sent the click, not from anything the bot rendered.
+describe("fuzz — hostile strings inside component custom_id segments", () => {
+  const component = (custom_id: string) => ({ type: 3, data: { custom_id } });
+
+  it.each(HOSTILE_STRINGS.map((s, i) => [i, s] as const))(
+    "effect button with hostile card id #%i resolves to a valid response",
+    async (_i, s) => {
+      expectValidResponse(await route(component(`card:effect:${s}`), registry));
+    },
+  );
+
+  it.each(HOSTILE_STRINGS.map((s, i) => [i, s] as const))(
+    "printing pager with hostile card id #%i resolves to a valid response",
+    async (_i, s) => {
+      expectValidResponse(await route(component(`card:printing:${s}:1`), registry));
+    },
+  );
+
+  it.each(HOSTILE_STRINGS.map((s, i) => [i, s] as const))(
+    "printing pager with hostile index segment #%i resolves to a valid response",
+    async (_i, s) => {
+      expectValidResponse(await route(component(`card:printing:BT1-001:${s}`), registry));
+    },
+  );
+
+  it.each(HOSTILE_STRINGS.map((s, i) => [i, s] as const))(
+    "printing pager hostile in BOTH segments #%i resolves to a valid response",
+    async (_i, s) => {
+      expectValidResponse(await route(component(`card:printing:${s}:${s}`), registry));
+    },
+  );
+});

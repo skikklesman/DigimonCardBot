@@ -64,6 +64,12 @@ Target: all pure logic. These are the bulk of the suite and must stay fast
   a valid response, never throws), and the `normalizeSearchName`
   **index-range invariant** (output stays in `[a-z0-9 space]`, all below
   `{`, so the repo's range query can't be de-indexed by hostile input).
+  The router pass drives the real `buildRegistry` (every wired surface is
+  fuzzed automatically) and, since the 2026-07-10 refresh, also pushes the
+  hostile corpus through each **component custom_id segment** — the effect
+  card id and the pager's card-id/index segments arrive verbatim from the
+  client; `Number()` quirks (`Number("") === 0`, whitespace, exponent/hex
+  forms) are pinned in the corpus.
 - **Request-path error alerting** (chunk 4.5) — the rate-limiter dedup window
   and `reportRequestError`'s best-effort delivery (`error-alert.test.ts`,
   fake fetch); the router's `onError` reporter is called with the right

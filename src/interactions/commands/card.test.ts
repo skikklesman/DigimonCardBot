@@ -139,15 +139,13 @@ describe("/card choice-restriction line (chunk 4.6.1)", () => {
 
   it("degrades a partner the repo can't find to its bare id", async () => {
     // EX2-007's partner EX7-064 isn't in this fixture — the line renders
-    // with the unresolved id rather than failing or lying.
+    // with the unresolved id rather than failing or lying. listPrintings
+    // resolves the card itself; findPrinting (partner lookup) returns null.
+    const mother = card("EX2-007", "Mother D-Reaper", "0", { restriction: "Choice Restriction" });
     const withUnknownPartner = createCardCommand({
       ...repo,
-      findPrinting: (id) =>
-        Promise.resolve(
-          id === "EX2-007"
-            ? card("EX2-007", "Mother D-Reaper", "0", { restriction: "Choice Restriction" })
-            : null,
-        ),
+      listPrintings: (id) => Promise.resolve(id === "EX2-007" ? [mother] : []),
+      findPrinting: () => Promise.resolve(null),
     });
     const response = await withUnknownPartner({
       type: 2,
@@ -342,5 +340,56 @@ describe("/card alt option (chunk 4.12)", () => {
     const response = await invokeAlt("EX3-035|0", "EX3-035|P1");
     expect(embedTitle(response)).toBe("Goldramon — EX3-035 (P1)");
     expect((response as unknown as { data: { content?: string } }).data.content).toBeUndefined();
+  });
+});
+
+describe("/card D1 query budget (2026-07-10 timeout regression)", () => {
+  // The /card critical path must issue exactly ONE D1 read on the common
+  // token/id path. Chunk 4.12 briefly made it two (resolve the row, then a
+  // separate listPrintings for the Prev/Next nav) — two sequential round-trips
+  // to production D1 pushed /card past Discord's 3s limit and it timed out.
+  // Counting repo calls proves the single-read profile deterministically.
+  function countingRepo() {
+    const calls: string[] = [];
+    const family = [card("BT14-018", "Goldramon"), card("BT14-018", "Goldramon", "P1")];
+    const repo = {
+      findPrinting: (id: string, v = "0") => {
+        calls.push("findPrinting");
+        return Promise.resolve(family.find((c) => c.cardId === id && c.variant === v) ?? null);
+      },
+      findByValue: (val: string) => {
+        calls.push("findByValue");
+        const [id, v] = val.split("|");
+        return Promise.resolve(family.find((c) => c.cardId === id && c.variant === v) ?? null);
+      },
+      searchByName: () => {
+        calls.push("searchByName");
+        return Promise.resolve([family[0]!]);
+      },
+      listPrintings: (id: string) => {
+        calls.push("listPrintings");
+        return Promise.resolve(id === "BT14-018" ? family : []);
+      },
+      listRestricted: () => Promise.resolve([]),
+      countSetCards: () => Promise.resolve({ cards: 0, printings: 0 }),
+    } as unknown as CardRepo;
+    return { repo, calls };
+  }
+  const run = (repo: CardRepo, value: string) =>
+    createCardCommand(repo)({
+      type: 2,
+      data: { name: "card", options: [{ name: "card-name", type: 3, value }] },
+    } as never);
+
+  it("resolves a picked token in a SINGLE D1 round-trip (nav reuses the family)", async () => {
+    const { repo, calls } = countingRepo();
+    await run(repo, "BT14-018|P1");
+    expect(calls).toEqual(["listPrintings"]);
+  });
+
+  it("resolves a bare card id in a single D1 round-trip", async () => {
+    const { repo, calls } = countingRepo();
+    await run(repo, "BT14-018");
+    expect(calls).toEqual(["listPrintings"]);
   });
 });

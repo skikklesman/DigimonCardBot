@@ -10,6 +10,37 @@
 
 ---
 
+## 2026-07-10 — `/card` timeout regression: one D1 read on the critical path (4.12 hotfix)
+
+- **Symptom (owner, in the soak guild):** `/card` intermittently returned
+  Discord's "didn't respond in time" — some cards fine, others not, no obvious
+  pattern.
+- **Ruled out (measured against the live source):** the alt-art count. The
+  failing cards (BT14-018 Goldramon, BT24-065 Diaboromon X Antibody) have **2**
+  printings; a working one (EX10-010) has **3**; the largest family in the whole
+  set is 10. Not a data-volume problem.
+- **Root cause:** chunk 4.12 added a **second** D1 read to every `/card` hit —
+  it resolved the row (`findByValue`/`findPrinting`), then fetched the family
+  again (`listPrintings`) for the Prev/Next nav. Two **sequential** round-trips.
+  Under production D1 latency, two waves flirt with Discord's hard 3-second
+  deadline, so `/card` flaked on slower invocations (hence "some work, some
+  don't" — it's variance, not specific cards). Before 4.12, `/card` did one read
+  and never timed out. This is the review's **finding #6** (the redundant
+  double-read), which was deferred — deferring it caused the outage.
+- **Fix:** `resolveCardFamily` fetches the printing family in **one**
+  `listPrintings` and derives both the shown printing and the nav from it —
+  restoring the pre-4.12 single-round-trip profile on the common token/id path.
+  (A free-text name single-hit still needs two — search, then family — the least
+  common path.) Guarded by a query-budget test that asserts the token/id path
+  issues exactly one D1 read.
+- **Evidence:** a wall-clock benchmark of the real handler with injected
+  per-query latency — BEFORE = 2 round-trips (over 3s once per-query latency
+  reaches ~1500ms); AFTER = 1 round-trip (under budget even at 2000ms/query).
+- **Lesson:** an extra sequential D1 round-trip on a synchronous
+  (3-second-capped) path is not "in budget" just because each query is indexed
+  — latency, not row count, is the ceiling. Count round-trips on the request
+  path, not just rows.
+
 ## 2026-07-10 — Command-set parity call: five commands, frozen (chunk 4.4, closes Phase 4)
 
 - **Decision (owner).** The command set is at parity with the old bot and is

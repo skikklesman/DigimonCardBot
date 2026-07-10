@@ -25,7 +25,7 @@ import {
   notFoundResponse,
   type PrintingNav,
 } from "../embeds.ts";
-import { resolveCardValue, type CardResolution } from "./resolve.ts";
+import { resolveCardFamily, type CardFamilyResolution } from "./resolve.ts";
 
 export const CARD_NAME_OPTION = "card-name";
 /** Optional printing selector (chunk 4.12): its autocomplete offers the
@@ -59,14 +59,13 @@ async function relatedCardNames(
   return new Map(printings.filter((p) => p !== null).map((p) => [p.cardId, p.name]));
 }
 
-/** The shown printing's position in its card's variant-ordered family, or
- * undefined for a single-printing card (no Prev/Next). One indexed query per
- * /card — a command invocation, not the autocomplete hot path. */
-async function printingNav(repo: CardRepo, card: Card): Promise<PrintingNav | undefined> {
-  const printings = await repo.listPrintings(card.cardId);
-  if (printings.length <= 1) return undefined;
-  const index = printings.findIndex((p) => p.variant === card.variant);
-  return { index: index < 0 ? 0 : index, total: printings.length };
+/** The shown printing's position in its (already-fetched) family, or undefined
+ * for a single-printing card — no Prev/Next, and no extra query, since the
+ * resolution already returned the whole family (2026-07-10 timeout fix). */
+function printingNav(card: Card, family: Card[]): PrintingNav | undefined {
+  if (family.length <= 1) return undefined;
+  const index = family.findIndex((p) => p.variant === card.variant);
+  return { index: index < 0 ? 0 : index, total: family.length };
 }
 
 export function createCardCommand(repo: CardRepo): CommandHandler {
@@ -77,34 +76,34 @@ export function createCardCommand(repo: CardRepo): CommandHandler {
     if (nameValue === null && altValue === null) return MISSING_OPTION_RESPONSE;
 
     // An explicit alt-printing pick (a `card_id|variant` token from the alt
-    // autocomplete) wins; otherwise resolve the card-name value. An alt value
-    // that doesn't resolve — free text, or a token gone stale — falls back to
-    // the card-name card, but says so rather than dropping the pick silently
-    // (altMissed; owner call, 4.12 review #8).
-    const picked = altValue ? await repo.findByValue(altValue) : null;
-    const altMissed = altValue !== null && picked === null;
-    const resolution: CardResolution = picked
-      ? { kind: "hit", card: picked }
+    // autocomplete) wins. It's only ever a token, so gate on the `|` — never
+    // let free text typed into `alt` fall through to a name search. An alt that
+    // doesn't resolve (free text, or a token gone stale) falls back to the
+    // card-name card, but says so rather than dropping the pick (altMissed;
+    // owner call, 4.12 review #8). Each resolution fetches the printing family
+    // in ONE query, so the nav needs no second D1 round-trip — the fix for the
+    // 2026-07-10 /card-timeout regression (DECISIONS.md).
+    const altResolved =
+      altValue && altValue.includes("|") ? await resolveCardFamily(repo, altValue) : null;
+    const altHit = altResolved?.kind === "hit" ? altResolved : null;
+    const altMissed = altValue !== null && altHit === null;
+    const result: CardFamilyResolution = altHit
+      ? altHit
       : nameValue !== null
-        ? await resolveCardValue(repo, nameValue)
+        ? await resolveCardFamily(repo, nameValue)
         : { kind: "miss" };
 
     const query = nameValue ?? altValue ?? "";
-    switch (resolution.kind) {
+    switch (result.kind) {
       case "hit": {
-        // Two independent query groups — overlap them (a left-to-right await
-        // would serialize them for no reason; 4.12 review #7).
-        const [related, nav] = await Promise.all([
-          relatedCardNames(repo, resolution.card),
-          printingNav(repo, resolution.card),
-        ]);
+        const related = await relatedCardNames(repo, result.card);
         const note = altMissed
           ? "I couldn't match that printing, so here's the card itself."
           : undefined;
-        return cardResponse(resolution.card, related, nav, note);
+        return cardResponse(result.card, related, printingNav(result.card, result.family), note);
       }
       case "multi":
-        return disambiguationResponse(query, resolution.matches);
+        return disambiguationResponse(query, result.matches);
       case "miss":
         return notFoundResponse(query);
     }

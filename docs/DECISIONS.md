@@ -10,6 +10,19 @@
 
 ---
 
+## 2026-07-10 — Open-source license: MIT (resolves open decision #8)
+
+- **Decision (owner).** The repo will be released under the **MIT License**
+  when it goes public at launch. `LICENSE` file added; README + `package.json`
+  (`"license": "MIT"`) set to match.
+- **Why.** Simplest, most familiar for a community Discord bot; low friction for
+  reuse; and it matches the MIT-licensed card-data source (`TakaOtaku/
+Digimon-Card-App`, confirmed 5.1). AGPL-3.0 was the considered alternative
+  (would force hosted forks to publish their source) but the owner preferred
+  maximum community reuse over forced share-back.
+- **Note.** The copyright line uses the `skikklesman` GitHub handle; swap to a
+  legal name pre-publish if preferred.
+
 ## 2026-07-10 — Drift-fact re-verification for launch (chunk 5.1, HANDOFF §16)
 
 Re-checked the four "verify at build time" facts against current sources before
@@ -1063,10 +1076,9 @@ were fixed in place:
 
 Carried from HANDOFF §14 plus new ones raised by the roadmap. Resolved ones
 move up into the log above — so far #1 (card source), #2 (`/alt` in MVP),
-#3 (`/page`: Will Not Do), #4 (keyword source), #5 (Team owner), and
-#6 (sync cadence).
+#3 (`/page`: Will Not Do), #4 (keyword source), #5 (Team owner),
+#6 (sync cadence), #7 (command parity — 4.4 parity call 2026-07-10), and
+#8 (open-source license — **MIT**, 2026-07-10).
 
-| #   | Decision                                           | Default until decided              | Needed by |
-| --- | -------------------------------------------------- | ---------------------------------- | --------- |
-| 7   | Final command names/options parity                 | Mirror old bot                     | Chunk 4.4 |
-| 8   | Open-source license (repo goes public post-launch) | MIT unless owner prefers otherwise | Phase 5   |
+**None open.** Every decision on this list has been resolved; new ones get
+appended here as they arise.

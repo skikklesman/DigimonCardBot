@@ -1,6 +1,8 @@
 {
   "name": "digimon-tcg-bot",
   "version": "0.0.0",
+  "description": "Discord slash-command bot for Digimon TCG card lookup (Cloudflare Worker + D1, HTTP interactions).",
+  "license": "MIT",
   "private": true,
   "type": "module",
   "scripts": {

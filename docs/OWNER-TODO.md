@@ -191,6 +191,15 @@
       Cloudflare Workers/D1 analytics during 5.5; if you near the cap, flip on
       **Workers Paid ($5/mo)** — no code change, still cheap. Not a blocker for
       launch, just don't get surprised by a mid-rollout throttle.
+- [ ] **Rehearse the rollback playbook once** (5.4 release checklist — the one
+      open item as of 2026-07-10; needs your Cloudflare auth). Prove the two
+      paths work before launch, on production or a scratch copy: **(a) bad
+      dataset** — flip `active_version` back one with a single
+      `wrangler d1 execute` write, confirm `/card` + `/health` still serve, then
+      flip it forward again (the previous version is retained by design);
+      **(b) bad deploy** — `wrangler rollback` (or redeploy the previous commit
+      from CI), confirm the endpoint still answers. The request path is
+      stateless, so both are safe to rehearse. Full playbook: TESTING.md §7.
 - [ ] **Community announcement plan**: where/when to tell the old bot's
       communities, invite link distribution.
 

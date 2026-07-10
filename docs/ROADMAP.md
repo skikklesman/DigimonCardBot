@@ -598,9 +598,15 @@ Sequencing here is dictated by Discord's rules — HUMAN actions included
       are only ~25 servers apart. Prep the checklist answers ahead of time
       ([DISCORD-VERIFICATION.md](DISCORD-VERIFICATION.md)) so it's
       submit-on-sight._
-- [ ] **5.4 — Launch checklist.** Run the release checklist in
-      [TESTING.md](TESTING.md); confirm alerting, rollback procedure rehearsed,
-      soak-period learnings addressed.
+- [ ] **5.4 — Launch checklist.** _(First pass 2026-07-10: 5 of 6 release-checklist
+      items green — CI (checks + deploy+smoke) success; `/health` fresh (v6,
+      8,535 cards, not stale); alerting forced-failure drill within 30 days
+      (Phase 3 + Gate C); Gate B effectively re-validated by the post-fix `/card`
+      spot-check; soak learnings (cron dialect, blank image 4.11, 2-printing
+      timeout 84fc68f) all addressed. **Open:** a rollback-playbook rehearsal —
+      OWNER-TODO. Re-run this whole checklist immediately before Gate E.)_ Run the
+      release checklist in [TESTING.md](TESTING.md); confirm alerting, rollback
+      procedure rehearsed, soak-period learnings addressed.
 - [ ] **5.5 — Rollout.** Publish invite link to the community; monitor closely
       for the first week (alerts + Worker analytics + D1 metrics).
       **Throttle the invite pace across the 75→100 window** so verification

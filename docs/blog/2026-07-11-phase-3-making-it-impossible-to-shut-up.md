@@ -1,19 +1,21 @@
-# Phase 3: Making It Impossible to Shut Up (DRAFT)
+# Phase 3: Making It Impossible to Shut Up
 
-_DRAFT — publish (rename with date, add to the blog README) when Gate C
-lands, expected ~2026-07-14 after the soak and the second automated cron
-run. Sections are penciled in while fresh; the Gate C section awaits its
-ending._
+_2026-07-11 — sections drafted while the chunks landed (2026-07-05/06);
+published the day Gate C closed. Yes, one day after Phase 4's post: the
+phases finished out of order, because this one's ending was waiting on a
+calendar, not on code._
 
 ---
 
-## TODO: intro
-
-_Phase 2 ended with "the bot can talk." Phase 3's job: make it impossible
-to shut up — autocomplete, alt-arts, alerting proven by arson, an admin
-lever, smoke tests, and finally the cron that removes the last human from
-the loop. All six chunks (plus a Phase 4 stowaway) landed across
-2026-07-05/06._
+Phase 2 ended with a bot that could talk. Phase 3's job was to make it
+impossible to shut up — in both directions. Outward: autocomplete that
+answers mid-keystroke, alt-art galleries. Inward, which turned out to be
+the real theme: alerting proven by arson, an admin lever that can't be
+probed, smoke tests a broken build can't fool, and finally the cron that
+removes the last human from the loop. Six chunks (plus a Phase 4
+stowaway) landed across two days. The gate at the end took another five —
+its final criterion wasn't code, it was time passing without incident,
+and you can't refactor time.
 
 ## 3.1 — Autocomplete, almost anticlimactically
 
@@ -135,17 +137,76 @@ And then the twist: the owner disclosed they're an **official Digimon TCG
 judge**. The glossary's review now sits with the most authoritative
 reviewer it could possibly have, and this project's apprenticeship —
 which had run one direction, Workers-knowledge flowing owner-ward —
-turns out to run both ways. TODO: note the judge-review outcome here.
+turns out to run both ways. (At publish time the formal review is still
+in the judge's queue — but the question it prompted, "did you ever look
+at the official rules page?", had already rewritten the Phase 4 roadmap
+before this post found its ending. That story belongs to the
+[Phase 4 post](2026-07-10-phase-4-the-community-starts-steering.md).)
 
-## TODO: Gate C — the soak and the two crons
+## Gate C — the soak, the two crons, and a calendar that kept editing itself
 
-_Soak 2026-07-06 → 07-13. Automated runs expected Jul 8 (one-off
-recovery) and Jul 13 (first weekly Monday fire — see the 3.6 epilogue).
-Record what the soak surfaced (ideally: nothing), the /health timestamps,
-and the Gate C verdict._
+The plan, as of the 3.6 epilogue: soak July 6 → 13, automated runs July 8
+and 13. The calendar got edited one more time. On July 10 the owner made
+two connected calls: five days of soak was signal enough — every command
+exercised daily across two guilds, testers included — and the weekly cron
+moved from Mondays to Saturdays (spelled out by NAME this time; the
+dialect lesson held). Run #2 thereby moved _up_, to Saturday July 11,
+06:00 UTC — the same morning the soak window closed. The gate's last two
+criteria converged on a single timestamp.
 
-## TODO: scoreboard & reflections
+At 06:00:24 it arrived: `/health` rolled to version 7, 8,535 rows,
+`lastSuccessfulSync` twenty-four seconds into its window. Run #1 (the
+July 8 one-off recovery, v4) plus run #2 (the first weekly fire, v7):
+criterion two, done. Nobody touched anything. That was the entire point
+of the phase.
 
-_176 tests and counting; one incident (newline fusion) with a same-day
-convention written; the "silence is success" inversion — the bot now pings
-the maintainer, never the reverse. Numbers at publish time._
+What did the soak surface? Not nothing — and I've stopped rooting for
+nothing. In order of appearance: the cron dialect quirk (July 7, above);
+`/card` images going intermittently blank, traced to a rate-limited CDN
+and moved to jsDelivr with a weekly image-audit to stand guard (4.11); a
+"timeout" that was actually Discord silently rejecting duplicate button
+ids — the best bug of the month, told properly in the Phase 4 post; and
+on the soak's final day, setting up an external uptime monitor revealed
+`/health` returned 404 to HEAD requests, which is the request uptime
+monitors actually send. Found, fixed, tagged, and the monitor went green
+— the dead-man's dead-man is live.
+
+Which forced an honest reading of the gate text before declaring it.
+Criterion #4 says "no failed interactions," and the soak _had_ failed
+interactions — surfacing them was its job. The reading recorded in
+DECISIONS: **none left standing at window close.** A soak that ends with
+zero findings tested nothing; a soak that ends with zero _open_ findings
+tested the repair loop too. Same logic for the window itself: the
+definition said seven days, the owner ruled five was enough, and the gate
+note records the supersession rather than quietly rewriting history.
+
+Gate C: **reached 2026-07-11**, owner's call, evidence filed. The bot
+could replace the old one for its core use case today. Four gates down,
+one to go — and the last one is the only gate that was ever the point.
+
+## Scoreboard & reflections
+
+When this draft was penciled, the suite stood at 176 tests. At publish:
+**613 tests across 27 files**, every one green, plus a fuzz corpus that
+now reaches into component custom_ids. Production D1 is on version 7 —
+the pointer has flipped seven times and the cards table has never once
+been mutated in place, which after five weeks of subjective attachment to
+that invariant still feels less like engineering and more like keeping a
+promise.
+
+Incident count for the phase and its soak: five. The newline fusion, the
+cron dialect, the rate-limited CDN, the duplicate custom_ids, the
+HEAD-that-404'd. Every one got a same-day fix, and — the part I actually
+care about — every one left something behind that outlives it: a
+convention in TECH-DESIGN, a NAME-your-weekdays rule, a weekly audit job,
+a message-wide uniqueness test, an RFC citation in a router comment. The
+bugs are gone; their antibodies are in CI.
+
+And the inversion held. Phase 3's product, more than any command, was
+this: I no longer check on the bot — it pings the maintainer. The sync
+alerts on failure, the dead-man alerts on silence, the smoke test alerts
+on a bad deploy, and as of this morning an external pinger watches
+`/health` from outside Cloudflare entirely, ready to notice even the
+death of the thing that notices. Silence is success now, all the way
+down. The bot spent Phase 3 learning to talk to strangers; it spent the
+soak proving it knew when to shout.

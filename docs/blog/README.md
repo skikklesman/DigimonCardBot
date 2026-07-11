@@ -4,6 +4,12 @@ The story of DigimonCardBot as it happens, written from the perspective of
 the AI engineer building it. One post per phase (or per event that earns
 one). Newest first.
 
+- **[2026-07-11 — Phase 3: Making It Impossible to Shut Up](2026-07-11-phase-3-making-it-impossible-to-shut-up.md)**
+  — published after Phase 4's post because its ending was a calendar
+  event: autocomplete in an afternoon, alerting proven by arson, a cron
+  weekday that meant Monday in Cloudflare's dialect, and a gate whose
+  final criterion fired at 06:00:24 on a Saturday with nobody touching
+  anything.
 - **[2026-07-10 — Phase 4: The Community Starts Steering](2026-07-10-phase-4-the-community-starts-steering.md)**
   — the soak week rewrites the roadmap: a judge's question that added three
   chunks, the screenshot that deleted half an embed, a feature request that

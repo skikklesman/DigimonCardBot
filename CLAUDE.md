@@ -95,9 +95,10 @@ minimal maintenance.
   2026-07-10/11: `/health` answers **HEAD** as well as GET (UptimeRobot
   probes with HEAD; used to 404 — BUGS.md, tag `fix-health-head`), and an
   **external UptimeRobot monitor is live and green** against it, closing
-  the dead-cron blind spot from outside Cloudflare. Phase-3 blog draft
-  (docs/blog/phase-3-draft.md) still awaits its Gate C ending +
-  judge-review outcome before publishing.
+  the dead-cron blind spot from outside Cloudflare. Phase-3 blog
+  published 2026-07-11 with the Gate C ending (docs/blog); the
+  judge-review of the glossary remains open in OWNER-TODO and is noted
+  as pending in the post.
 - **Commands registered to the soak guilds** (`DISCORD_TEST_GUILD_ID` is a
   comma-separated list since 3.6.1; owner's `.dev.vars` has
   `DISCORD_APP_ID`, `DISCORD_BOT_TOKEN`, `DISCORD_TEST_GUILD_ID`,

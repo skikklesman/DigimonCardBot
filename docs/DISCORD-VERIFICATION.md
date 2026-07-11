@@ -1,7 +1,8 @@
 # Discord App Verification — prep sheet
 
 > Draft answers for the Developer Portal **App Verification** form, so
-> submission (roadmap chunk 5.3) is copy-paste-and-go the moment the tab
+> submission (roadmap chunk 6.1, post-launch — formerly 5.3) is
+> copy-paste-and-go the moment the tab
 > unlocks. **The tab only appears at >75 servers**; 100 is the hard freeze
 > (DECISIONS.md 2026-07-07, re-confirmed 5.1 on 2026-07-10). Owner: review and
 > tweak the wording once, then leave it here until you cross 75.
@@ -72,7 +73,7 @@
 
 ---
 
-## Required before submitting (these GATE 5.3 — get them ready pre-75)
+## Required before submitting (these GATE 6.1 — get them ready pre-75)
 
 The verification form itself asks for a **Privacy Policy URL** and a **Terms of
 Service URL** on the app profile; without them the submission can't go through.
@@ -95,7 +96,7 @@ before crossing 75 servers, not after.
       public around launch; the Privacy Policy / ToS can live in it, which folds
       two tasks into one.
 
-> When the ToS/Privacy pages exist, drop their URLs here so everything for 5.3
+> When the ToS/Privacy pages exist, drop their URLs here so everything for 6.1
 > lives in one place.
 
 ## When the tab unlocks (>75 servers) — submission checklist

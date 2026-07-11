@@ -10,6 +10,26 @@
 
 ---
 
+## 2026-07-11 — Verification moves post-launch; Gate E redefined; Post-Launch section created
+
+- **Decision (owner).** Chunk 5.3 (Discord bot verification) moves out of
+  Phase 5 into a new **Post-Launch (Phase 6)** roadmap section as **6.1**,
+  and "verified" is removed from Gate E's criteria (now: global, invited,
+  first-week monitoring clean).
+- **Why.** Verification is growth-gated, not launch-gated: the App
+  Verification tab only appears at >75 servers (DECISIONS 2026-07-07), and
+  75 servers can only exist after the 5.5 rollout publishes the invite —
+  so 5.3 could never precede Gate E and was mis-filed as a launch task.
+  The new section also gives the growth/steady-state work a home: 6.2
+  capacity watch → Workers Paid call, 6.3 open-source flip, 6.4 glossary
+  judge review + §16 alignment, 6.5 steady-state ops rhythm.
+- **Unchanged.** The **100-server freeze is still the hard constraint** —
+  5.5 keeps the invite-pace throttle across the 75→100 window, and the
+  prep sheet (DISCORD-VERIFICATION.md) stays submit-on-sight. Moving the
+  chunk changes its filing, not its urgency.
+- **Revisit if:** Discord changes the 75-server tab threshold or the
+  100-server cap (re-check at 6.1 time — both were re-verified 5.1).
+
 ## 2026-07-11 — 🚀 Gate C (MVP) declared
 
 - **Decision (owner).** Gate C is reached as of 2026-07-11, the day the soak

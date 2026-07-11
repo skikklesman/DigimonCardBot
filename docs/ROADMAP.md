@@ -14,13 +14,13 @@
 
 ## The five gates
 
-| Gate  | Name                    | Meaning                                                                                        | Reached at end of |
-| ----- | ----------------------- | ---------------------------------------------------------------------------------------------- | ----------------- |
-| **A** | 🏗️ **Scaffolding Up**   | First runnable: Worker deployed, signature verification live, Discord accepts the endpoint URL | Phase 0           |
-| **B** | 🎮 **First Playable**   | A human in the test guild types `/card` and gets a card embed back                             | Phase 2           |
-| **C** | 🚀 **MVP**              | Could replace the old bot for its core use case today (definition below)                       | Phase 3           |
-| **D** | ✅ **Feature Complete** | Full command set matching the old bot, hardened                                                | Phase 4           |
-| **E** | 🌍 **Launched**         | Global commands, Discord-verified, rolled out                                                  | Phase 5           |
+| Gate  | Name                    | Meaning                                                                                          | Reached at end of |
+| ----- | ----------------------- | ------------------------------------------------------------------------------------------------ | ----------------- |
+| **A** | 🏗️ **Scaffolding Up**   | First runnable: Worker deployed, signature verification live, Discord accepts the endpoint URL   | Phase 0           |
+| **B** | 🎮 **First Playable**   | A human in the test guild types `/card` and gets a card embed back                               | Phase 2           |
+| **C** | 🚀 **MVP**              | Could replace the old bot for its core use case today (definition below)                         | Phase 3           |
+| **D** | ✅ **Feature Complete** | Full command set matching the old bot, hardened                                                  | Phase 4           |
+| **E** | 🌍 **Launched**         | Global commands, publicly invited, first week clean (verification follows post-launch — see 6.1) | Phase 5           |
 
 ### MVP definition (Gate C)
 
@@ -588,7 +588,8 @@ Sequencing here is dictated by Discord's rules — HUMAN actions included
       100k req/day + 10ms CPU + 50 subreq; D1 free 5M rows-read/day + 100k
       write/day (autocomplete row-reads are the ceiling to watch at ~1k servers —
       may need Workers Paid $5/mo, a monitoring item not a blocker). Discord
-      100-server verification cap UNCHANGED (still gates 5.3); the 2026
+      100-server verification cap UNCHANGED (still gates verification —
+      chunk 6.1 since the 2026-07-11 post-launch restructure); the 2026
       privileged-intents change (100 servers → 10k users) is N/A — we use no
       intents. API v10 current, pinned explicitly. Source repo healthy + MIT.)_
       Everything in [HANDOFF §16](../HANDOFF.md): free-tier limits, verification
@@ -602,14 +603,12 @@ Sequencing here is dictated by Discord's rules — HUMAN actions included
       until the bot is publicly invited (5.5). Reversible.)_ Flip the
       registration script to global (allow ~1h propagation). Keep guild
       registration for the test guild as the fast-iteration path.
-- [ ] **5.3 — Submit Discord bot verification** _(human, government ID)_
-      **before crossing 100 servers** — the bot freezes at #100 otherwise
-      (HANDOFF §12). Historically ~5-day review. _Can't be started before
-      **75 servers** — the App Verification tab only appears then (verified
-      2026-07-07, DECISIONS.md), so the earliest submit and the #100 freeze
-      are only ~25 servers apart. Prep the checklist answers ahead of time
-      ([DISCORD-VERIFICATION.md](DISCORD-VERIFICATION.md)) so it's
-      submit-on-sight._
+- **5.3 — moved to Post-Launch as 6.1** _(2026-07-11, owner call)_: Discord
+  verification is growth-gated, not launch-gated — the App Verification
+  tab only appears at **>75 servers**, which can only happen after the
+  5.5 rollout. See the Post-Launch section below; the prep sheet
+  ([DISCORD-VERIFICATION.md](DISCORD-VERIFICATION.md)) is done and
+  waiting.
 - [ ] **5.4 — Launch checklist.** _(First pass 2026-07-10: 5 of 6 release-checklist
       items green — CI (checks + deploy+smoke) success; `/health` fresh (v6,
       8,535 cards, not stale); alerting forced-failure drill within 30 days
@@ -622,11 +621,61 @@ Sequencing here is dictated by Discord's rules — HUMAN actions included
 - [ ] **5.5 — Rollout.** Publish invite link to the community; monitor closely
       for the first week (alerts + Worker analytics + D1 metrics).
       **Throttle the invite pace across the 75→100 window** so verification
-      (5.3) clears before server #100 — a fast rollout can hit the freeze
+      (6.1) clears before server #100 — a fast rollout can hit the freeze
       mid-review (DECISIONS 2026-07-07).
 
-**🌍 Gate E criteria:** verified, global, invited, first-week monitoring
-clean. **Reached:** `pending`
+**🌍 Gate E criteria:** global, invited, first-week monitoring clean.
+**Reached:** `pending`
+_(2026-07-11: "verified" removed from the criteria — verification can only
+begin at 75+ servers, which only exist after rollout, so it was never truly
+a launch-phase criterion. It's now Post-Launch chunk 6.1; the 100-server
+freeze remains the hard constraint, guarded by 5.5's throttle rule.)_
+
+---
+
+## Post-Launch (Phase 6) — after 🌍 Gate E
+
+Launch isn't the finish line; it's when the growth-gated and steady-state
+work starts. Nothing here can (or should) happen before the bot is public.
+No gate closes this section — it's the operating roadmap.
+
+- [ ] **6.1 — Submit Discord bot verification** _(human, government ID;
+      moved from 5.3, 2026-07-11)_ **before crossing 100 servers** — the bot
+      freezes at #100 otherwise (HANDOFF §12). Historically ~5-day review.
+      _Can't be started before **75 servers** — the App Verification tab
+      only appears then (verified 2026-07-07, DECISIONS.md), so the earliest
+      submit and the #100 freeze are only ~25 servers apart. The checklist
+      answers are pre-drafted ([DISCORD-VERIFICATION.md](DISCORD-VERIFICATION.md))
+      so it's submit-on-sight; the invite-pace throttle that protects the
+      window lives in 5.5._
+- [ ] **6.2 — Capacity watch → Workers Paid decision.** From the 5.1 drift
+      check: D1's free 5 M row-reads/day is the ceiling to watch
+      (autocomplete is the hungry path) as servers approach ~1,000. Watch
+      Workers/D1 analytics closely during 5.5's first week, then on a
+      monthly rhythm; if metrics near the cap, flip on **Workers Paid
+      ($5/mo)** — no code change. _Done when: traffic has stabilized and
+      the stay-free / go-paid call is made and recorded._
+- [ ] **6.3 — Open-source the repo.** The standing intent (CLAUDE.md;
+      license landed as MIT 2026-07-10 with the public README): flip the
+      repo public once the bot is up and running stably. Pre-flip: audit
+      git history for anything that shouldn't publish (secrets never lived
+      in the repo, but verify), and decide the copyright line (currently
+      the `skikklesman` handle — DECISIONS 2026-07-10 note).
+- [ ] **6.4 — Glossary: judge review + Comprehensive Rules §16 alignment.**
+      The owner (official Digimon TCG judge) reviews the `/keyword`
+      definitions (OWNER-TODO item); align them against the official
+      ruleset's §16 keyword reference, and revisit the four 2026 mechanics
+      deliberately omitted in 4.1. Update the Phase 3 blog post's pending
+      judge-review line when done.
+- [ ] **6.5 — Steady-state operations rhythm.** The watch items that
+      outlive launch: the weekly trio (Saturday sync cron, source-contract
+      check, image audit) stays green — pre-release image gaps like BT26's
+      404s self-resolve upstream and only matter if the audit breaches its
+      5% ceiling; the alert channel stays the single signal (silence is
+      success); and the old bot's shutdown (**2026-07-31**) likely brings a
+      migration wave — watch its timing against the 75→100 verification
+      window. _Done when: the first post-launch month closes with the
+      rhythm documented and no manual intervention needed._
 
 ---
 

@@ -176,7 +176,8 @@
       fast rollout can hit 100 during the ~5-day review and freeze). Prep
       the two items below now so submission is instant at 75.
 - [x] **Pre-draft the verification checklist answers** **Done 2026-07-10**
-      (chunk 5.3 pre-draft): [DISCORD-VERIFICATION.md](DISCORD-VERIFICATION.md)
+      (verification pre-draft — chunk 6.1, formerly 5.3):
+      [DISCORD-VERIFICATION.md](DISCORD-VERIFICATION.md)
       refreshed for the current command set + the 5.1 drift check, with a
       step-by-step submission checklist. **Still yours:** review/tweak the
       wording once. The real long-pole (Privacy/ToS) is its own item below.

@@ -71,7 +71,10 @@ function json(payload: unknown, init?: ResponseInit): Response {
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
-    if (request.method === "GET" && url.pathname === "/health") {
+    // HEAD is accepted alongside GET (RFC 9110 §9.3.2) because uptime pingers
+    // (UptimeRobot's plain HTTP monitor) probe with HEAD; the runtime strips
+    // the body, so the same handler serves both (BUGS.md fix, 2026-07-10).
+    if ((request.method === "GET" || request.method === "HEAD") && url.pathname === "/health") {
       return handleHealth(env.DB);
     }
     if (request.method === "POST" && url.pathname === "/admin/resync") {

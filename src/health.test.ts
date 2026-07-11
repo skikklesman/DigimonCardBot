@@ -70,7 +70,13 @@ describe("GET /health", () => {
     expect(Object.keys(body).sort()).toEqual(["activeVersion", "cardCount", "lastSuccessfulSync"]);
   });
 
-  it("is GET-only (POST /health falls through to 404)", async () => {
+  it("answers HEAD like GET — same status, empty body (uptime pingers probe with HEAD)", async () => {
+    const res = await SELF.fetch(URL_, { method: "HEAD" });
+    expect(res.status).toBe(200);
+    await expect(res.text()).resolves.toBe("");
+  });
+
+  it("is read-only (POST /health falls through to 404)", async () => {
     const res = await SELF.fetch(URL_, { method: "POST" });
     expect(res.status).toBe(404);
   });
@@ -101,6 +107,12 @@ describe("GET /health", () => {
         "lastSuccessfulSync",
       ]);
       expect(body.lastSuccessfulSync).toBe("2020-01-01T00:00:00.000Z");
+    });
+
+    it("carries the verdict on HEAD too — 503 once stale (the pinger's whole signal)", async () => {
+      await setSyncTime("2020-01-01T00:00:00.000Z");
+      const res = await SELF.fetch(URL_, { method: "HEAD" });
+      expect(res.status).toBe(503);
     });
 
     it("answers 503 on an unparseable sync timestamp (health unknown ≠ healthy)", async () => {

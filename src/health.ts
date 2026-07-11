@@ -1,5 +1,5 @@
-// GET /health (TESTING.md §4): the read-only vitals the post-deploy smoke
-// script and any uptime pinger assert against. Public-safe by design — the
+// GET|HEAD /health (TESTING.md §4): the read-only vitals the post-deploy
+// smoke script and any uptime pinger assert against. Public-safe by design — the
 // three fields say "the Worker runs, D1 answers, and the data is this
 // fresh" and nothing else. No secrets, no internals.
 //

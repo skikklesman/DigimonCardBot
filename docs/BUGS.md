@@ -34,6 +34,15 @@ the history).
 - **Revisit when:** touching the router's dispatch again, or any hardening/
   fuzz pass (chunk 4.5 is the natural home).
 
+<!-- Fixed 2026-07-10 (tag `fix-health-head`): "HEAD /health returns 404" —
+reported 2026-07-10 while setting up the external uptime ping (OWNER-TODO):
+UptimeRobot's plain HTTP monitor probes with HEAD, but the router matched
+`request.method === "GET"` literally, so HEAD fell through to the catch-all
+404 (verified against production) and the monitor would have declared the bot
+permanently down. Fix: /health accepts HEAD alongside GET (RFC 9110 §9.3.2 —
+the runtime strips the body, same handler); tests cover HEAD 200/503 parity
+and the empty body. -->
+
 <!-- Fixed 2026-07-08 (chunk 4.10 branch): "Dual cards missing the Option side
 in effect" — composeEffect now folds both optionCardColourRequirement (labeled
 [Option Requirement]) and optionCardEffect (labeled [Option]). Live data

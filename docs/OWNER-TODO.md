@@ -72,7 +72,10 @@
       cron-dialect quirk — see the soak section) is exactly this failure
       class happening for real: a cron that silently isn't scheduled when
       you think it is, and only a staleness probe notices — do this
-      before Gate C, not before launch._
+      before Gate C, not before launch._ _2026-07-10: `/health` now
+      answers `HEAD` too (UptimeRobot's plain HTTP monitor probes with
+      HEAD; it used to 404 — BUGS.md, tag `fix-health-head`), so the
+      default monitor type works as-is._
 - [x] **Optional — alert webhook in GitHub:** **Done 7/9 by Owner** add `SYNC_ALERT_WEBHOOK` as a
       repo Actions secret (same URL as the Worker secret) so the Monday
       source-contract job pings your alert channel on failure instead of

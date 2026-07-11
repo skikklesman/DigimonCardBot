@@ -10,6 +10,26 @@
 
 ---
 
+## 2026-07-11 — 🚀 Gate C (MVP) declared
+
+- **Decision (owner).** Gate C is reached as of 2026-07-11, the day the soak
+  window closed and the first weekly Saturday cron fired.
+- **Evidence.** Two automated production syncs (Jul 8 one-off recovery → v4;
+  Jul 11 weekly → v7, `lastSuccessfulSync` 2026-07-11T06:00:24Z, verified via
+  `/health`); soak 2026-07-06 → 07-11 with all surfaced findings fixed
+  in-window (cron dialect, blank images/4.11, 2-printing custom_id dup) and
+  the alert channel otherwise silent; alerting proven by drills; CI green
+  throughout. Full per-bullet accounting in ROADMAP's Gate C note.
+- **Interpretation calls made while closing:** (a) the MVP definition's
+  "7 consecutive days" soak is superseded by the owner's 5-day-soak decision
+  (2026-07-10, below) — the definition text was left intact, the gate note
+  records the supersession; (b) criterion #4's "no failed interactions" is
+  read as **none left standing at window close**, not none ever observed —
+  a soak that surfaces bugs which get fixed in-window (the 2-printing
+  "did not respond", Jul 10) is the soak working, not failing.
+- **Revisit if:** never — gates don't reopen. But the same two readings
+  apply to any future soak (e.g. before Gate E).
+
 ## 2026-07-10 — Cron job moved Mondays->Saturdays
 
 - **Decision (owner).** The cron job will run on Saturdays at 6:00 UTC, not Mondays

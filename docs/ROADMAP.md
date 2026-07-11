@@ -259,7 +259,19 @@ the test guild. **Reached:** 2026-07-05
       server count officially starts mattering now.
 
 **🚀 Gate C criteria:** all five MVP-definition bullets above are true.
-**Reached:** `pending`
+**Reached:** ✅ **2026-07-11** (owner call). Evidence, per bullet: ① `/card`
+proven since Gate B and exercised all soak week (incl. the 4.12 alt fold);
+② two automated production syncs — Jul 8 one-off recovery (v4) + Jul 11
+first weekly Saturday fire (v7, `lastSuccessfulSync` 2026-07-11T06:00:24Z);
+③ alerting proven by the Phase 3 forced-failure + stale-sync drills (and
+again by 4.5's request-path drill); ④ soak ran 2026-07-06 → 07-11 — a
+**5-day window by owner decision** (DECISIONS 2026-07-10, cron move),
+superseding this file's original "7 consecutive days" wording; findings it
+surfaced (cron dialect, blank images → 4.11, 2-printing custom_id dup)
+were all fixed inside the window, alert channel otherwise silent; ⑤ CI
+green throughout, post-deploy smoke included. Note: the soak did surface
+failed interactions (that was its job) — the gate reads "no failed
+interactions" as **none left standing**, not none ever seen.
 
 ---
 

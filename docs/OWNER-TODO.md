@@ -126,8 +126,10 @@
       every listed guild; ④ verify `/card`, `/alt`, `/keyword`, `/release`
       and autocomplete respond in guild 2, then check 3.6.1 off in the
       roadmap.
-- [ ] **Use the bot daily in the test guild** — a few `/card` lookups per day
-      for 7 consecutive days; variety beats volume (autocomplete picks, free
+- [x] **Use the bot daily in the test guild** **Done 7/11 by Owner** (soak
+      window closed 2026-07-11 — 5 days by owner decision, DECISIONS
+      2026-07-10, superseding the original 7) — a few `/card` lookups per day;
+      variety beats volume (autocomplete picks, free
       text, an ID, a typo). This is Gate C criterion #4. Once guild 2 is live,
       spread some of the daily use there too.
 - [x] **After the 4.12 deploy — `npm run register`, then spot-check `/card`
@@ -154,10 +156,13 @@
       reads wrong.
 - [x] **Glance at the alert channel daily** — silence is expected; anything
       that appears is soak findings.
-- [ ] **After the first two automated crons** (expected Jul 8 one-off +
+- [x] **After the first two automated crons** (expected Jul 8 one-off +
       Jul 11, the first weekly Saturday fire), confirm two ✅ automated
       syncs happened (`/health` timestamp refreshes, or the Cloudflare
-      dashboard cron log) — Gate C criterion #2.
+      dashboard cron log) — Gate C criterion #2. **Confirmed 2026-07-11:**
+      `/health` shows v7, `lastSuccessfulSync` 2026-07-11T06:00:24Z — the
+      weekly Saturday fire, on the dot; Jul 8 one-off (v4) confirmed earlier.
+      Both runs verified. Gate C declared same day.
 
 ## Launch-phase (Phase 5 — before the old bot dies 2026-07-31)
 

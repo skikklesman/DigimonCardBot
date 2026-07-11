@@ -17,7 +17,7 @@ minimal maintenance.
   verification (human action, ~5-day review) must be submitted before the bot
   reaches 100 servers.
 
-### Live deployment (current through chunk 4.12 + Phase 4 complete, 2026-07-10)
+### Live deployment (current through 🚀 Gate C reached, 2026-07-11)
 
 - **Worker is deployed and live** (production) at
   `https://digimon-tcg-bot.rstewart555.workers.dev`; the interactions endpoint
@@ -85,12 +85,19 @@ minimal maintenance.
 - **Cron is LIVE**: `0 6 * * 7` — which on Cloudflare means **Saturdays**
   06:00 UTC (their cron numbers weekdays from 1 = Sunday; diagnosed and
   deliberately kept 2026-07-07, DECISIONS — spell days by NAME in any
-  future cron edit). A temporary one-off recovery trigger `0 6 8 7 *`
-  fires Wed Jul 8 and is removed after. **The 5-day soak runs 2026-07-06
-  → 2026-07-11**; Gate C also needs the two automated runs (expected
-  Jul 8 one-off + Jul 11 weekly). Owner duties in OWNER-TODO.md.
-  Production D1: version 6, 8,535 rows (per `/health` 2026-07-09),
-  pipeline-loaded via cron + the resync route.
+  future cron edit; the Jul 8 one-off recovery trigger is long removed).
+  **🚀 Gate C (MVP) reached 2026-07-11** (DECISIONS entry has the
+  per-criterion evidence and two interpretation calls): the 5-day soak
+  (2026-07-06 → 07-11, owner-shortened from 7) closed clean, and both
+  automated runs landed — Jul 8 one-off (v4) + Jul 11 first weekly
+  Saturday fire (v7). Production D1: version 7, 8,535 rows (per `/health`
+  2026-07-11), pipeline-loaded via cron + the resync route.
+  2026-07-10/11: `/health` answers **HEAD** as well as GET (UptimeRobot
+  probes with HEAD; used to 404 — BUGS.md, tag `fix-health-head`), and an
+  **external UptimeRobot monitor is live and green** against it, closing
+  the dead-cron blind spot from outside Cloudflare. Phase-3 blog draft
+  (docs/blog/phase-3-draft.md) still awaits its Gate C ending +
+  judge-review outcome before publishing.
 - **Commands registered to the soak guilds** (`DISCORD_TEST_GUILD_ID` is a
   comma-separated list since 3.6.1; owner's `.dev.vars` has
   `DISCORD_APP_ID`, `DISCORD_BOT_TOKEN`, `DISCORD_TEST_GUILD_ID`,

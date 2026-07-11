@@ -61,7 +61,8 @@
       in `.dev.vars` on the dev machine (generated remotely 2026-07-06,
       never displayed in any transcript). Copy it into your password
       manager next to the webhook URL.
-- [ ] **External uptime ping** _(upgraded from optional 2026-07-06)_: point
+- [x] **External uptime ping** _(upgraded from optional 2026-07-06)_: **Done
+      7/11 by Owner** (UptimeRobot monitor live and green) — point
       a free pinger (e.g. UptimeRobot) at `GET /health` on the Worker.
       `/health` now returns **503 when card data goes stale**, so a plain
       "is it 200?" ping catches endpoint-down, Cloudflare account problems,

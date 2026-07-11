@@ -1,14 +1,15 @@
 # Weekly image-coverage audit (chunk 4.11): fetch the real upstream, run it
 # through the adapter, and probe every card image URL against the live CDN.
 # Fails (red run + GitHub's failure email) only on `missing` images — a genuine
-# coverage gap. Throttling is reported but never fails the run. Mondays 07:00
+# coverage gap. Throttling is reported but never fails the run. Saturdays 07:00
 # UTC, an hour after the source-contract job so the two don't overlap. GitHub
-# cron IS Unix dialect: `1` really is Monday. Writes nothing anywhere.
+# cron IS Unix dialect: `6` really is Saturday (Cloudflare's `7` = Saturday
+# does NOT apply here). Writes nothing anywhere.
 name: Image audit
 
 on:
   schedule:
-    - cron: "0 7 * * 1"
+    - cron: "0 7 * * 6"
   workflow_dispatch: # manual trigger for on-demand coverage checks
 
 jobs:

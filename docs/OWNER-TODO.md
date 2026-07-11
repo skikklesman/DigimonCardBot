@@ -29,7 +29,7 @@
       formatting automatically. Note the review in DECISIONS.md when done —
       "judge-reviewed" is a quality stamp worth recording.
 
-- [ ] **Spot-check the /set dates** (`src/data/releases.ts`, chunk 4.2;
+- [x] **Spot-check the /set dates** (`src/data/releases.ts`, chunk 4.2;
       the command was renamed from /release in 4.9): ~71 sets with EN
       release dates, all pulled from official Bandai product pages on
       2026-07-06 — but a second pair of eyes on a handful you know cold
@@ -57,7 +57,7 @@
       variables → Actions). The CI job picks it up automatically on the
       next push — no code change. Until then deploys stay manual and CI
       only smoke-checks production.
-- [ ] **Vault the resync token:** the `RESYNC_TOKEN` value sits on its line
+- [x] **Vault the resync token:** the `RESYNC_TOKEN` value sits on its line
       in `.dev.vars` on the dev machine (generated remotely 2026-07-06,
       never displayed in any transcript). Copy it into your password
       manager next to the webhook URL.
@@ -148,10 +148,10 @@
       there — it's in `src/interactions/embeds.ts` (`RESTRICTION_LINES`),
       and the partner map is `src/data/restrictions.ts` if a pairing
       reads wrong.
-- [ ] **Glance at the alert channel daily** — silence is expected; anything
+- [x] **Glance at the alert channel daily** — silence is expected; anything
       that appears is soak findings.
 - [ ] **After the first two automated crons** (expected Jul 8 one-off +
-      Jul 13, the first weekly Monday fire), confirm two ✅ automated
+      Jul 11, the first weekly Saturday fire), confirm two ✅ automated
       syncs happened (`/health` timestamp refreshes, or the Cloudflare
       dashboard cron log) — Gate C criterion #2.
 

@@ -12,12 +12,9 @@ database_name = "cards"
 database_id = "004a6c30-4560-4990-9b41-2bf7805bb94e"
 
 # Weekly sync (HANDOFF §3). CRON DIALECT WARNING: Cloudflare numbers
-# days-of-week from 1 = Sunday, so `2` here means MONDAY 06:00 UTC — not
+# days-of-week from 1 = Sunday, so `7` here means SATURDAY 06:00 UTC — not
 # Unix cron's Tuesday. Discovered when the expected Jul 7 fire never
-# existed; owner kept the de-facto Monday schedule (DECISIONS.md
-# 2026-07-07). Spell days by NAME (MON, TUE) in any future edit.
-# TEMPORARY second entry: one-off recovery run Wed 2026-07-08 06:00 UTC —
-# the mis-read weekly schedule has no fire before Jul 13 (OWNER-TODO,
-# soak section). REMOVE after it fires.
+# existed; owner changed the schedule to Saturday (DECISIONS.md
+# 2026-07-10). Spell days by NAME (MON, TUE) in any future edit.
 [triggers]
-crons = ["0 6 * * 2", "0 6 8 7 *"] # Mondays 06:00 UTC + one-off Jul 8
+crons = ["0 6 * * 7"] # Saturdays 06:00 UTC

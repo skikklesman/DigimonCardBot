@@ -145,7 +145,7 @@ Weekly scheduled CI job: fetch the real card source, run it through the
 adapter + validation gates, **write nothing**, report pass/fail to the alert
 webhook. Originally offset a day **before** the sync cron (converting "the
 sync failed" into "we knew a day early that upstream drifted"); since
-2026-07-07 it runs the **same hour** (Mondays 06:00 UTC) — the stagger was
+2026-07-07 it runs the **same hour** (Saturday 06:00 UTC) — the stagger was
 lost to the Cloudflare cron-dialect finding and consciously not restored
 (DECISIONS.md 2026-07-07). It remains an independent probe of upstream.
 

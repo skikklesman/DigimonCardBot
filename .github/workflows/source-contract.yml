@@ -1,12 +1,13 @@
-# Weekly source-contract check (TESTING.md §5): Mondays 06:00 UTC — same
+# Weekly source-contract check (TESTING.md §5): Saturdays 06:00 UTC — same
 # hour as the sync cron since the cron-dialect finding (DECISIONS.md
-# 2026-07-07; the day-early stagger was consciously dropped). Note GitHub
-# cron IS Unix dialect: `1` below really is Monday. Writes nothing anywhere.
+# 2026-07-07; the day-early stagger was consciously dropped; moved Mon->Sat
+# 2026-07-10). Note GitHub cron IS Unix dialect: `6` below really is
+# Saturday (Cloudflare's `7` = Saturday does NOT apply here). Writes nothing anywhere.
 name: Source contract
 
 on:
   schedule:
-    - cron: "0 6 * * 1"
+    - cron: "0 6 * * 6"
   workflow_dispatch: # manual trigger for testing
 
 jobs:

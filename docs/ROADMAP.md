@@ -225,12 +225,12 @@ the test guild. **Reached:** 2026-07-05
       re-dated Jul 8 (one-off recovery) + Jul 13 — DECISIONS.md
       2026-07-07. Also closed a plan gap: the TESTING.md §5 weekly
       source-contract CI job now exists — Mondays 06:00 UTC, now the same
-      hour as the sync; verified green against the real upstream. **Soak runs
-      2026-07-06 → 2026-07-13**; owner duties in OWNER-TODO.md. Repo-wide
+      hour as the sync; verified green against the real upstream. **Corrected 2026-07-10:** **Soak runs
+      2026-07-06 → 2026-07-11**; owner duties in OWNER-TODO.md. Repo-wide
       change: relative imports carry explicit `.ts` extensions so scripts,
       deploys, and tests share one resolution style.)_ Enable the production
       cron schedule. Start the
-      7-day soak: bot in test guild, daily use, watch logs/alerts. Fix anything the
+      5-day soak: bot in test guild, daily use, watch logs/alerts. Fix anything the
       soak surfaces.
 - [x] **3.6.1 — Expand soak coverage to a 2nd guild.** _(Landed
       2026-07-06: `npm run register` handles a comma-separated
@@ -520,7 +520,7 @@ Chunks 4.1–4.3 are independent — parallelizable.
       self-induce the throttling they'd measure). Tests: `image-coverage`
       categorization/retry/concurrency (incl. 403-throttle) with a fake fetch;
       adapter URL assertions re-pinned to `IMAGE_BASE`. **Owner:** run
-      `POST /admin/resync` (or wait for the Monday cron) so production serves
+      `POST /admin/resync` (or wait for the Saturday cron) so production serves
       jsDelivr URLs. Also corrects the stale 4.8 safety note below.
 
 - [x] **4.12 — Fold `/alt` into `/card`; retire the `/alt` command.** _(Landed

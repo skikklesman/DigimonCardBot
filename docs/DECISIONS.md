@@ -10,6 +10,12 @@
 
 ---
 
+## 2026-07-10 — Cron job moved Mondays->Saturdays
+
+- **Decision (owner).** The cron job will run on Saturdays at 6:00 UTC, not Mondays
+- **Why.** Decided a 5-day soak was sufficient rather than a 7-day soak, so the cron
+  job was moved forward 2 days.
+
 ## 2026-07-10 — Open-source license: MIT (resolves open decision #8)
 
 - **Decision (owner).** The repo will be released under the **MIT License**

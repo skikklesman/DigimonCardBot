@@ -38,7 +38,7 @@ minimal maintenance.
   `/release` (upcoming-releases forecast, 4.9), alerting (proven by live
   drills), `POST /admin/resync` (bearer-auth, proven against production),
   `GET /health` (503 when stale), post-deploy smoke in CI, weekly
-  source-contract CI job (Mondays 06:00 UTC). Chunk 4.6 (2026-07-07):
+  source-contract CI job (Saturdays 06:00 UTC). Chunk 4.6 (2026-07-07):
   `/card` shows a ⚠️ description line for banned/restricted/choice-
   restricted cards (`restriction` column, migration 0002). Chunk 4.7
   (2026-07-07): `/banlist` — the full banned/restricted list, grouped
@@ -48,7 +48,7 @@ minimal maintenance.
   Chunk 4.11 (2026-07-08): card images move off hotlinked
   `raw.githubusercontent.com` (429-rate-limited → intermittent blank
   `/card` images) to jsDelivr's CDN — one `IMAGE_BASE` constant; ships
-  `npm run image-audit` (weekly CI, Mondays 07:00 UTC) probing every
+  `npm run image-audit` (weekly CI, Saturdays 07:00 UTC) probing every
   card image for coverage gaps. **Production resync done** (2026-07-08,
   OWNER-TODO checked off) — the stored `image_url` values now point at
   jsDelivr.
@@ -82,13 +82,13 @@ minimal maintenance.
   Phase 4 blog published (docs/blog).** Next is Phase 5 (launch). The owner is
   an **official Digimon TCG judge**: primary source for all rules/keyword
   content (see OWNER-TODO's glossary-review item).
-- **Cron is LIVE**: `0 6 * * 2` — which on Cloudflare means **Mondays**
+- **Cron is LIVE**: `0 6 * * 7` — which on Cloudflare means **Saturdays**
   06:00 UTC (their cron numbers weekdays from 1 = Sunday; diagnosed and
   deliberately kept 2026-07-07, DECISIONS — spell days by NAME in any
   future cron edit). A temporary one-off recovery trigger `0 6 8 7 *`
-  fires Wed Jul 8 and is removed after. **The 7-day soak runs 2026-07-06
-  → 2026-07-13**; Gate C also needs the two automated runs (expected
-  Jul 8 one-off + Jul 13 weekly). Owner duties in OWNER-TODO.md.
+  fires Wed Jul 8 and is removed after. **The 5-day soak runs 2026-07-06
+  → 2026-07-11**; Gate C also needs the two automated runs (expected
+  Jul 8 one-off + Jul 11 weekly). Owner duties in OWNER-TODO.md.
   Production D1: version 6, 8,535 rows (per `/health` 2026-07-09),
   pipeline-loaded via cron + the resync route.
 - **Commands registered to the soak guilds** (`DISCORD_TEST_GUILD_ID` is a

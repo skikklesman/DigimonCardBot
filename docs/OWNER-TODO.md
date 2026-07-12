@@ -206,7 +206,7 @@
       Cloudflare Workers/D1 analytics during 5.5; if you near the cap, flip on
       **Workers Paid ($5/mo)** — no code change, still cheap. Not a blocker for
       launch, just don't get surprised by a mid-rollout throttle.
-- [ ] **Rehearse the rollback playbook once** (5.4 release checklist — the one
+- [x] **Rehearse the rollback playbook once** **Done on 2026-07-12 by Owner** (5.4 release checklist — the one
       open item as of 2026-07-10; needs your Cloudflare auth). Prove the two
       paths work before launch, on production or a scratch copy: **(a) bad
       dataset** — flip `active_version` back one with a single

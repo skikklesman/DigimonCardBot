@@ -4,3 +4,7 @@
 # "modified" files and false format-check failures on untouched code
 # (TECH-DIRECTION.md §4, established 2026-07-08).
 * text=auto eol=lf
+# Exception: cmd.exe batch files want CRLF (LF-only batch files can
+# misparse labels/multi-line constructs).
+*.cmd text eol=crlf
+*.bat text eol=crlf

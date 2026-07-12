@@ -218,24 +218,71 @@ Everything in Gate B, plus:
 | Endpoint down                      | External uptime ping on `/health` (free tier of any uptime service) | Email/Discord                                                                    | 2 consecutive failures   |
 | Drop-count spike                   | Validation gate counts, reported in sync summary                    | Webhook (warn, not fail)                                                         | > 1% of batch            |
 
-### Rollback playbook (rehearse before launch)
+### Rollback playbook (rehearse before launch; rehearsed 2026-07-12)
 
-- **Bad dataset got promoted:** flip `active_version` back one (single SQL
-  write via `wrangler d1 execute`). Old version is retained by design.
-- **Bad code deploy:** `wrangler rollback` (or redeploy previous commit from
-  CI). Request path is stateless, so rollback is safe at any time.
+> **Click-to-run:** `scripts\rollback-playbook.cmd` walks all of this as a
+> guided menu with confirmations (status / dataset flip back / flip forward /
+> code rollback). It runs on your local wrangler OAuth login and contains no
+> secrets. The raw commands below are the manual fallback — Windows
+> PowerShell, from the repo root. Mind the two shell traps learned in the
+> rehearsal: it's `npx wrangler` (project-local install, not on PATH) and
+> `curl.exe` (bare `curl` is PowerShell's Invoke-WebRequest alias).
+
+- **Bad dataset got promoted:** flip `active_version` back one — a single SQL
+  write. The prior version's rows are retained by design (sync GC keeps
+  exactly one, `src/sync/load.ts`).
+
+  ```powershell
+  # Baseline, then confirm the prior version's rows exist
+  curl.exe -s https://digimon-tcg-bot.rstewart555.workers.dev/health
+  npx wrangler d1 execute cards --remote --command "SELECT version, COUNT(*) AS n FROM cards GROUP BY version"
+
+  # The rollback itself (<target> = activeVersion - 1)
+  npx wrangler d1 execute cards --remote --command "UPDATE meta SET value = '<target>' WHERE key = 'active_version'"
+
+  # Verify: /health 200 on the prior version, then spot-check /card in a soak guild
+  curl.exe -s https://digimon-tcg-bot.rstewart555.workers.dev/health
+  ```
+
+  While flipped back, the next sync treats the newer version as **staging and
+  deletes its rows** (`src/sync/load.ts`). In a real incident that's the cure:
+  the next clean sync rebuilds it and re-promotes. In a **rehearsal** it would
+  destroy the good live dataset — don't hit `/admin/resync`, stay clear of the
+  weekly cron (Saturday 06:00 UTC), and flip forward promptly with the same
+  `UPDATE`.
+
+- **Bad code deploy:** `wrangler rollback`. Request path is stateless, so
+  rollback is safe at any time.
+
+  ```powershell
+  npx wrangler deployments list   # note the CURRENT Version ID first
+  npx wrangler rollback           # interactive -- pick the previous version
+  curl.exe -s -o NUL -w "%{http_code}" https://digimon-tcg-bot.rstewart555.workers.dev/health
+
+  # Roll forward later: "rollback" to the noted ID restores the exact
+  # original build (no rebuild drift, unlike a fresh deploy)
+  npx wrangler rollback <original-version-id>
+  ```
+
+  If wrangler reports a 5xx / "malformed response" from `api.cloudflare.com`,
+  that's a Cloudflare API outage, not your auth — check
+  [cloudflarestatus.com](https://www.cloudflarestatus.com/) and retry. The
+  dataset path above rides the D1 API, which can be up while the deployments
+  endpoint is down (observed live 2026-07-12: 521/525 on deployments, D1 and
+  the worker itself fine).
+
 - **Source dead long-term:** swap the adapter (HANDOFF §9); cache keeps serving
   stale-but-correct data indefinitely in the meantime — this is a degraded
   state, not an outage.
 
 ### Release checklist (run before Gate E, and for any risky change after)
 
-- [ ] CI green (unit + integration).
-- [ ] Deployed to production; smoke tests green.
-- [ ] Gate B manual script passes in test guild.
-- [ ] Health route shows fresh sync + expected card count.
-- [ ] Alert webhook tested within the last 30 days (forced-failure drill).
-- [ ] Rollback rehearsed within the last 90 days.
+- [x] CI green (unit + integration).
+- [x] Deployed to production; smoke tests green.
+- [x] Gate B manual script passes in test guild.
+- [x] Health route shows fresh sync + expected card count.
+- [x] Alert webhook tested within the last 30 days (forced-failure drill).
+- [x] Rollback rehearsed within the last 90 days.
 
 ### Load posture
 

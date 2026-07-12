@@ -10,6 +10,36 @@
 
 ---
 
+## 2026-07-12 — Rollback playbook gets real commands + a committed click-to-run script
+
+- **Decision (owner).** TESTING.md §7's playbook now carries the exact
+  PowerShell commands, and `scripts/rollback-playbook.cmd` (+ `.ps1`) is a
+  committed guided menu for the same moves: status, dataset flip
+  back/forward, `wrangler rollback`. Owner call: fine to commit — it only
+  works under the local wrangler OAuth login and contains no secrets (worker
+  URL, DB name are already documented as non-secrets).
+- **Why.** The rehearsal proved the _moves_ but also proved the _commands_
+  weren't reproducible from memory — three shell traps surfaced live
+  (`wrangler` not on PATH → `npx`; PowerShell's `curl` alias → `curl.exe`;
+  UTF-16 default on `>` redirects). Mid-incident is the wrong time to
+  rediscover those.
+- **Guardrails baked into the script:** refuses to flip to a version with 0
+  rows; every write requires typing `FLIP`; warns that a sync while flipped
+  back deletes the newer version as staging (desired in an incident,
+  destructive in a rehearsal — same warning now in TESTING.md §7).
+- **Also:** `.gitattributes` gains a `*.cmd`/`*.bat` CRLF exception to the
+  repo-wide LF rule (cmd.exe can misparse LF-only batch files).
+- **Revisit if:** the worker URL or D1 database name changes — both are
+  hardcoded in the script and in TESTING.md §7.
+
+## 2026-07-12 — Rollback rehearsal completed
+
+- **Decision (owner).** Ran the rollback playbook, rehearsing two scenarios:
+  bad data and bad code. Both scenarios completed successfully.
+- **Why.** Needed to test this before it goes live, don't want to have test
+  this for the first time post-launch.
+- **Revisit if:** A rollback is needed.
+
 ## 2026-07-11 — Verification moves post-launch; Gate E redefined; Post-Launch section created
 
 - **Decision (owner).** Chunk 5.3 (Discord bot verification) moves out of

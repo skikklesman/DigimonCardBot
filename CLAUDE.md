@@ -19,14 +19,19 @@ minimal maintenance.
 
 ### Live deployment (current through 🚀 Gate C reached, 2026-07-11)
 
-- **Worker is deployed and live** (production) at
-  `https://digimon-tcg-bot.rstewart555.workers.dev`; the interactions endpoint
+> **Operational identifiers** (live Worker URL, Cloudflare account name + ID,
+> D1 database ID, owner email) are kept out of this public-bound file. They live
+> in the gitignored **`CLAUDE.local.md`** on the dev machine — read it for the
+> concrete values. Placeholders below point there.
+
+- **Worker is deployed and live** (production) at `<WORKER_URL>` (see
+  `CLAUDE.local.md`); the interactions endpoint
   is `POST /interactions`. It only answers Discord's signed PING for now — every
   card command lands in later chunks.
-- **Cloudflare:** account `<OWNER_EMAIL>'s Account`
-  (`<CLOUDFLARE_ACCOUNT_ID>`); `wrangler` authed via OAuth on the dev
+- **Cloudflare:** account `<CLOUDFLARE_ACCOUNT>` (`<CLOUDFLARE_ACCOUNT_ID>` —
+  see `CLAUDE.local.md`); `wrangler` authed via OAuth on the dev
   machine (token has `workers` + `d1` write — no re-login needed for Phase 1).
-- **D1:** database `cards` (`004a6c30-4560-4990-9b41-2bf7805bb94e`) exists,
+- **D1:** database `cards` (`<D1_DATABASE_ID>` — see `CLAUDE.local.md`) exists,
   bound as `DB`, schema migrated (chunk 1.1). **Production D1 is populated**
   (2026-07-05, Gate B): version 1 live, 8,425 rows / 4,295 cards, transferred
   from the first real local sync. It will NOT refresh until the cron trigger

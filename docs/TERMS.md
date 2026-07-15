@@ -55,11 +55,6 @@ after a change constitutes acceptance of the updated terms.
 You may stop using the bot at any time by removing it from your server. We may
 restrict or terminate access to the bot at our discretion.
 
-## Governing law
-
-These terms are governed by the laws of **[JURISDICTION]**, without regard to
-conflict-of-law principles.
-
 ## Contact
 
 **[CONTACT — email address or support server]**.

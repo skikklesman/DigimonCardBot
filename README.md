@@ -10,19 +10,18 @@
 
 # DigimonCardBot
 
-A fast, no-frills **Digimon Trading Card Game** card-lookup bot for Discord.
+A fast **Digimon Trading Card Game** card-lookup bot for Discord.
 Type a card name and get its image, ban/restriction status, and alternate-art
-printings — right in the channel, with autocomplete.
+printings.
 
-Built to carry on for the community bot **DigimonTCGBot** (retiring
-2026‑07‑31).
+Inspired by the dearly departed **DigimonTCGBot** who retired in July 2026.
 
 ## Add it to your server
 
-**[Invite link — coming at launch.]**
+[**\[Use this link to invite DigimonCardBot to a server, or add it to your own user.\]**](https://discord.com/oauth2/authorize?client_id=1523405095507857600)
 
-The bot installs with the **`applications.commands` scope only** — it adds
-slash commands and nothing else. It is **not** a member of your server, has no
+The bot installs with the **`applications.commands` scope only**, it adds
+slash commands and nothing else. It is not a member of your server, has no
 presence, reads no messages, and cannot post on its own.
 
 ## Commands
@@ -46,16 +45,22 @@ IDs, no analytics. Each interaction is handled statelessly.
 ## How it works
 
 DigimonCardBot runs as a single **Cloudflare Worker** using Discord's **HTTP
-interactions** model — a signed request/response endpoint, with **no Gateway
-connection and no privileged intents**. Card data lives in a **Cloudflare D1**
+interactions** model — a signed request/response endpoint, with no Gateway
+connection and no privileged intents. Card data lives in a **Cloudflare D1**
 database, refreshed on a weekly schedule from a public community card dataset
-behind a validation pipeline (so a bad upstream update can't corrupt live
-data). The design targets ~1,000 servers at roughly \$0/month with minimal
-maintenance.
+behind a validation pipeline. The design should mean that it can operate in the 
+CloudFlare free tier for up to ~1,000 servers, with minimal maintenance.
 
 ## Development
 
-Requires Node.js (native TypeScript) and a Cloudflare account for deploys.
+This repository has scripts that automatically run on a new push to the master branch,
+which kick off some validation tests.  If those return green, a new build is
+automatically deployed to the Cloudflare and will be live on all servers within an hour.
+
+## Developing your own bot
+
+If you want to fork this and develop your own version and release it, you will need Node.js 
+(native TypeScript), a Cloudflare account for deploys, and a new Discord developer application ID.
 
 ```bash
 npm install

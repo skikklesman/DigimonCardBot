@@ -57,7 +57,7 @@ restrict or terminate access to the bot at our discretion.
 
 ## Contact
 
-**[CONTACT — email address or support server]**.
+**[CrestOfDope@proton.me](mailto:CrestOfDope@proton.me)**.
 
 ---
 

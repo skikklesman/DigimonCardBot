@@ -67,7 +67,7 @@ new "last updated" date.
 
 ## Contact
 
-Questions about this policy: **[CONTACT — email address or support server]**.
+Questions about this policy: **[CrestOfDope@proton.me](mailto:CrestOfDope@proton.me)**.
 
 ---
 

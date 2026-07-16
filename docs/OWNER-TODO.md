@@ -181,24 +181,27 @@
       refreshed for the current command set + the 5.1 drift check, with a
       step-by-step submission checklist. **Still yours:** review/tweak the
       wording once. The real long-pole (Privacy/ToS) is its own item below.
-- [ ] **Finish + publish the Privacy Policy and Terms of Service** — the real
-      gating dependency for verification (the form requires both URLs). Drafts
-      are ready at [docs/PRIVACY.md](PRIVACY.md) (bot stores **no** user data)
-      and [docs/TERMS.md](TERMS.md) (standard as-is / no-warranty). Three small
-      fills, all yours: `[CONTACT]` in both, `[JURISDICTION]` in the ToS, and a
-      once-over of the wording (I'm not a lawyer). Then **publish to public
-      URLs** — the public README or raw GitHub links both work — and paste the
-      URLs into [DISCORD-VERIFICATION.md](DISCORD-VERIFICATION.md). Do this
-      before crossing 75 servers so submission is instant.
+- [ ] **Publish the Privacy Policy and Terms of Service** — the real gating
+      dependency for verification (the form requires both URLs).
+      **The writing is done (2026-07-15):** [docs/PRIVACY.md](PRIVACY.md) (bot
+      stores **no** user data) and [docs/TERMS.md](TERMS.md) (as-is /
+      no-warranty) carry no placeholders — contact is `CrestOfDope@proton.me`,
+      the `[JURISDICTION]` question is gone (governing-law section dropped,
+      DECISIONS 2026-07-15), draft notes stripped, both dated. **Still yours:**
+      ① a once-over of the wording (I'm not a lawyer), ② make them reachable at
+      public URLs — flipping the repo public is the one step that does this
+      (raw GitHub links work the moment it's public), ③ paste both URLs into
+      [DISCORD-VERIFICATION.md](DISCORD-VERIFICATION.md). Do this before
+      crossing 75 servers so submission is instant.
 - [x] **License chosen: MIT** **Done 2026-07-10** — `LICENSE` file added;
-      README + `package.json` set to match (DECISIONS 2026-07-10). _Optional:
-      swap the copyright name from the `skikklesman` handle to your legal name
-      before the repo goes public._
-- [ ] **Publish the public README + legal pages** — `README.md`, `docs/PRIVACY.md`,
-      and `docs/TERMS.md` are drafted; flip the repo public (or serve them via
-      GitHub Pages/raw), fill the `[invite link]` / `[CONTACT]` / `[JURISDICTION]`
-      placeholders, then paste the Privacy/ToS URLs into
-      [DISCORD-VERIFICATION.md](DISCORD-VERIFICATION.md).
+      README + `package.json` set to match (DECISIONS 2026-07-10). _Copyright
+      line stays on the `skikklesman` handle — decided 2026-07-15, deliberate,
+      no longer an open option (DECISIONS 2026-07-15)._
+- [ ] **Flip the repo public** — everything content-side is ready (roadmap 6.3:
+      history audited, license settled, docs placeholder-free). This is the one
+      action nobody but you can take: **Settings → General → Danger Zone →
+      Change visibility → Public.** It is also what publishes the Privacy/ToS
+      URLs the item above needs.
 - [ ] **Watch usage during rollout; be ready to enable Workers Paid** (5.1
       finding, 2026-07-10): the free tier is 100k Worker requests/day and 5M D1
       rows-read/day. Autocomplete keystrokes (one request each) are the driver —

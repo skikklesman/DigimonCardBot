@@ -657,10 +657,22 @@ No gate closes this section — it's the operating roadmap.
       the stay-free / go-paid call is made and recorded._
 - [ ] **6.3 — Open-source the repo.** The standing intent (CLAUDE.md;
       license landed as MIT 2026-07-10 with the public README): flip the
-      repo public once the bot is up and running stably. Pre-flip: audit
-      git history for anything that shouldn't publish (secrets never lived
-      in the repo, but verify), and decide the copyright line (currently
-      the `skikklesman` handle — DECISIONS 2026-07-10 note).
+      repo public once the bot is up and running stably.
+      **Pre-flip work is DONE (2026-07-15) — only the visibility flip itself
+      remains** (owner action: Settings → General → Danger Zone → Change
+      visibility). What's already closed:
+      ① **history audited** — no secret has ever been committed (`.dev.vars`
+      has never been tracked in any commit; no webhook URLs or bot tokens
+      anywhere in the log; the one committed keypair,
+      `test/fixtures/discord-test-keypair.json`, is a documented test-only
+      Ed25519 pair that guards nothing);
+      ② **copyright line settled** — stays on the `skikklesman` handle, and
+      that is deliberate (DECISIONS 2026-07-15 — do not "fix" it);
+      ③ **public docs finalized** — README/PRIVACY/TERMS carry no draft notes
+      and no `[placeholders]`; contact and invite link are live; the ToS
+      governing-law section was dropped (DECISIONS 2026-07-15);
+      ④ **Worker URL + D1 id confirmed publishable** as non-secrets
+      (DECISIONS 2026-07-15).
 - [ ] **6.4 — Glossary: judge review + Comprehensive Rules §16 alignment.**
       The owner (official Digimon TCG judge) reviews the `/keyword`
       definitions (OWNER-TODO item); align them against the official

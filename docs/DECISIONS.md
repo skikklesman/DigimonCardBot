@@ -10,6 +10,62 @@
 
 ---
 
+## 2026-07-15 — Worker URL and D1 database id stay committed (not treated as secrets)
+
+- **Decision (owner).** The live Worker URL and the D1 `database_id` stay in
+  the repo as-is, and go public with it.
+- **Why.** Neither is a secret. The Worker URL is an HTTP endpoint that only
+  Discord calls — regular users never see it — and it is **load-bearing** where
+  it sits: `scripts/smoke.ts` uses it as the fallback for `WORKER_URL` (nothing
+  in CI or `package.json` sets that variable, so CI's post-deploy smoke depends
+  on the fallback) and `scripts/rollback-playbook.ps1` hardcodes it for
+  `/health`. The D1 `database_id` is **required in `wrangler.toml` by design**
+  — Cloudflare's own templates commit it — and is an opaque UUID, useless
+  without account credentials.
+- **Rejected alternative:** routing both through gitignored/CI-injected config.
+  That means templating core config and adding a required env var to every
+  smoke and rollback run — permanent friction, and it would have broken CI and
+  the rollback playbook — to conceal two non-secrets.
+- **Revisit if:** the Worker URL or the D1 database changes (both are hardcoded
+  in the script and TESTING.md §7 — same caveat as the 2026-07-12 entry), or if
+  wrangler ever stops requiring `database_id` in config.
+
+## 2026-07-15 — ToS: the governing-law section is dropped, not filled
+
+- **Decision (owner).** Removed the "Governing law" section from
+  [TERMS.md](TERMS.md) rather than naming a jurisdiction.
+- **Why.** For a free, no-data, hobby bot a governing-law clause is optional
+  boilerplate. The clauses actually carrying weight — as-is / no warranty, and
+  discretion to restrict or discontinue — all remain. Discord verification
+  requires a ToS to _exist_ with sensible content; it does not require a
+  governing-law clause, and plenty of hobby-bot ToS omit one.
+- **Revisit if:** the bot ever takes money, stores user data, or a lawyer
+  advises otherwise. (Nothing here is legal advice.)
+
+## 2026-07-15 — LICENSE copyright stays on the `skikklesman` handle
+
+- **Decision (owner).** The MIT copyright line stays
+  `Copyright (c) 2026 skikklesman`. The OWNER-TODO option to swap it for a
+  legal name is **declined — this is deliberate, not an oversight.**
+- **Why.** A handle is a valid copyright attribution, and it is already the
+  project's public identity: it's the GitHub account and it's in the repo URL.
+  Adding a legal name buys nothing.
+- **Revisit if:** a real enforcement need ever arises. Otherwise **do not
+  "fix" this** — it has been decided once.
+
+## 2026-07-15 — Public contact is a dedicated project address
+
+- **Decision (owner).** [PRIVACY.md](PRIVACY.md) and [TERMS.md](TERMS.md) both
+  point to `CrestOfDope@proton.me`. The `[CONTACT]` placeholders are gone, and
+  the maintainer DRAFT notes are stripped from README/PRIVACY/TERMS with both
+  legal docs dated 2026-07-15.
+- **Why.** Discord verification requires a reachable contact on both documents
+  (chunk 6.1). A dedicated project address keeps project mail separate from
+  personal mail, and is portable if the project ever gains maintainers or
+  changes hands.
+- **Revisit if:** a support server or custom-domain address replaces it — then
+  update both docs and the verification sheet together.
+
 ## 2026-07-12 — Rollback playbook gets real commands + a committed click-to-run script
 
 - **Decision (owner).** TESTING.md §7's playbook now carries the exact

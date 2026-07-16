@@ -614,7 +614,7 @@ Sequencing here is dictated by Discord's rules — HUMAN actions included
       8,535 cards, not stale); alerting forced-failure drill within 30 days
       (Phase 3 + Gate C); Gate B effectively re-validated by the post-fix `/card`
       spot-check; soak learnings (cron dialect, blank image 4.11, 2-printing
-      timeout 84fc68f) all addressed. **Open:** a rollback-playbook rehearsal —
+      timeout) all addressed. **Open:** a rollback-playbook rehearsal —
       OWNER-TODO. Re-run this whole checklist immediately before Gate E.)_ Run the
       release checklist in [TESTING.md](TESTING.md); confirm alerting, rollback
       procedure rehearsed, soak-period learnings addressed.

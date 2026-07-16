@@ -1,14 +1,6 @@
-<!--
-  Maintainer note (not rendered on GitHub): DRAFT for owner review before
-  publishing. This is not legal advice. Before you publish + submit for Discord
-  verification: (1) fill the [CONTACT] placeholder, (2) confirm the third-party
-  and "no data" statements still match reality, (3) set the effective date to
-  the publish date. Companion doc: docs/TERMS.md.
--->
-
 # Privacy Policy — DigimonCardBot
 
-_Last updated: 2026-07-10._
+_Last updated: 2026-07-15._
 
 DigimonCardBot ("the bot") is a Discord application that provides Digimon
 Trading Card Game card lookups via slash commands. This policy explains what

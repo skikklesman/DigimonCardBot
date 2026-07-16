@@ -1,13 +1,6 @@
-<!--
-  Maintainer note (not rendered on GitHub): DRAFT for owner review before
-  publishing. This is not legal advice. Before you publish + submit for Discord
-  verification: (1) fill the [JURISDICTION] and [CONTACT] placeholders,
-  (2) set the effective date to the publish date. Companion doc: docs/PRIVACY.md.
--->
-
 # Terms of Service — DigimonCardBot
 
-_Last updated: 2026-07-10._
+_Last updated: 2026-07-15._
 
 By adding DigimonCardBot ("the bot") to a Discord server or using its commands,
 you agree to these terms.

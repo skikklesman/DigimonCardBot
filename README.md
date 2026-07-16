@@ -1,13 +1,3 @@
-<!--
-  Maintainer note (not rendered on GitHub): DRAFT for owner review before the
-  repo goes public. Fill the placeholders flagged in [brackets]: the invite
-  link (published at rollout, 5.5) and the contact/support line. License is set
-  (MIT, see LICENSE) — swap the copyright name from the `skikklesman` handle to
-  your legal name if you prefer. The Privacy/ToS links below are the public home
-  the verification form needs — once this README is live, paste those URLs into
-  docs/DISCORD-VERIFICATION.md.
--->
-
 # DigimonCardBot
 
 A fast **Digimon Trading Card Game** card-lookup bot for Discord.

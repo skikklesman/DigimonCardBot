@@ -48,18 +48,18 @@ DigimonCardBot runs as a single **Cloudflare Worker** using Discord's **HTTP
 interactions** model — a signed request/response endpoint, with no Gateway
 connection and no privileged intents. Card data lives in a **Cloudflare D1**
 database, refreshed on a weekly schedule from a public community card dataset
-behind a validation pipeline. The design should mean that it can operate in the 
+behind a validation pipeline. The design should mean that it can operate in the
 CloudFlare free tier for up to ~1,000 servers, with minimal maintenance.
 
 ## Development
 
 This repository has scripts that automatically run on a new push to the master branch,
-which kick off some validation tests.  If those return green, a new build is
+which kick off some validation tests. If those return green, a new build is
 automatically deployed to the Cloudflare and will be live on all servers within an hour.
 
 ## Developing your own bot
 
-If you want to fork this and develop your own version and release it, you will need Node.js 
+If you want to fork this and develop your own version and release it, you will need Node.js
 (native TypeScript), a Cloudflare account for deploys, and a new Discord developer application ID.
 
 ```bash

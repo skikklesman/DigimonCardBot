@@ -10,6 +10,33 @@
 
 ---
 
+## 2026-07-15 — Prettier is a tool, not a gate: `format:check` removed from CI and the pre-merge gate
+
+- **Decision (owner).** `npm run format:check` is gone from
+  `.github/workflows/ci.yml` and from the TECH-DIRECTION §4 pre-merge gate.
+  Prettier itself stays — `npm run format` (and the `format:check` script) are
+  still there to run by hand. Formatting is simply never allowed to fail a
+  build, a merge, or a deploy.
+- **Why.** Wrong shape for the risk. The `checks` job is what `deploy` `needs`,
+  so a cosmetic check sat directly in front of production: on 2026-07-15 a
+  trailing space in README failed `format:check`, which **skipped the deploy
+  job entirely** while typecheck, lint and all 613 tests were green. Blocking a
+  release on whitespace costs more than the inconsistency it prevents, and the
+  owner's read is that a formatter that can break the pipeline gets in the way
+  more than it helps.
+- **Scope checked:** prettier is **not** wired into ESLint and there are no
+  husky/lint-staged pre-commit hooks, so removing the CI step genuinely removes
+  formatting from every gate — nothing else can fail on it. The `checks` job is
+  renamed `Typecheck, lint, test` (no branch protection referenced the old
+  name).
+- **Known trade-off:** formatting will drift, and once the repo is public,
+  external PRs may arrive inconsistently formatted. Mitigation is
+  `npm run format` (or editor format-on-save) — a fix applied, never a gate.
+- **Revisit if:** drift actually becomes painful with real contributors. Even
+  then the answer is an **advisory/auto-fix** step, not a blocking one —
+  formatting must not gate `deploy`. Do not re-add `format:check` to the
+  `checks` job.
+
 ## 2026-07-15 — Worker URL and D1 database id stay committed (not treated as secrets)
 
 - **Decision (owner).** The live Worker URL and the D1 `database_id` stay in

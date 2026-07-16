@@ -84,16 +84,19 @@ every checkout produce LF, on Windows too. Don't fight it with
 **Pitfall prevented:** the first lap of the branch workflow (2026-07-08)
 ended with 16 "modified" files nobody had touched — Windows' default
 `autocrlf` conversion rewrote the working tree to CRLF during the
-checkout/merge dance, and prettier (and CI, which checks out LF on
-Linux) failed the format check on phantom diffs. With checkout pinned to
-LF, the working tree always matches what prettier and CI expect.
+checkout/merge dance, producing phantom diffs (which, at the time, also
+failed the since-removed CI format check). The rule still earns its keep
+without that check: pinned to LF, the working tree matches what git and CI
+see on Linux, so `git status` stays honest and diffs stay real.
 
 ## 4. The pre-merge gate (existing rhythm, now written down)
 
 Before any merge to master, all of the following — no exceptions:
 
-- `npm test`, `npm run lint`, `npm run typecheck`, `npm run format:check`
-  all green locally (CI re-proves it, but don't lean on CI to find out).
+- `npm test`, `npm run lint`, `npm run typecheck` all green locally (CI
+  re-proves it, but don't lean on CI to find out). **Formatting is not part
+  of the gate** — `npm run format` is a tool you may run, never a check that
+  can fail a merge or a deploy (DECISIONS 2026-07-15).
 - Docs sweep travels **in the same squash commit** as the code: ROADMAP
   checkbox + landed note, DECISIONS.md entry for any non-trivial call,
   OWNER-TODO.md for any new human action, CLAUDE.md's status block.

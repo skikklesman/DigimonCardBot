@@ -1,4 +1,37 @@
-# Copy to .dev.vars (gitignored) for local `wrangler dev` against a real
-# Discord app. Values come from the Discord Developer Portal (chunk 0.5).
+# Copy to .dev.vars (gitignored) for local development against a real Discord
+# app. Values come from the Discord Developer Portal:
+# https://discord.com/developers/applications
 # Deployed secrets are set with `wrangler secret put NAME` — never committed.
+#
+# This file does double duty: `wrangler dev` injects these into the Worker's
+# env, and scripts/register-commands.ts reads DISCORD_APP_ID, DISCORD_BOT_TOKEN
+# and DISCORD_TEST_GUILD_ID straight out of this file when you run
+# `npm run register`.
+
+# --- Required by the Worker (`npm run dev`) ---
+# Verifies the signature on Discord's signed interaction requests.
 DISCORD_PUBLIC_KEY = "your-app-public-key-hex"
+
+# --- Required by `npm run register` / `npm run register:global` ---
+DISCORD_APP_ID = "your-application-id"
+DISCORD_BOT_TOKEN = "your-bot-token"
+# Target guild(s) for `npm run register` — guild-scoped and instant, which is
+# the fast iteration path. Comma-separated for more than one. Get a guild id by
+# right-clicking the server with Developer Mode on. Unused by register:global.
+DISCORD_TEST_GUILD_ID = "your-test-guild-id"
+
+# --- Optional: leave commented out to keep the default behaviour ---
+
+# Bearer token for POST /admin/resync, which refreshes card data on demand
+# instead of waiting for the weekly cron — handy for seeding a fresh database.
+# Without it the route 404s as though it does not exist (deliberate: bad and
+# missing auth are indistinguishable). Only set it if you want the route live.
+# RESYNC_TOKEN = "a-long-random-string"
+
+# Discord webhook URL for sync failures and request-path errors. Without it,
+# alerts are logged and dropped rather than delivered.
+# SYNC_ALERT_WEBHOOK = "https://discord.com/api/webhooks/..."
+
+# Overrides the upstream card dataset URL, for staging or drills. Defaults to
+# the real source.
+# CARD_SOURCE_URL = "https://example.invalid/cards.json"

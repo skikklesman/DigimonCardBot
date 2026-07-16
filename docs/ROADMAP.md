@@ -655,12 +655,9 @@ No gate closes this section — it's the operating roadmap.
       monthly rhythm; if metrics near the cap, flip on **Workers Paid
       ($5/mo)** — no code change. _Done when: traffic has stabilized and
       the stay-free / go-paid call is made and recorded._
-- [ ] **6.3 — Open-source the repo.** The standing intent (CLAUDE.md;
-      license landed as MIT 2026-07-10 with the public README): flip the
-      repo public once the bot is up and running stably.
-      **Pre-flip work is DONE (2026-07-15) — only the visibility flip itself
-      remains** (owner action: Settings → General → Danger Zone → Change
-      visibility). What's already closed:
+- [x] **6.3 — Open-source the repo.** **DONE 2026-07-15 — the repo is PUBLIC**
+      (owner flipped the switch; GitHub detects the MIT license). The standing
+      intent from CLAUDE.md, executed. What landed:
       ① **history audited** — no secret has ever been committed (`.dev.vars`
       has never been tracked in any commit; no webhook URLs or bot tokens
       anywhere in the log; the one committed keypair,
@@ -672,7 +669,14 @@ No gate closes this section — it's the operating roadmap.
       and no `[placeholders]`; contact and invite link are live; the ToS
       governing-law section was dropped (DECISIONS 2026-07-15);
       ④ **Worker URL + D1 id confirmed publishable** as non-secrets
-      (DECISIONS 2026-07-15).
+      (DECISIONS 2026-07-15);
+      ⑤ **README rebuilt for contributors** — install/test commands, the CI
+      gates a PR must pass, `.dev.vars.example` completed to cover every
+      variable the code reads, `engines: node >=22.18` declared, and an honest
+      self-hosting guide (own D1 + `database_id`, migrations, the empty-database
+      seeding gap, and the public-HTTPS-endpoint requirement).
+      _Consequence: the Privacy/ToS URLs verification needs (6.1) are now live,
+      and outside PRs/Issues are open._
 - [ ] **6.4 — Glossary: judge review + Comprehensive Rules §16 alignment.**
       The owner (official Digimon TCG judge) reviews the `/keyword`
       definitions (OWNER-TODO item); align them against the official

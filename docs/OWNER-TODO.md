@@ -197,11 +197,9 @@
       README + `package.json` set to match (DECISIONS 2026-07-10). _Copyright
       line stays on the `skikklesman` handle — decided 2026-07-15, deliberate,
       no longer an open option (DECISIONS 2026-07-15)._
-- [ ] **Flip the repo public** — everything content-side is ready (roadmap 6.3:
-      history audited, license settled, docs placeholder-free). This is the one
-      action nobody but you can take: **Settings → General → Danger Zone →
-      Change visibility → Public.** It is also what publishes the Privacy/ToS
-      URLs the item above needs.
+- [x] **Flip the repo public** **Done 2026-07-15 by Owner** — the repo is
+      public, MIT detected, and the Privacy/ToS URLs the item above needs are
+      now live (roadmap 6.3). Outside Issues and PRs are open from here on.
 - [ ] **Watch usage during rollout; be ready to enable Workers Paid** (5.1
       finding, 2026-07-10): the free tier is 100k Worker requests/day and 5M D1
       rows-read/day. Autocomplete keystrokes (one request each) are the driver —

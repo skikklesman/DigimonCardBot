@@ -8,9 +8,12 @@ minimal maintenance.
 ## Project facts
 
 - Remote: https://github.com/skikklesman/DigimonCardBot (`origin`, branch
-  `master`). **Private for now** — the owner intends to open-source it once
-  it's up and running (license + public README are launch-phase tasks; see
-  DECISIONS.md open decisions).
+  `master`). **PUBLIC since 2026-07-15** (MIT; roadmap 6.3 — the standing
+  intent, now executed). Treat everything here as world-readable the moment
+  it's pushed: no personal or account identifiers in tracked files. The few
+  the owner keeps private live in the gitignored `CLAUDE.local.md`; real
+  secrets live only in `wrangler secret` / `.dev.vars`. The repo also now
+  takes outside contributions — Issues and PRs are invited in the README.
 - The `gh` CLI is installed and authenticated as `skikklesman` on the dev
   machine.
 - Timeline pressure: the old bot dies **2026-07-31**, and Discord bot

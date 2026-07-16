@@ -16,8 +16,9 @@ reads no messages, and cannot post on its own.
 
 ## About the project
 
-I built this as a replacement for the DigimonTCGBot that went down, and one of
-the hurdles was not having access to the source code of that original bot. For
+I built this as a replacement for the DigimonTCGBot that went down, and as an experiment
+to see what Claude Code is capable of as a programming assistant.
+One of the hurdles was not having access to the source code of that original bot. For
 this one, I want to make the code public for others to reference if they want to
 build their own bots.
 
